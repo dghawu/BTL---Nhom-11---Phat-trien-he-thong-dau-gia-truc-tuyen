@@ -1,4 +1,6 @@
 package model.auction;
+import model.entity.Entity;
+import model.user.Bidder;
 
 import java.time.LocalDateTime;
 

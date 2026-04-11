@@ -1,12 +1,19 @@
 package model.user;
 
+import model.auction.Auction;
+import model.item.Item;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 public class Seller extends User {
     private List<Auction> myProducts;
+    private List<Auction> myAuctions;
     public Seller(String id, String name, String password) {
         super(id, name, password, "SELLER");
         this.myProducts = new ArrayList<>();
+        this.myAuctions = new ArrayList<>();
     }
     // Hiển thị menu (override từ User)
     @Override
@@ -57,6 +64,38 @@ public class Seller extends User {
         System.out.println("\n===== DANH SÁCH SẢN PHẨM =====");
         for (int i = 0; i < myProducts.size(); i++) {
             System.out.println(i + ". " + myProducts.get(i));
+        }
+    }
+    //Tạo phiên đấu giá
+    public Auction createAuction(
+        String auctionId,
+        Item item,
+        LocalDateTime startTime,
+        LocalDateTime endTime,
+        double minIncrement) {
+        Auction auction = new Auction(auctionId, item, startTime, endTime, minIncrement);
+        myAuctions.add(auction);
+        System.out.println("Seller " + getName() + " đã tạo phiên đấu giá: " + auctionId);
+        return auction;
+    }
+    //Xem cac phien dau gia cua seller
+    public void viewMyAuctions() {
+        for (Auction auction : myAuctions) {
+            System.out.println(
+                    "Auction ID: " + auction.getAuctionId() +
+                            " | Item: " + auction.getItem() +
+                            " | Price: " + auction.getCurrentPrice()
+            );
+        }
+    }
+    //Huy phien dau gia
+    public void cancelAuction(String auctionId) {
+        for (Auction auction : myAuctions) {
+            if (auction.getAuctionId().equals(auctionId)) {
+                auction.setStatus("CANCELED");
+                System.out.println("Đã hủy phiên đấu giá: " + auctionId);
+                return;
+            }
         }
     }
 }
