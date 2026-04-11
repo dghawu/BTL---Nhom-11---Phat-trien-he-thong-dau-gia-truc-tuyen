@@ -28,7 +28,7 @@ public class Bidder extends User implements AuctionObserver {
         System.out.println("[BIDDER] " + getName() + " yêu cầu đặt giá: " + amount);
 
         // Tạo đối tượng model.auction.BidTransaction mới
-        BidTransaction newBid = new BidTransaction(this.getName(), amount);
+        BidTransaction newBid = new BidTransaction(this.getName(),auction.getAuctionId(), amount);
 
         // Gửi yêu cầu đến model.auction.Auction
         boolean response = auction.handleNewBid(newBid);

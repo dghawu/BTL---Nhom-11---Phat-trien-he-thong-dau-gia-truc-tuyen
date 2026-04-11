@@ -1,5 +1,8 @@
 package model.item;
 
+import factory.ItemFactory;
+import model.entity.Entity;
+
 public abstract class Item extends Entity implements ItemFactory {
 
     public enum ItemStatus {
@@ -78,4 +81,5 @@ public abstract class Item extends Entity implements ItemFactory {
      * Mặc định không in gì thêm.
      */
     protected void printExtraInfo() {}
+
 }
