@@ -1,12 +1,19 @@
+package model.auction;
+
+import model.entity.Entity;
+import model.item.Item;
+import model.user.Bidder;
+import observer.Subject;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lớp Auction quản lý phiên đấu giá cho một sản phẩm cụ thể.
+ * Lớp model.auction.Auction quản lý phiên đấu giá cho một sản phẩm cụ thể.
  * Đảm bảo logic về thời gian, giá cao nhất và trạng thái phiên.
  */
-public class Auction extends Entity {
+public class Auction extends Entity implements Subject {
     private String auctionId;
     private Item item;
     private double currentPrice;

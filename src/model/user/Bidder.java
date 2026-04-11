@@ -1,8 +1,14 @@
+package model.user;
+
+import model.auction.Auction;
+import model.auction.BidTransaction;
+import observer.AuctionObserver;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Bidder extends User {
+public class Bidder extends User implements AuctionObserver {
     private List<Auction> watchlist;      // Danh sách sản phẩm đang theo dõi
     private double maxAutoBidAmount;      // Ngưỡng giá tối đa cho Auto-bid
     private boolean isAutoBidEnabled;     // Trạng thái bật/tắt tự động đấu giá
@@ -26,11 +32,11 @@ public class Bidder extends User {
         System.out.println("[BIDDER] " + getName() + " yêu cầu đặt giá: " + amount);
 
 
-        // Tạo đối tượng BidTransaction mới
+        // Tạo đối tượng model.auction.BidTransaction mới
         BidTransaction newBid = new BidTransaction(this.getName(), amount);
 
 
-        // Gửi yêu cầu đến Auction
+        // Gửi yêu cầu đến model.auction.Auction
         String response = auction.handleNewBid(newBid);
         System.out.println("Hệ thống phản hồi: " + response);
 
@@ -62,7 +68,6 @@ public class Bidder extends User {
         System.out.println("[AUTO-BID] " + getName() + " đã thiết lập giá trần: " + maxAmount);
     }
 
-    @Override
     public void update(Auction auction, double newPrice, String lastBidderId) {
         if (!lastBidderId.equals(this.getName())) {
             System.out.println("[NOTIFY to " + getName() + "] Giá '"
@@ -74,7 +79,6 @@ public class Bidder extends User {
             }
         }
     }
-
 
     /**
      * Logic xử lý tự động nâng giá
@@ -107,5 +111,10 @@ public class Bidder extends User {
         System.out.println("3. Cài đặt đấu giá tự động (Auto-bid)");
         System.out.println("4. Xem danh sách đang theo dõi");
         System.out.println("5. Đăng xuất");
+    }
+
+    @Override
+    public void update(String message) {
+        System.out.println("New update: " + message);
     }
 }

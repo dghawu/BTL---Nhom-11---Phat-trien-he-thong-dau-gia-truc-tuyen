@@ -1,3 +1,5 @@
+package model.item;
+
 public class Fashion extends Item {
 
 
@@ -10,7 +12,7 @@ public class Fashion extends Item {
 
     private Fashion(String id, String sellerId, String name,
                     String description, double startingPrice,
-                    ItemStatus status, String size, String brand) {
+                    Item.ItemStatus status, String size, String brand) {
         super(id, sellerId, name, description, startingPrice, status);
         this.size  = size;
         this.brand = brand;
@@ -21,14 +23,14 @@ public class Fashion extends Item {
     @Override
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status) {
+                           Item.ItemStatus status) {
         return new Fashion(id, sellerId, name, description, startingPrice, status, "One size", "Không rõ");
     }
 
 
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status, String size, String brand) {
+                           Item.ItemStatus status, String size, String brand) {
         return new Fashion(id, sellerId, name, description, startingPrice, status, size, brand);
     }
 

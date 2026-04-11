@@ -1,3 +1,5 @@
+package model.item;
+
 public class ETC extends Item {
 
 
@@ -9,7 +11,7 @@ public class ETC extends Item {
 
     private ETC(String id, String sellerId, String name,
                 String description, double startingPrice,
-                ItemStatus status, String note) {
+                Item.ItemStatus status, String note) {
         super(id, sellerId, name, description, startingPrice, status);
         this.note = note;
     }
@@ -19,14 +21,14 @@ public class ETC extends Item {
     @Override
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status) {
+                           Item.ItemStatus status) {
         return new ETC(id, sellerId, name, description, startingPrice, status, "Không có ghi chú");
     }
 
 
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status, String note) {
+                           Item.ItemStatus status, String note) {
         return new ETC(id, sellerId, name, description, startingPrice, status, note);
     }
 

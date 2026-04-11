@@ -1,3 +1,5 @@
+package model.item;
+
 public class Vehicle extends Item {
 
 
@@ -9,7 +11,7 @@ public class Vehicle extends Item {
 
     private Vehicle(String id, String sellerId, String name,
                     String description, double startingPrice,
-                    ItemStatus status, long mileage) {
+                    Item.ItemStatus status, long mileage) {
         super(id, sellerId, name, description, startingPrice, status);
         this.mileage = mileage;
     }
@@ -19,14 +21,14 @@ public class Vehicle extends Item {
     @Override
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status) {
+                           Item.ItemStatus status) {
         return new Vehicle(id, sellerId, name, description, startingPrice, status, 0L);
     }
 
 
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status, long mileage) {
+                           Item.ItemStatus status, long mileage) {
         return new Vehicle(id, sellerId, name, description, startingPrice, status, mileage);
     }
 

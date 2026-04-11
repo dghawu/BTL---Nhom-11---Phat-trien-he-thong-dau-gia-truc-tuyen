@@ -1,3 +1,5 @@
+package model.item;
+
 public class Art extends Item {
 
 
@@ -10,7 +12,7 @@ public class Art extends Item {
 
     private Art(String id, String sellerId, String name,
                 String description, double startingPrice,
-                ItemStatus status, String artist, String medium) {
+                Item.ItemStatus status, String artist, String medium) {
         super(id, sellerId, name, description, startingPrice, status);
         this.artist = artist;
         this.medium = medium;
@@ -21,14 +23,14 @@ public class Art extends Item {
     @Override
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status) {
+                           Item.ItemStatus status) {
         return new Art(id, sellerId, name, description, startingPrice, status, "Không rõ", "Không rõ");
     }
 
 
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status, String artist, String medium) {
+                           Item.ItemStatus status, String artist, String medium) {
         return new Art(id, sellerId, name, description, startingPrice, status, artist, medium);
     }
 

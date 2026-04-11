@@ -1,3 +1,5 @@
+package model.item;
+
 public class Electronics extends Item {
 
 
@@ -10,7 +12,7 @@ public class Electronics extends Item {
 
     private Electronics(String id, String sellerId, String name,
                         String description, double startingPrice,
-                        ItemStatus status, int warrantyMonths) {
+                        Item.ItemStatus status, int warrantyMonths) {
         super(id, sellerId, name, description, startingPrice, status);
         this.warrantyMonths = warrantyMonths;
     }
@@ -18,21 +20,21 @@ public class Electronics extends Item {
 
     // ── Factory Method ──────────────────────────────────────────────
     /**
-     * Tạo Electronics với warrantyMonths mặc định = 12.
-     * Dùng {@link #createItem(String, String, String, String, double, ItemStatus, int)}
+     * Tạo model.item.Electronics với warrantyMonths mặc định = 12.
+     * Dùng {@link #createItem(String, String, String, String, double, Item.ItemStatus, int)}
      * nếu muốn chỉ định thời hạn bảo hành khác.
      */
     @Override
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status) {
+                           Item.ItemStatus status) {
         return new Electronics(id, sellerId, name, description, startingPrice, status, 12);
     }
 
 
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
-                           ItemStatus status, int warrantyMonths) {
+                           Item.ItemStatus status, int warrantyMonths) {
         return new Electronics(id, sellerId, name, description, startingPrice, status, warrantyMonths);
     }
 

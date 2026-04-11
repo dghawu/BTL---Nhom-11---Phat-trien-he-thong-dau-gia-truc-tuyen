@@ -1,3 +1,5 @@
+package model.item;
+
 public abstract class Item extends Entity implements ItemFactory {
 
     public enum ItemStatus {
@@ -7,7 +9,7 @@ public abstract class Item extends Entity implements ItemFactory {
     public enum ItemType {
         ELECTRONICS, ART, VEHICLE, FASHION, ETC;
 
-        /** Tạo Item tương ứng với loại enum — dùng như static factory. */
+        /** Tạo model.item.Item tương ứng với loại enum — dùng như static factory. */
         public Item create(String sellerId, String name, String id,
                            String description, double startingPrice,
                            ItemStatus status) {

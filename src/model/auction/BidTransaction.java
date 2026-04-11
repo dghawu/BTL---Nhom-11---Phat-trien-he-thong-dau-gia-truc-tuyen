@@ -1,7 +1,9 @@
+package model.auction;
+
 import java.time.LocalDateTime;
 
 /**
- * Lớp BidTransaction lưu trữ thông tin về một giao dịch đặt giá cụ thể.
+ * Lớp model.auction.BidTransaction lưu trữ thông tin về một giao dịch đặt giá cụ thể.
  * Đáp ứng yêu cầu về lưu trữ lịch sử và hiển thị biểu đồ giá theo thời gian.
  */
 public class BidTransaction extends Entity {
