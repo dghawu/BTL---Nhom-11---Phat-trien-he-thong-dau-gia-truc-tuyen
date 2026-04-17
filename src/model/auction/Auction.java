@@ -1,5 +1,7 @@
 package model.auction;
 
+import exception.AuctionClosedException;
+import exception.InvalidBidException;
 import model.entity.Entity;
 import model.item.Item;
 import observer.AuctionObserver;
@@ -29,7 +31,7 @@ public class Auction extends Entity implements Subject {
         this.auctionId    = id;
         this.item         = item;
         this.startPrice   = startPrice;
-        this.currentPrice = item.getStartingPrice();
+        this.currentPrice = startPrice;
         this.minIncrement = minIncrement;
         this.startTime    = startTime;
         this.endTime      = endTime;
@@ -47,48 +49,49 @@ public class Auction extends Entity implements Subject {
         System.out.println("Kết thúc    : " + endTime);
     }
 
-    public synchronized boolean handleNewBid(BidTransaction bid) {
+    /**
+     * Xử lý lượt đặt giá — throws exception thay vì return false.
+     * Caller (Bidder.placeManualBid) cần try-catch để xử lý.
+     */
+    public synchronized void handleNewBid(BidTransaction bid) {
+        // 1. Kiểm tra trạng thái phiên
         if (!status.equals("RUNNING")) {
-            System.out.println("Lỗi: Phiên không trong trạng thái RUNNING.");
-            return false;
+            throw new AuctionClosedException(auctionId, status);
         }
+        // 2. Kiểm tra hết giờ
         if (LocalDateTime.now().isAfter(endTime)) {
             closeAuction();
-            return false;
+            throw new AuctionClosedException(auctionId, "FINISHED");
         }
-
+        // 3. Kiểm tra giá hợp lệ
         double requiredPrice = currentPrice + minIncrement;
         if (bid.getAmount() < requiredPrice) {
-            System.out.println("Lỗi: Cần đặt tối thiểu " + requiredPrice
-                    + ", bạn đặt " + bid.getAmount());
-            return false;
+            throw new InvalidBidException(bid.getAmount(), requiredPrice);
         }
 
-        // Anti-sniping: bid trong 30 giây cuối → gia hạn +60 giây
+        // 4. Anti-sniping: bid trong 30 giây cuối → gia hạn +60 giây
         if (LocalDateTime.now().isAfter(endTime.minusSeconds(30))) {
             endTime = endTime.plusSeconds(60);
             System.out.println("[ANTI-SNIPE] Gia hạn phiên đến: " + endTime);
-            // Báo AuctionTimer lên lịch lại
             AuctionTimer.getInstance().reschedule(this);
         }
 
+        // 5. Cập nhật
         this.currentPrice  = bid.getAmount();
         this.currentWinner = bid.getBidderId();
         this.bidHistory.add(bid);
         notifyObservers(this, currentPrice, bid.getBidderId());
 
         System.out.println("Đặt giá thành công! Giá hiện tại: " + currentPrice);
-        return true;
     }
 
     public void startAuction() {
         if (status.equals("APPROVED")) {
             this.status = "RUNNING";
             System.out.println("Phiên " + auctionId + " bắt đầu!");
-            // Lên lịch tự động đóng khi hết giờ
             AuctionTimer.getInstance().schedule(this);
         } else {
-            System.out.println("Không thể bắt đầu: trạng thái hiện tại là " + status);
+            throw new AuctionClosedException(auctionId, status);
         }
     }
 
@@ -124,5 +127,5 @@ public class Auction extends Entity implements Subject {
     public String getStatus()                   { return status; }
     public void setStatus(String status)        { this.status = status; }
     public void setName(String name)            { item.setName(name); }
-    public void setStartPrice(double price)     { item.setStartingPrice(price); }
+    public void setStartPrice(double price)     { item.setStartPrice(price); }
 }
