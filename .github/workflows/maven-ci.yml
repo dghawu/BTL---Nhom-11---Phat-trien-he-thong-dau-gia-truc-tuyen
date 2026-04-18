@@ -3,9 +3,9 @@ name: Maven CI/CD
 # Kích hoạt workflow
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, main, develop ]
 
 jobs:
   build:
