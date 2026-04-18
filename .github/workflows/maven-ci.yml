@@ -26,15 +26,15 @@ jobs:
 
       # Step 3: Build project
       - name: Build with Maven
-        run: mvn clean compile
+        run: mvn clean compile -U
 
       # Step 4: Chạy Unit Tests
       - name: Run tests
-        run: mvn test
+        run: mvn test -U
 
       # Step 5: Package JAR/WAR
       - name: Package with Maven
-        run: mvn package -DskipTests
+        run: mvn package -DskipTests -U
 
       # Step 6: Upload artifacts
       - name: Upload build artifacts
