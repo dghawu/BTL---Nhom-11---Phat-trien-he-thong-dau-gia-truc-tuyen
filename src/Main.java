@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class Main {
     public static void main(String[] args) {
 
-        UserService    userService = UserService.getInstance();
+        UserService  userService = UserService.getInstance();
         AuctionManager auctionMgr  = AuctionManager.getInstance();
 
         // 1. Đăng ký users qua UserService

@@ -16,8 +16,8 @@ public abstract class User extends Entity {
 
     public String getName()     { return name; }
     public String getRole()     { return role; }
+    public String getPassword() { return password; } // thêm cho UserDAO
 
-    // Thêm setter password cho UserService.changePassword()
     public void setPassword(String password) { this.password = password; }
 
     public boolean login(String name, String pass) {

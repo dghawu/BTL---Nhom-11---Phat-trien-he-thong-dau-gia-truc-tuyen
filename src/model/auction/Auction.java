@@ -21,7 +21,7 @@ public class Auction extends Entity implements Subject {
     private String currentWinner;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private String status; // PENDING, APPROVED, RUNNING, FINISHED, PAYING, REJECTED, CANCELED
+    private String status;
     private List<BidTransaction> bidHistory;
     private List<AuctionObserver> observers;
 
@@ -49,39 +49,28 @@ public class Auction extends Entity implements Subject {
         System.out.println("Kết thúc    : " + endTime);
     }
 
-    /**
-     * Xử lý lượt đặt giá — throws exception thay vì return false.
-     * Caller (Bidder.placeManualBid) cần try-catch để xử lý.
-     */
     public synchronized void handleNewBid(BidTransaction bid) {
-        // 1. Kiểm tra trạng thái phiên
         if (!status.equals("RUNNING")) {
             throw new AuctionClosedException(auctionId, status);
         }
-        // 2. Kiểm tra hết giờ
         if (LocalDateTime.now().isAfter(endTime)) {
             closeAuction();
             throw new AuctionClosedException(auctionId, "FINISHED");
         }
-        // 3. Kiểm tra giá hợp lệ
         double requiredPrice = currentPrice + minIncrement;
         if (bid.getAmount() < requiredPrice) {
             throw new InvalidBidException(bid.getAmount(), requiredPrice);
         }
-
-        // 4. Anti-sniping: bid trong 30 giây cuối → gia hạn +60 giây
+        // Anti-sniping
         if (LocalDateTime.now().isAfter(endTime.minusSeconds(30))) {
             endTime = endTime.plusSeconds(60);
             System.out.println("[ANTI-SNIPE] Gia hạn phiên đến: " + endTime);
             AuctionTimer.getInstance().reschedule(this);
         }
-
-        // 5. Cập nhật
         this.currentPrice  = bid.getAmount();
         this.currentWinner = bid.getBidderId();
         this.bidHistory.add(bid);
         notifyObservers(this, currentPrice, bid.getBidderId());
-
         System.out.println("Đặt giá thành công! Giá hiện tại: " + currentPrice);
     }
 
@@ -106,7 +95,6 @@ public class Auction extends Entity implements Subject {
         notifyObservers(this, currentPrice, currentWinner != null ? currentWinner : "");
     }
 
-    // Observer
     @Override
     public void addObserver(AuctionObserver o)    { observers.add(o); }
     @Override
@@ -121,6 +109,8 @@ public class Auction extends Entity implements Subject {
     public Item getItem()                       { return item; }
     public double getCurrentPrice()             { return currentPrice; }
     public double getStartPrice()               { return startPrice; }
+    public double getMinIncrement()             { return minIncrement; } // thêm cho AuctionDAO
+    public LocalDateTime getStartTime()         { return startTime; }   // thêm cho AuctionDAO
     public LocalDateTime getEndTime()           { return endTime; }
     public String getCurrentWinner()            { return currentWinner; }
     public List<BidTransaction> getBidHistory() { return bidHistory; }
