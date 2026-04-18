@@ -14,7 +14,7 @@ public abstract class Item extends Entity implements ItemFactory {
 
         /** Tạo model.item.Item tương ứng với loại enum — dùng như static factory. */
         public Item create(String sellerId, String name, String id,
-                           String description, double startingPrice,
+                           String description, double startPrice,
                            ItemStatus status) {
             Item prototype = switch (this) {
                 case ELECTRONICS -> new Electronics();
@@ -24,14 +24,14 @@ public abstract class Item extends Entity implements ItemFactory {
                 case ETC         -> new ETC();
 
             };
-            return prototype.createItem(sellerId, name, id, description, startingPrice, status);
+            return prototype.createItem(sellerId, name, id, description, startPrice, status);
         }
     }
 
     private String    sellerId;
     private String    name;
     private String    description;
-    private double    startingPrice;
+    private double    startPrice;
     private ItemStatus status;
 
     /** Constructor rỗng — cần thiết để các subclass dùng làm prototype. */
@@ -46,7 +46,7 @@ public abstract class Item extends Entity implements ItemFactory {
         this.sellerId      = sellerId;
         this.name          = name;
         this.description   = description;
-        this.startingPrice = startingPrice;
+        this.startPrice    = startPrice;
         this.status        = status;
     }
 
@@ -60,8 +60,8 @@ public abstract class Item extends Entity implements ItemFactory {
     public String    getDescription()   { return description; }
     public void      setDescription(String description) { this.description = description; }
 
-    public double    getStartingPrice() { return startingPrice; }
-    public void      setStartingPrice(double startingPrice) { this.startingPrice = startingPrice; }
+    public double    getStartPrice() { return startPrice; }
+    public void      setStartPrice(double startPrice) { this.startPrice = startPrice; }
 
     public ItemStatus getStatus()       { return status; }
     public void       setStatus(ItemStatus status)  { this.status = status; }
@@ -71,7 +71,7 @@ public abstract class Item extends Entity implements ItemFactory {
     public void printInfo() {
         System.out.printf("[%s] %s (Seller: %s)%n", getClass().getSimpleName(), name, sellerId);
         System.out.printf("  Mô tả        : %s%n", description);
-        System.out.printf("  Giá khởi điểm: %.0f VNĐ%n", startingPrice);
+        System.out.printf("  Giá khởi điểm: %.0f VNĐ%n", startPrice);
         System.out.printf("  Trạng thái   : %s%n", status);
         printExtraInfo();
     }

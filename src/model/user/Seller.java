@@ -38,7 +38,7 @@ public class Seller extends User {
 
     public Auction createAuction(String auctionId, Item item, double minIncrement,
                                  LocalDateTime startTime, LocalDateTime endTime) {
-        Auction auction = new Auction(auctionId, item, item.getStartingPrice(),
+        Auction auction = new Auction(auctionId, item, item.getStartPrice(),
                 minIncrement, startTime, endTime);
         myAuctions.add(auction);
         System.out.println("Seller " + getName() + " tạo phiên: " + auctionId);
