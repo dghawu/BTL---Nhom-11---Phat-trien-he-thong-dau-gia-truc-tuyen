@@ -9,18 +9,19 @@ public abstract class User extends Entity {
 
     public User(String id, String name, String password, String role) {
         super(id);
-        this.name = name;
+        this.name     = name;
         this.password = password;
-        this.role = role;
+        this.role     = role;
     }
-    public String getName() {
-        return name;
-    }
-    public String getRole() {
-        return role;
-    }
-    public boolean login(String user, String pass) {
-        return this.name.equals(user) && this.password.equals(pass);
+
+    public String getName()     { return name; }
+    public String getRole()     { return role; }
+
+    // Thêm setter password cho UserService.changePassword()
+    public void setPassword(String password) { this.password = password; }
+
+    public boolean login(String name, String pass) {
+        return this.name.equals(name) && this.password.equals(pass);
     }
 
     public abstract void showMenu();

@@ -1,25 +1,22 @@
 package service;
 
-import exception.UserNotFoundException;
 import model.auction.Auction;
-import model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Singleton quản lý toàn bộ phiên đấu giá và người dùng.
+ * Singleton chỉ quản lý phiên đấu giá.
+ * Việc quản lý user được tách sang UserService.
  */
 public class AuctionManager {
 
     private static volatile AuctionManager instance;
     private final List<Auction> auctions;
-    private final List<User>    users;
 
     private AuctionManager() {
         auctions = new ArrayList<>();
-        users    = new ArrayList<>();
     }
 
     public static AuctionManager getInstance() {
@@ -31,7 +28,7 @@ public class AuctionManager {
         return instance;
     }
 
-    // ── Auction ────────────────────────────────────────────────────
+    // ── Quản lý phiên ─────────────────────────────────────────────
 
     public void addAuction(Auction auction) {
         auctions.add(auction);
@@ -58,11 +55,19 @@ public class AuctionManager {
                 .collect(Collectors.toList());
     }
 
+    public List<Auction> getPendingAuctions() {
+        return auctions.stream()
+                .filter(a -> a.getStatus().equals("PENDING"))
+                .collect(Collectors.toList());
+    }
+
+    // ── Duyệt / Từ chối (Admin) ───────────────────────────────────
+
     public void approveAuction(String auctionId) {
         Auction a = findAuction(auctionId);
         if (a.getStatus().equals("PENDING")) {
             a.setStatus("APPROVED");
-            System.out.println("[Admin] Duyệt phiên: " + auctionId);
+            System.out.println("[AuctionManager] Duyệt phiên: " + auctionId);
         } else {
             System.out.println("Phiên không ở trạng thái PENDING.");
         }
@@ -71,47 +76,6 @@ public class AuctionManager {
     public void rejectAuction(String auctionId) {
         Auction a = findAuction(auctionId);
         a.setStatus("REJECTED");
-        System.out.println("[Admin] Từ chối phiên: " + auctionId);
-    }
-
-    // ── User ───────────────────────────────────────────────────────
-
-    public void addUser(User user) {
-        users.add(user);
-        System.out.println("[AuctionManager] Đăng ký: " + user.getName());
-    }
-
-    /**
-     * Tìm user theo ID.
-     * @throws UserNotFoundException nếu không tìm thấy
-     */
-    public User findUserById(String id) throws UserNotFoundException {
-        return users.stream()
-                .filter(u -> u.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new UserNotFoundException(id));
-    }
-
-    /**
-     * Đăng nhập.
-     * @throws UserNotFoundException nếu sai tên/mật khẩu
-     */
-    public User login(String name, String password) throws UserNotFoundException {
-        return users.stream()
-                .filter(u -> u.login(name, password))
-                .findFirst()
-                .orElseThrow(() -> new UserNotFoundException(name));
-    }
-
-    public List<User> getAllUsers() { return users; }
-
-    /**
-     * Ban user theo ID.
-     * @throws UserNotFoundException nếu không tìm thấy user
-     */
-    public void banUser(String userId) throws UserNotFoundException {
-        findUserById(userId); // throw nếu không tìm thấy
-        users.removeIf(u -> u.getId().equals(userId));
-        System.out.println("[Admin] Đã ban user: " + userId);
+        System.out.println("[AuctionManager] Từ chối phiên: " + auctionId);
     }
 }
