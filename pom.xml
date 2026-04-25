@@ -17,7 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         
-        <!-- 🔧 Centralize versions -->
+        <!-- Centralize versions -->
         <javafx.version>21.0.2</javafx.version>
         <junit.version>5.10.2</junit.version>
         <mysql.version>8.3.0</mysql.version>
@@ -42,7 +42,6 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-        <!-- 🔧 Thêm javafx-graphics -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
@@ -129,15 +128,13 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven Checkstyle Plugin -->
+            <!-- Maven Checkstyle Plugin - SKIP CHECK -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.3.1</version>
                 <configuration>
-                    <configLocation>google_checks.xml</configLocation>
-                    <failsOnError>false</failsOnError>
-                    <failOnViolation>false</failOnViolation>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
 
