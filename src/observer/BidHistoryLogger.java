@@ -5,7 +5,7 @@ import model.auction.Auction;
 import model.auction.BidTransaction;
 
 /**
- * BidHistoryLogger lắng nghe bid mới và tự động lưu vào database.
+ * BidHistoryLogger lắng nghe bid mới và tự động lưu vào dao.
  * Là một Observer — được đăng ký vào Auction khi phiên bắt đầu.
  */
 public class BidHistoryLogger implements AuctionObserver {
