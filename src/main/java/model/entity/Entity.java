@@ -19,13 +19,11 @@ public abstract class Entity {
         this.createdAt = LocalDateTime.now();
     }
 
-
     // Constructor cho phép truyền ID cụ thể
     public Entity(String id) {
         this.id = id;
         this.createdAt = LocalDateTime.now();
     }
-
 
     /**
      * Phương thức trừu tượng để hiển thị thông tin đối tượng.

@@ -25,7 +25,7 @@ public class SocketBroadcaster implements AuctionObserver {
         this.auctionId = auctionId;
     }
 
-    // ── Quản lý subscribers ────────────────────────────────────────
+    // Quản lý subscribers
 
     /**
      * Thêm client vào danh sách nhận thông báo.
@@ -51,7 +51,7 @@ public class SocketBroadcaster implements AuctionObserver {
                 + " | Còn lại: " + subscribers.size());
     }
 
-    // ── Observer update ────────────────────────────────────────────
+    //Observer update
 
     /**
      * Khi có bid mới → broadcast đến tất cả client đang xem phiên này.
@@ -63,7 +63,7 @@ public class SocketBroadcaster implements AuctionObserver {
         broadcast(message);
     }
 
-    // ── Broadcast ─────────────────────────────────────────────────
+    //Broadcast
 
     /**
      * Gửi message đến tất cả client.
@@ -102,7 +102,7 @@ public class SocketBroadcaster implements AuctionObserver {
         broadcast(message);
     }
 
-    // ── Helper ─────────────────────────────────────────────────────
+    //Helper
 
     private String buildMessage(Auction auction, double newPrice, String lastBidderId) {
         return "BID_UPDATE"
