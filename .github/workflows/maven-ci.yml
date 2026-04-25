@@ -1,4 +1,4 @@
-name: Maven CI/CD Pipeline
+name: Maven CI/CD
 
 on:
   push:
@@ -9,21 +9,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    
-    permissions:
-      contents: read
-      checks: write
-      statuses: write
 
     steps:
-      # Step 1: Clone code
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      # Step 2: Setup JDK 21
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -31,58 +22,21 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # 🔧 Step 3: Install JavaFX dependencies for Linux
-      - name: Install JavaFX Dependencies
+
+      - name: Install dependencies for JavaFX
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-0 libxrender1 libxrandr2
 
-      # Step 4: Validate POM
-      - name: Validate Maven POM
-        run: mvn validate
 
-      # Step 5: Build project
-      - name: Build with Maven
-        run: mvn clean compile
+      - name: Build and test with Maven
+        run: mvn clean package
 
-      # Step 6: Run Unit Tests
-      - name: Run Unit Tests
-        run: mvn test
-        env:
-          _JAVA_OPTIONS: "-Djava.awt.headless=true"
 
-      # Step 7: Code Quality Check (Checkstyle)
-      - name: Code Quality Check
-        run: mvn checkstyle:check
-        continue-on-error: true
-
-      # Step 8: Package JAR
-      - name: Package with Maven
-        run: mvn package -DskipTests
-
-      # Step 9: Upload Build Artifacts
-      - name: Upload Build Artifacts
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
-        if: success()
         with:
-          name: maven-build-artifacts
-          path: target/*.jar
+          name: maven-build
+          path: target/
           retention-days: 30
-
-      # Step 10: Publish Test Results
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          files: target/surefire-reports/*.xml
-          check_name: 'Test Results'
-
-      # Step 11: Upload Checkstyle Report
-      - name: Upload Checkstyle Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: checkstyle-report
-          path: target/checkstyle-result.xml
-          retention-days: 7
