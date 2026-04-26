@@ -6,10 +6,27 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+<<<<<<< HEAD
         <module name="server" />
         <module name="client" />
+=======
+      </profile>
+      <profile name="Annotation profile for Auction System" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.3.Final/mapstruct-processor-1.5.3.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar" />
+        </processorPath>
+>>>>>>> 795bedefc5bffea9a396f9ea90311ac74f9c6403
         <module name="BTL---Nhom-11---Phat-trien-he-thong-dau-gia-truc-tuyen" />
       </profile>
     </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="BTL---Nhom-11---Phat-trien-he-thong-dau-gia-truc-tuyen" options="-parameters" />
+    </option>
   </component>
 </project>
