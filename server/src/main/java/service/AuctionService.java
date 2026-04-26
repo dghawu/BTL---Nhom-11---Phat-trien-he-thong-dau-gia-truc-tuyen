@@ -3,6 +3,11 @@ package service;
 import dao.AuctionDAO;
 import model.auction.Auction;
 import model.item.Item;
+import model.item.Electronics;
+import model.item.Art;
+import model.item.Vehicle;
+import model.item.Fashion;
+import model.item.ETC;
 import observer.BidHistoryLogger;
 import observer.SocketBroadcaster;
 
