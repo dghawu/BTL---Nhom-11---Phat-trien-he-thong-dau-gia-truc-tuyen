@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+<<<<<<< HEAD
     <component name="ProjectModuleManager">
         <modules>
             <module fileurl="file://$PROJECT_DIR$/my-app.iml" filepath="$PROJECT_DIR$/my-app.iml" />
@@ -7,4 +8,13 @@
             795bedefc5bffea9a396f9ea90311ac74f9c6403
         </modules>
     </component>
+=======
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/my-app.iml" filepath="$PROJECT_DIR$/my-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BTL---Nhom-11---Phat-trien-he-thong-dau-gia-truc-tuyen.iml" filepath="$PROJECT_DIR$/BTL---Nhom-11---Phat-trien-he-thong-dau-gia-truc-tuyen.iml" />
+ 795bedefc5bffea9a396f9ea90311ac74f9c6403
+    </modules>
+  </component>
+>>>>>>> 63ddc476da8c732f02de59099ae222b11c8887bd
 </project>
