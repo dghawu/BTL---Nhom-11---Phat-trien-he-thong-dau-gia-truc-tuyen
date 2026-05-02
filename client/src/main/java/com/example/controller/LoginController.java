@@ -1,7 +1,12 @@
 package com.example.controller;
 
+<<<<<<< HEAD
 import com.example.socket.ServerService;   // FIX: đúng package
 import com.example.socket.SocketClient;    // FIX: đúng package
+=======
+import com.example.socket.ServerService;
+import com.example.socket.SocketClient;
+>>>>>>> 53a35d462fa597d7f6310ea7af1a30e45db39bdb
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
