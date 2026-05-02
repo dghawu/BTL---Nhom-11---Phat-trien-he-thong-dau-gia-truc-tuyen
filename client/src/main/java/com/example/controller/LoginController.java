@@ -1,5 +1,7 @@
 package com.example.controller;
 
+import com.example.server.ServerService;
+import com.example.server.SocketClient;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,8 +12,8 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
- * Controller cho màn hình Login (Login.fxml)
- * Xử lý đăng nhập và điều hướng đến Home theo role.
+ * LoginController - đã kết nối thật với ServerService.
+ * Thay thế file LoginController.java cũ.
  */
 public class LoginController {
 
@@ -23,7 +25,6 @@ public class LoginController {
     //  Actions
     // ------------------------------------------------------------------ //
 
-    /** Nút LOG IN */
     @FXML
     private void handleLogin() {
         String username = usernameField.getText().trim();
@@ -34,20 +35,25 @@ public class LoginController {
             return;
         }
 
-        // TODO: gọi server để xác thực
-        // String role = ServerService.login(username, password);
-        // Tạm thời dùng mock để test UI:
-        String role = mockLogin(username, password);
-
-        if (role == null) {
-            showError("Sai tên đăng nhập hoặc mật khẩu.");
-            return;
+        // Kết nối server nếu chưa kết nối
+        if (!SocketClient.getInstance().isConnected()) {
+            boolean ok = SocketClient.getInstance().connect();
+            if (!ok) {
+                showError("Không thể kết nối đến server. Vui lòng thử lại.");
+                return;
+            }
         }
 
-        navigateToHome(role, username);
+        // Gọi ServerService
+        ServerService.UserResult result = ServerService.login(username, password);
+
+        if (result.success) {
+            navigateToHome(result.role, result.username, result.userId);
+        } else {
+            showError(result.message);
+        }
     }
 
-    /** Nút "Creat new account" → sang Register */
     @FXML
     private void handleGoRegister() {
         loadScene("/fxml/Register.fxml");
@@ -57,36 +63,25 @@ public class LoginController {
     //  Helpers
     // ------------------------------------------------------------------ //
 
-    private void showError(String msg) {
-        errorLabel.setText(msg);
-        errorLabel.setVisible(true);
-        errorLabel.setManaged(true);
-    }
-
-    /**
-     * Điều hướng đến Home tương ứng với role.
-     * Truyền username sang controller tiếp theo qua setter.
-     */
-    private void navigateToHome(String role, String username) {
+    private void navigateToHome(String role, String username, int userId) {
         try {
-            String fxml;
-            switch (role.toUpperCase()) {
-                case "ADMIN"  -> fxml = "/fxml/HomeAdmin.fxml";
-                case "SELLER" -> fxml = "/fxml/HomeSeller.fxml";
-                default       -> fxml = "/fxml/HomeBidder.fxml";
-            }
+            String fxml = switch (role.toUpperCase()) {
+                case "ADMIN"  -> "/fxml/HomeAdmin.fxml";
+                case "SELLER" -> "/fxml/HomeSeller.fxml";
+                default       -> "/fxml/HomeBidder.fxml";
+            };
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
 
-            // Truyền username vào Home controller
+            // Truyền thông tin user vào Home controller
             Object ctrl = loader.getController();
-            if (ctrl instanceof com.example.controller.HomeAdminController)
-                ((com.example.controller.HomeAdminController) ctrl).initData(username);
-            else if (ctrl instanceof com.example.controller.HomeSellerController)
-                ((com.example.controller.HomeSellerController) ctrl).initData(username);
-            else if (ctrl instanceof com.example.controller.HomeBidderController)
-                ((com.example.controller.HomeBidderController) ctrl).initData(username);
+            if (ctrl instanceof HomeAdminController)
+                ((HomeAdminController) ctrl).initData(username, userId);
+            else if (ctrl instanceof HomeSellerController)
+                ((HomeSellerController) ctrl).initData(username, userId);
+            else if (ctrl instanceof HomeBidderController)
+                ((HomeBidderController) ctrl).initData(username, userId);
 
             Stage stage = (Stage) usernameField.getScene().getWindow();
             stage.setScene(new Scene(root));
@@ -98,12 +93,10 @@ public class LoginController {
         }
     }
 
-    /** Mock login - xóa khi có server thật */
-    private String mockLogin(String username, String password) {
-        if (username.startsWith("admin"))  return "ADMIN";
-        if (username.startsWith("seller")) return "SELLER";
-        if (username.startsWith("bidder")) return "BIDDER";
-        return null;
+    private void showError(String msg) {
+        errorLabel.setText(msg);
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
     }
 
     private void loadScene(String fxmlPath) {

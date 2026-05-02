@@ -1,33 +1,47 @@
 package com.example.main;
 
+import com.example.server.SocketClient;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.net.URL;
-
 /**
- * Main - Entry point của Auction System JavaFX App
- *
- * Cách chạy:
- *   - Maven: mvn javafx:run
- *   - Hoặc run Main.java trực tiếp từ IDE (cần thêm VM option:
- *     --module-path <path-to-javafx-sdk>/lib --add-modules javafx.controls,javafx.fxml)
+ * Main - entry point.
+ * Kết nối socket khi khởi động, ngắt khi tắt app.
  */
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Kết nối đến server ngay khi app mở
+        boolean connected = SocketClient.getInstance().connect();
+        if (!connected) {
+            System.err.println("[App] Cảnh báo: Không kết nối được server. " +
+                    "Một số tính năng sẽ không hoạt động.");
+            // Vẫn cho mở app, lỗi sẽ hiện ở màn Login
+        }
 
-        URL fxmlUrl = getClass().getResource("/fxml/Login.fxml");
-        System.out.println("FXML URL: " + fxmlUrl); // debug xem có null không
-        Parent root = FXMLLoader.load(fxmlUrl);
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
+        Scene scene = new Scene(root, 1280, 720);
 
-        Scene scene = new Scene(root, 1000, 720);
         primaryStage.setTitle("Auction System");
         primaryStage.setScene(scene);
+        primaryStage.setMinWidth(1000);
+        primaryStage.setMinHeight(600);
+
+        // Ngắt kết nối socket khi đóng app
+        primaryStage.setOnCloseRequest(e -> {
+            SocketClient.getInstance().disconnect();
+            Platform.exit();
+        });
+
         primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
