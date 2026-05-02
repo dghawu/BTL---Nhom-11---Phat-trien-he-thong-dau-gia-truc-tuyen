@@ -1,6 +1,6 @@
 package com.example.main;
 
-import com.example.server.SocketClient;
+import com.example.socket.SocketClient;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
