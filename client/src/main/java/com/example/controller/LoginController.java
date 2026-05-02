@@ -1,12 +1,7 @@
 package com.example.controller;
 
-<<<<<<< HEAD
-import com.example.socket.ServerService;   // FIX: đúng package
-import com.example.socket.SocketClient;    // FIX: đúng package
-=======
 import com.example.socket.ServerService;
 import com.example.socket.SocketClient;
->>>>>>> 53a35d462fa597d7f6310ea7af1a30e45db39bdb
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -40,7 +35,6 @@ public class LoginController {
             return;
         }
 
-        // Kết nối server nếu chưa kết nối
         if (!SocketClient.getInstance().isConnected()) {
             boolean ok = SocketClient.getInstance().connect();
             if (!ok) {
@@ -49,7 +43,6 @@ public class LoginController {
             }
         }
 
-        // Gọi ServerService
         ServerService.UserResult result = ServerService.login(username, password);
 
         if (result.success) {
@@ -79,7 +72,6 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
 
-            // Truyền thông tin user vào Home controller
             Object ctrl = loader.getController();
             if (ctrl instanceof HomeAdminController)
                 ((HomeAdminController) ctrl).initData(username, userId);
