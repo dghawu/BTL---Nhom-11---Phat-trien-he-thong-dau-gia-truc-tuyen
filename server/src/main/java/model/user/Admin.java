@@ -27,9 +27,8 @@ public class Admin extends User {
         System.out.println("Role: " + role);
         System.out.println("Ngày tạo: " + getCreatedAt());
     }
-    // ========================
-    // 1. Quản lý người dùng
-    // ========================
+
+    //1. Quản lý người dùng
     public void banUser(List<User> users, String username) {
         for (User u : users) {
             if (u.getName().equals(username)) {
@@ -40,9 +39,8 @@ public class Admin extends User {
         }
         System.out.println("Không tìm thấy user!");
     }
-    // ========================
-    // 2. Quản lý sản phẩm
-    // ========================
+
+    //2. Quản lý sản phẩm
     public void moderateItem(List<Auction> items, int index) {
         if (index >= 0 && index < items.size()) {
             Auction item = items.get(index);
@@ -52,9 +50,8 @@ public class Admin extends User {
             System.out.println("Không tìm thấy sản phẩm!");
         }
     }
-    // ========================
-    // 3. Quản lý phiên đấu giá
-    // ========================
+
+    //3. Quản lý phiên đấu giá
     public void removeInvalidAuction(List<Auction> auctions, int index) {
         if (index >= 0 && index < auctions.size()) {
             Auction item = auctions.remove(index);
@@ -63,9 +60,8 @@ public class Admin extends User {
             System.out.println("Không tìm thấy phiên đấu giá!");
         }
     }
-    // ========================
+
     // 4. Xem tất cả giao dịch
-    // ========================
     public void reviewAllTransactions(List<BidTransaction> transactions) {
         System.out.println("\n===== DANH SÁCH GIAO DỊCH =====");
         for (BidTransaction t : transactions) {

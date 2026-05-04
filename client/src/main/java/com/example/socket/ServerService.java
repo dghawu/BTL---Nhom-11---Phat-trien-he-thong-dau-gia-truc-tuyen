@@ -20,10 +20,7 @@ public class ServerService {
 
     private static final SocketClient client = SocketClient.getInstance();
 
-    // ================================================================== //
     //  AUTH
-    // ================================================================== //
-
     /** Kết quả trả về cho các action liên quan đến User */
     public static class UserResult {
         public boolean success;
@@ -122,10 +119,7 @@ public class ServerService {
         return new UserResult(res.getBoolean("success"), res.optString("message", ""));
     }
 
-    // ================================================================== //
-    //  ITEMS (Sản phẩm)
-    // ================================================================== //
-
+    //  ITEMS
     /**
      * Lấy danh sách sản phẩm của seller.
      * Request:  {"action":"getMyItems","sellerId":1}
@@ -161,10 +155,7 @@ public class ServerService {
         return new JSONObject(raw).getBoolean("success");
     }
 
-    // ================================================================== //
     //  SESSIONS (Phiên đấu giá)
-    // ================================================================== //
-
     /**
      * Lấy tất cả phiên đang mở (cho màn Auctions).
      * Request:  {"action":"getAllSessions","category":"ALL"}
@@ -198,10 +189,7 @@ public class ServerService {
         return new JSONObject(raw).getBoolean("success");
     }
 
-    // ================================================================== //
     //  BIDDING (Đấu giá)
-    // ================================================================== //
-
     /**
      * Đặt giá thủ công.
      * Request:  {"action":"placeBid","sessionId":1,"bidderId":2,"bidAmount":370000}
@@ -236,10 +224,7 @@ public class ServerService {
         return new JSONObject(raw).getBoolean("success");
     }
 
-    // ================================================================== //
     //  TRANSACTIONS (Giao dịch)
-    // ================================================================== //
-
     /**
      * Lấy danh sách giao dịch của bidder.
      * Request:  {"action":"getMyTransactions","bidderId":2}
@@ -267,11 +252,8 @@ public class ServerService {
         if (raw == null) return false;
         return new JSONObject(raw).getBoolean("success");
     }
-
-    // ================================================================== //
+    
     //  ADMIN
-    // ================================================================== //
-
     /** Lấy tất cả users (Admin). */
     public static org.json.JSONArray getAllUsers() {
         JSONObject req = new JSONObject();

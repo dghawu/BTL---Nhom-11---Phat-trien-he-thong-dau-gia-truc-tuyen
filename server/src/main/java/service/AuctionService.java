@@ -54,7 +54,6 @@ public class AuctionService {
 
     /**
      * Bắt đầu phiên — đăng ký observers tự động.
-     *
      * Luồng:
      * auction.handleNewBid()
      *   └── notifyObservers()

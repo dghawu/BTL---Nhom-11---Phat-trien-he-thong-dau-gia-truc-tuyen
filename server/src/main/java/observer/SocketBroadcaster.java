@@ -8,9 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * SocketBroadcaster lắng nghe bid mới và broadcast đến tất cả client
- * đang xem phiên đấu giá qua Socket.
- *
+ * SocketBroadcaster lắng nghe bid mới và broadcast đến tất cả client đang xem phiên đấu giá qua Socket.
  * Mỗi phiên đấu giá có 1 SocketBroadcaster riêng.
  * Client kết nối vào → được thêm vào danh sách subscribers.
  * Khi có bid mới → tất cả subscribers nhận được thông báo ngay lập tức.
@@ -26,7 +24,6 @@ public class SocketBroadcaster implements AuctionObserver {
     }
 
     // Quản lý subscribers
-
     /**
      * Thêm client vào danh sách nhận thông báo.
      * Gọi khi client gửi lệnh "WATCH:AUC-001" đến server.
@@ -52,7 +49,6 @@ public class SocketBroadcaster implements AuctionObserver {
     }
 
     //Observer update
-
     /**
      * Khi có bid mới → broadcast đến tất cả client đang xem phiên này.
      * Message format: "BID_UPDATE:AUC-001:15500000.0:B01"
@@ -64,7 +60,6 @@ public class SocketBroadcaster implements AuctionObserver {
     }
 
     //Broadcast
-
     /**
      * Gửi message đến tất cả client.
      * Tự động xóa client bị ngắt kết nối.

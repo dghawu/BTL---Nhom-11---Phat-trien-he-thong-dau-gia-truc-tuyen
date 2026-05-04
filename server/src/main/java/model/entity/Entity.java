@@ -12,7 +12,6 @@ public abstract class Entity {
     private String id;
     private LocalDateTime createdAt;
 
-
     // Constructor mặc định tự động tạo ID duy nhất
     public Entity() {
         this.id = UUID.randomUUID().toString();
@@ -26,17 +25,15 @@ public abstract class Entity {
     }
 
     /**
-     * Phương thức trừu tượng để hiển thị thông tin đối tượng.
-     * Các lớp con bắt buộc phải ghi đè (Polymorphism).
+     * Phương thức trừu tượng hiển thị thông tin đối tượng.
+     * Các lớp con bắt buộc phải ghi đè.
      */
     public abstract void printInfo();
-
 
     // Getters
     public String getId() {
         return id;
     }
-
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
