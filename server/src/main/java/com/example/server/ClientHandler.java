@@ -54,10 +54,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // ------------------------------------------------------------------ //
     //  Router - phân phối đến đúng handler
-    // ------------------------------------------------------------------ //
-
     private String handleRequest(String jsonStr) {
         try {
             JSONObject req = new JSONObject(jsonStr);
@@ -102,10 +99,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    // ================================================================== //
     //  AUTH handlers
-    // ================================================================== //
-
     private String handleLogin(JSONObject req) {
         String username = req.getString("username");
         String password = req.getString("password");
@@ -164,10 +158,7 @@ public class ClientHandler implements Runnable {
         return success().toString();
     }
 
-    // ================================================================== //
     //  ITEMS handlers
-    // ================================================================== //
-
     private String handleGetMyItems(JSONObject req) {
         int sellerId = req.getInt("sellerId");
         // TODO: List<Item> items = itemDAO.findBySeller(sellerId);
@@ -186,10 +177,7 @@ public class ClientHandler implements Runnable {
         return success().put("items", new JSONArray()).toString();
     }
 
-    // ================================================================== //
     //  SESSIONS handlers
-    // ================================================================== //
-
     private String handleGetAllSessions(JSONObject req) {
         String category = req.optString("category", "ALL");
         // TODO: auctionDAO.findByCategory(category)
@@ -207,10 +195,7 @@ public class ClientHandler implements Runnable {
         return success().put("sessions", new JSONArray()).toString();
     }
 
-    // ================================================================== //
     //  BIDDING handlers
-    // ================================================================== //
-
     private String handlePlaceBid(JSONObject req) {
         int    sessionId = req.getInt("sessionId");
         int    bidderId  = req.getInt("bidderId");
@@ -226,10 +211,7 @@ public class ClientHandler implements Runnable {
         return success().toString();
     }
 
-    // ================================================================== //
     //  TRANSACTIONS handlers
-    // ================================================================== //
-
     private String handleGetMyTransactions(JSONObject req) {
         int bidderId = req.getInt("bidderId");
         // TODO: bidDAO.findByBidder(bidderId)
@@ -242,10 +224,8 @@ public class ClientHandler implements Runnable {
         return success().toString();
     }
 
-    // ================================================================== //
-    //  ADMIN handlers
-    // ================================================================== //
 
+    //  ADMIN handlers
     private String handleGetAllUsers(JSONObject req) {
         // TODO: userDAO.findAll()
         return success().put("users", new JSONArray()).toString();
@@ -263,10 +243,7 @@ public class ClientHandler implements Runnable {
         return success().toString();
     }
 
-    // ================================================================== //
     //  Helpers
-    // ================================================================== //
-
     /** Tạo JSONObject success base */
     private JSONObject success() {
         return new JSONObject().put("success", true);

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ItemDAO xử lý CRUD với bảng items.
+ * ItemDAO - đã sửa cho MySQL (đổi INSERT OR IGNORE → INSERT IGNORE).
  */
 public class ItemDAO {
 
@@ -20,11 +20,10 @@ public class ItemDAO {
     // ── INSERT ─────────────────────────────────────────────────────
 
     public void save(Item item) {
-        String sql = """
-                INSERT OR IGNORE INTO items
-                (id, seller_id, name, description, starting_price, status, type, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                """;
+        // Sửa: INSERT IGNORE thay vì INSERT OR IGNORE (MySQL syntax)
+        String sql = "INSERT IGNORE INTO items " +
+                "(id, seller_id, name, description, starting_price, status, type, created_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, item.getId());
             ps.setString(2, item.getSellerId());
@@ -64,6 +63,31 @@ public class ItemDAO {
             while (rs.next()) list.add(mapToItem(rs));
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi findBySellerId: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public List<Item> findAll() {
+        List<Item> list = new ArrayList<>();
+        String sql = "SELECT * FROM items";
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs   = stmt.executeQuery(sql)) {
+            while (rs.next()) list.add(mapToItem(rs));
+        } catch (SQLException e) {
+            System.out.println("[ItemDAO] Lỗi findAll: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public List<Item> findByType(String type) {
+        List<Item> list = new ArrayList<>();
+        String sql = "SELECT * FROM items WHERE type = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, type.toUpperCase());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(mapToItem(rs));
+        } catch (SQLException e) {
+            System.out.println("[ItemDAO] Lỗi findByType: " + e.getMessage());
         }
         return list;
     }

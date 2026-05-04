@@ -18,7 +18,7 @@ public class DatabaseConnection {
             "&allowPublicKeyRetrieval=true" +
             "&characterEncoding=UTF-8";
     private static final String DB_USER     = "root";
-    private static final String DB_PASSWORD = "your_password"; // ← đổi thành password của bạn
+    private static final String DB_PASSWORD = "";
 
     private DatabaseConnection() {
         try {

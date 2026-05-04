@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * UserDAO xử lý toàn bộ thao tác CRUD với bảng users.
+ * UserDAO - đã sửa cho MySQL (đổi INSERT OR IGNORE → INSERT IGNORE).
  */
 public class UserDAO {
 
@@ -23,7 +23,8 @@ public class UserDAO {
     // ── INSERT ─────────────────────────────────────────────────────
 
     public void save(User user) {
-        String sql = "INSERT OR IGNORE INTO users (id, name, password, role, created_at) " +
+        // Sửa: INSERT IGNORE thay vì INSERT OR IGNORE (MySQL syntax)
+        String sql = "INSERT IGNORE INTO users (id, name, password, role, created_at) " +
                 "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getId());
@@ -103,6 +104,32 @@ public class UserDAO {
         }
     }
 
+    /** Đổi tên user - dùng cho handleChangeUsername */
+    public void updateName(String userId, String newName) {
+        String sql = "UPDATE users SET name = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newName);
+            ps.setString(2, userId);
+            ps.executeUpdate();
+            System.out.println("[UserDAO] Đổi tên: " + userId + " → " + newName);
+        } catch (SQLException e) {
+            System.out.println("[UserDAO] Lỗi updateName: " + e.getMessage());
+        }
+    }
+
+    /** Đổi role user - dùng cho handleMakeAdmin */
+    public void updateRole(String userId, String newRole) {
+        String sql = "UPDATE users SET role = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, newRole);
+            ps.setString(2, userId);
+            ps.executeUpdate();
+            System.out.println("[UserDAO] Đổi role: " + userId + " → " + newRole);
+        } catch (SQLException e) {
+            System.out.println("[UserDAO] Lỗi updateRole: " + e.getMessage());
+        }
+    }
+
     // ── DELETE ─────────────────────────────────────────────────────
 
     public void delete(String userId) {
@@ -118,7 +145,6 @@ public class UserDAO {
 
     // ── Helper ─────────────────────────────────────────────────────
 
-    /** Chuyển ResultSet → đúng subclass User */
     private User mapToUser(ResultSet rs) throws SQLException {
         String id       = rs.getString("id");
         String name     = rs.getString("name");
