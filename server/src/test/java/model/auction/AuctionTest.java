@@ -1,25 +1,24 @@
 package model.auction;
-
+import model.enums.AuctionStatus;
 import exception.AuctionClosedException;
 import exception.InvalidBidException;
+import model.auction.Auction;
+import model.auction.BidTransaction;
 import model.item.Item;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Auction Tests")
-public class AuctionTest {
+class AuctionTest {
 
     private Auction auction;
     private Item laptop;
 
     @BeforeEach
     void setUp() {
-        // Tạo item và phiên đấu giá mới trước mỗi test
         laptop = Item.ItemType.ELECTRONICS.create(
                 "S01", "Laptop Dell", "ITEM-001",
                 "Core i7", 10_000_000.0, Item.ItemStatus.APPROVED);
@@ -29,7 +28,8 @@ public class AuctionTest {
                 LocalDateTime.now(),
                 LocalDateTime.now().plusMinutes(30)
         );
-        auction.setStatus("APPROVED");
+        // FIX: dùng enum thay vì String
+        auction.setStatus(AuctionStatus.APPROVED);
         auction.startAuction(); // → RUNNING
     }
 
@@ -48,7 +48,6 @@ public class AuctionTest {
     @DisplayName("Đặt giá thấp hơn giá tối thiểu → InvalidBidException")
     void testBidTooLow() {
         BidTransaction bid = new BidTransaction("B01", "AUC-001", 10_100_000.0);
-        // Cần tối thiểu 10_000_000 + 500_000 = 10_500_000
         assertThrows(InvalidBidException.class, () -> auction.handleNewBid(bid));
     }
 
@@ -100,9 +99,10 @@ public class AuctionTest {
                 "AUC-003", laptop, 10_000_000.0, 500_000.0,
                 LocalDateTime.now(), LocalDateTime.now().plusMinutes(30)
         );
-        newAuction.setStatus("APPROVED");
+        // FIX: dùng enum
+        newAuction.setStatus(AuctionStatus.APPROVED);
         newAuction.startAuction();
-        assertEquals("RUNNING", newAuction.getStatus());
+        assertEquals(AuctionStatus.RUNNING, newAuction.getStatus());
     }
 
     @Test
@@ -112,7 +112,7 @@ public class AuctionTest {
                 "AUC-004", laptop, 10_000_000.0, 500_000.0,
                 LocalDateTime.now(), LocalDateTime.now().plusMinutes(30)
         );
-        // status = PENDING
+        // status = PENDING mặc định
         assertThrows(AuctionClosedException.class, newAuction::startAuction);
     }
 
@@ -122,7 +122,8 @@ public class AuctionTest {
     @DisplayName("closeAuction → status FINISHED")
     void testCloseAuction() {
         auction.closeAuction();
-        assertEquals("FINISHED", auction.getStatus());
+        // FIX: so sánh với enum
+        assertEquals(AuctionStatus.FINISHED, auction.getStatus());
     }
 
     @Test
@@ -131,5 +132,23 @@ public class AuctionTest {
         auction.handleNewBid(new BidTransaction("B01", "AUC-001", 10_500_000.0));
         auction.closeAuction();
         assertEquals("B01", auction.getCurrentWinner());
+    }
+
+    // ── Status flow ────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Status flow: PENDING → APPROVED → RUNNING → FINISHED")
+    void testStatusFlow() {
+        Auction a = new Auction(
+                "AUC-005", laptop, 10_000_000.0, 500_000.0,
+                LocalDateTime.now(), LocalDateTime.now().plusMinutes(30)
+        );
+        assertEquals(AuctionStatus.PENDING,  a.getStatus());
+        a.setStatus(AuctionStatus.APPROVED);
+        assertEquals(AuctionStatus.APPROVED, a.getStatus());
+        a.startAuction();
+        assertEquals(AuctionStatus.RUNNING,  a.getStatus());
+        a.closeAuction();
+        assertEquals(AuctionStatus.FINISHED, a.getStatus());
     }
 }
