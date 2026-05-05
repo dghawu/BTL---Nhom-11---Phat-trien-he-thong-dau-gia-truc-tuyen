@@ -10,7 +10,7 @@
 
 <!-- Screen 1: Login -->
 
-<HBox prefHeight="640" prefWidth="1024" style="-fx-background-color: #FFFFFF;" stylesheets="@../../../../../server/src/main/resources/css/style.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="com.example.controller.LoginController">
+<HBox prefHeight="640" prefWidth="1024" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="com.example.controller.LoginController">
 
     <!-- Left half: decorative / branding space -->
     <Region HBox.hgrow="ALWAYS" />

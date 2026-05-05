@@ -11,7 +11,7 @@
 
 <!-- Screen 1.1: Register -->
 
-<HBox prefHeight="640" prefWidth="1024" style="-fx-background-color: #FFFFFF;" stylesheets="@../../../../../server/src/main/resources/css/style.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="com.example.controller.RegisterController">
+<HBox prefHeight="640" prefWidth="1024" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="com.example.controller.RegisterController">
 
     <!-- Left spacer -->
     <Region HBox.hgrow="ALWAYS" />

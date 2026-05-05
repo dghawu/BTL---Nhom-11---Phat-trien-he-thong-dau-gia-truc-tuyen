@@ -18,7 +18,7 @@ public class DatabaseConnection {
             "&allowPublicKeyRetrieval=true" +
             "&characterEncoding=UTF-8";
     private static final String DB_USER     = "root";
-    private static final String DB_PASSWORD = "emyeuthayduongvathayhieu";
+    private static final String DB_PASSWORD = "6789";
 
     private DatabaseConnection() {
         try {
