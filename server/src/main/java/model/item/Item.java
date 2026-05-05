@@ -46,7 +46,7 @@ public abstract class Item extends Entity implements ItemFactory {
         this.sellerId      = sellerId;
         this.name          = name;
         this.description   = description;
-        this.startPrice    = startPrice;
+        this.startPrice    = startingPrice;
         this.status        = status;
     }
 
