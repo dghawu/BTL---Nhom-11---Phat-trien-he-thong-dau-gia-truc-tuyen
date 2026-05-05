@@ -1,5 +1,6 @@
 package model.user;
 
+import model.enums.AuctionStatus;
 import model.auction.Auction;
 import model.item.Item;
 import service.AuctionTimer;
@@ -48,7 +49,8 @@ public class Seller extends User {
     public void editAuction(String auctionId, String newName, double newPrice) {
         for (Auction a : myAuctions) {
             if (a.getAuctionId().equals(auctionId)) {
-                if (a.getStatus().equals("RUNNING")) {
+                // ← so sánh bằng == thay vì .equals("RUNNING")
+                if (a.getStatus() == AuctionStatus.RUNNING) {
                     System.out.println("Không thể sửa: phiên đang chạy!");
                     return;
                 }
@@ -64,12 +66,13 @@ public class Seller extends User {
     public void cancelAuction(String auctionId) {
         for (Auction a : myAuctions) {
             if (a.getAuctionId().equals(auctionId)) {
-                if (a.getStatus().equals("RUNNING") || a.getStatus().equals("FINISHED")) {
+                // ← dùng enum
+                if (a.getStatus() == AuctionStatus.RUNNING
+                        || a.getStatus() == AuctionStatus.FINISHED) {
                     System.out.println("Không thể hủy phiên đang chạy/đã kết thúc!");
                     return;
                 }
-                a.setStatus("CANCELED");
-                // Hủy task timer nếu đang chạy
+                a.setStatus(AuctionStatus.CANCELED);
                 AuctionTimer.getInstance().cancelTask(auctionId);
                 System.out.println("Đã hủy phiên: " + auctionId);
                 return;
@@ -84,7 +87,7 @@ public class Seller extends User {
             System.out.println("ID: " + a.getAuctionId()
                     + " | Item: " + a.getItem().getName()
                     + " | Giá: "  + a.getCurrentPrice()
-                    + " | Trạng thái: " + a.getStatus());
+                    + " | Trạng thái: " + a.getStatus()); // ← tự in tên enum
         }
     }
 

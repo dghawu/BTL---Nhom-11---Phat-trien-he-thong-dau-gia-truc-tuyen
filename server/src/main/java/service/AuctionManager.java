@@ -1,22 +1,18 @@
 package service;
 
+import dao.AuctionDAO;
+import model.enums.AuctionStatus;
 import model.auction.Auction;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * Singleton chỉ quản lý phiên đấu giá.
- * Việc quản lý user được tách sang UserService.
- */
 public class AuctionManager {
 
     private static volatile AuctionManager instance;
-    private final List<Auction> auctions;
+    private final AuctionDAO auctionDAO;
 
     private AuctionManager() {
-        auctions = new ArrayList<>();
+        this.auctionDAO = new AuctionDAO();
     }
 
     public static AuctionManager getInstance() {
@@ -31,42 +27,41 @@ public class AuctionManager {
     // ── Quản lý phiên ─────────────────────────────────────────────
 
     public void addAuction(Auction auction) {
-        auctions.add(auction);
+        auctionDAO.save(auction);
         System.out.println("[AuctionManager] Thêm phiên: " + auction.getAuctionId());
     }
 
     public void removeAuction(String auctionId) {
-        auctions.removeIf(a -> a.getAuctionId().equals(auctionId));
+        auctionDAO.delete(auctionId);
     }
 
     public Auction findAuction(String auctionId) {
-        return auctions.stream()
-                .filter(a -> a.getAuctionId().equals(auctionId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Không tìm thấy phiên: " + auctionId));
+        Auction auction = auctionDAO.findById(auctionId);
+        if (auction == null) {
+            throw new IllegalArgumentException("Không tìm thấy phiên: " + auctionId);
+        }
+        return auction;
     }
 
-    public List<Auction> getAllAuctions() { return auctions; }
+    public List<Auction> getAllAuctions()     { return auctionDAO.findAll(); }
 
+    // ← dùng AuctionStatus enum thay vì String
     public List<Auction> getRunningAuctions() {
-        return auctions.stream()
-                .filter(a -> a.getStatus().equals("RUNNING"))
-                .collect(Collectors.toList());
+        return auctionDAO.findByStatus(AuctionStatus.RUNNING);
     }
 
     public List<Auction> getPendingAuctions() {
-        return auctions.stream()
-                .filter(a -> a.getStatus().equals("PENDING"))
-                .collect(Collectors.toList());
+        return auctionDAO.findByStatus(AuctionStatus.PENDING);
     }
 
-    // ── Duyệt / Từ chối (Admin) ───────────────────────────────────
+    // ── Duyệt / Từ chối ───────────────────────────────────────────
 
     public void approveAuction(String auctionId) {
         Auction a = findAuction(auctionId);
-        if (a.getStatus().equals("PENDING")) {
-            a.setStatus("APPROVED");
+        // ← so sánh bằng == thay vì .equals()
+        if (a.getStatus() == AuctionStatus.PENDING) {
+            a.setStatus(AuctionStatus.APPROVED);
+            auctionDAO.updateStatus(auctionId, AuctionStatus.APPROVED);
             System.out.println("[AuctionManager] Duyệt phiên: " + auctionId);
         } else {
             System.out.println("Phiên không ở trạng thái PENDING.");
@@ -75,7 +70,8 @@ public class AuctionManager {
 
     public void rejectAuction(String auctionId) {
         Auction a = findAuction(auctionId);
-        a.setStatus("REJECTED");
+        a.setStatus(AuctionStatus.REJECTED);
+        auctionDAO.updateStatus(auctionId, AuctionStatus.REJECTED);
         System.out.println("[AuctionManager] Từ chối phiên: " + auctionId);
     }
 }

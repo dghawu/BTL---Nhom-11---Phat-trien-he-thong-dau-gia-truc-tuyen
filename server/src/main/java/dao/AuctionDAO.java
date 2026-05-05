@@ -1,5 +1,6 @@
 package dao;
 
+import model.enums.AuctionStatus;
 import model.auction.Auction;
 import model.item.Item;
 
@@ -8,9 +9,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * AuctionDAO xử lý toàn bộ thao tác CRUD với bảng auctions.
- */
 public class AuctionDAO {
 
     private final Connection conn;
@@ -24,11 +22,9 @@ public class AuctionDAO {
     // ── INSERT ─────────────────────────────────────────────────────
 
     public void save(Auction auction) {
-        // Lưu item trước
         itemDAO.save(auction.getItem());
-
         String sql = """
-                INSERT OR IGNORE INTO auctions
+                INSERT IGNORE INTO auctions
                 (id, item_id, start_price, current_price, min_increment,
                  current_winner, start_time, end_time, status, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -42,7 +38,7 @@ public class AuctionDAO {
             ps.setString(6, auction.getCurrentWinner());
             ps.setString(7, auction.getStartTime().toString());
             ps.setString(8, auction.getEndTime().toString());
-            ps.setString(9, auction.getStatus());
+            ps.setString(9, auction.getStatus().name()); // ← enum.name() → "PENDING"
             ps.setString(10, auction.getCreatedAt().toString());
             ps.executeUpdate();
             System.out.println("[AuctionDAO] Lưu phiên: " + auction.getAuctionId());
@@ -77,11 +73,12 @@ public class AuctionDAO {
         return list;
     }
 
-    public List<Auction> findByStatus(String status) {
+    // ← nhận AuctionStatus thay vì String
+    public List<Auction> findByStatus(AuctionStatus status) {
         List<Auction> list = new ArrayList<>();
         String sql = "SELECT * FROM auctions WHERE status = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, status);
+            ps.setString(1, status.name()); // ← enum.name() → "RUNNING"
             ResultSet rs = ps.executeQuery();
             while (rs.next()) list.add(mapToAuction(rs));
         } catch (SQLException e) {
@@ -92,13 +89,14 @@ public class AuctionDAO {
 
     // ── UPDATE ─────────────────────────────────────────────────────
 
-    public void updateStatus(String auctionId, String newStatus) {
+    // ← nhận AuctionStatus thay vì String
+    public void updateStatus(String auctionId, AuctionStatus newStatus) {
         String sql = "UPDATE auctions SET status = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, newStatus);
+            ps.setString(1, newStatus.name()); // ← enum.name() → "APPROVED"
             ps.setString(2, auctionId);
             ps.executeUpdate();
-            System.out.println("[AuctionDAO] Cập nhật trạng thái: " + auctionId + " → " + newStatus);
+            System.out.println("[AuctionDAO] Cập nhật: " + auctionId + " → " + newStatus);
         } catch (SQLException e) {
             System.out.println("[AuctionDAO] Lỗi updateStatus: " + e.getMessage());
         }
@@ -154,7 +152,8 @@ public class AuctionDAO {
                 LocalDateTime.parse(rs.getString("start_time")),
                 LocalDateTime.parse(rs.getString("end_time"))
         );
-        auction.setStatus(rs.getString("status"));
+        // ← AuctionStatus.valueOf() chuyển "PENDING" → AuctionStatus.PENDING
+        auction.setStatus(AuctionStatus.valueOf(rs.getString("status")));
         return auction;
     }
 }

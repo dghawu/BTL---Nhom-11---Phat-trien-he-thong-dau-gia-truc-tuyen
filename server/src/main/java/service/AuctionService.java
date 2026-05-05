@@ -1,19 +1,15 @@
 package service;
 
 import dao.AuctionDAO;
+import model.enums.AuctionStatus;
 import model.auction.Auction;
 import model.item.Item;
-import model.item.Electronics;
-import model.item.Art;
-import model.item.Vehicle;
-import model.item.Fashion;
-import model.item.ETC;
 import observer.BidHistoryLogger;
 import observer.SocketBroadcaster;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * AuctionService xử lý nghiệp vụ đấu giá.
@@ -72,11 +68,11 @@ public class AuctionService {
         // 3. Bắt đầu phiên (đổi status → RUNNING, lên lịch AuctionTimer)
         auction.startAuction();
 
-        // 4. Cập nhật database
-        auctionDAO.updateStatus(auction.getAuctionId(), "RUNNING");
+        // 4. Cập nhật database — dùng enum thay vì String "RUNNING"
+        auctionDAO.updateStatus(auction.getAuctionId(), AuctionStatus.RUNNING);
 
         System.out.println("[AuctionService] Phiên " + auction.getAuctionId()
-                + " đã bắt đầu với " + "BidHistoryLogger + SocketBroadcaster.");
+                + " đã bắt đầu với BidHistoryLogger + SocketBroadcaster.");
     }
 
     /**
@@ -84,7 +80,9 @@ public class AuctionService {
      */
     public void closeAuction(Auction auction) {
         auction.closeAuction();
-        auctionDAO.updateStatus(auction.getAuctionId(), "FINISHED");
+
+        // ← dùng enum thay vì String "FINISHED"
+        auctionDAO.updateStatus(auction.getAuctionId(), AuctionStatus.FINISHED);
 
         // Broadcast kết quả đến tất cả client đang xem
         SocketBroadcaster broadcaster = broadcasters.get(auction.getAuctionId());
