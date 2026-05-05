@@ -1,5 +1,6 @@
 package model.auction;
 
+import model.enums.AuctionStatus;
 import exception.AuctionClosedException;
 import exception.InvalidBidException;
 import model.entity.Entity;
@@ -21,7 +22,7 @@ public class Auction extends Entity implements Subject {
     private String currentWinner;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private String status;
+    private AuctionStatus status; // ← đổi từ String sang enum
     private List<BidTransaction> bidHistory;
     private List<AuctionObserver> observers;
 
@@ -35,7 +36,7 @@ public class Auction extends Entity implements Subject {
         this.minIncrement = minIncrement;
         this.startTime    = startTime;
         this.endTime      = endTime;
-        this.status       = "PENDING";
+        this.status       = AuctionStatus.PENDING; // ← enum thay vì "PENDING"
         this.bidHistory   = new ArrayList<>();
         this.observers    = new ArrayList<>();
     }
@@ -50,12 +51,13 @@ public class Auction extends Entity implements Subject {
     }
 
     public synchronized void handleNewBid(BidTransaction bid) {
-        if (!status.equals("RUNNING")) {
-            throw new AuctionClosedException(auctionId, status);
+        // ← so sánh bằng == thay vì .equals()
+        if (status != AuctionStatus.RUNNING) {
+            throw new AuctionClosedException(auctionId, status.name());
         }
         if (LocalDateTime.now().isAfter(endTime)) {
             closeAuction();
-            throw new AuctionClosedException(auctionId, "FINISHED");
+            throw new AuctionClosedException(auctionId, AuctionStatus.FINISHED.name());
         }
         double requiredPrice = currentPrice + minIncrement;
         if (bid.getAmount() < requiredPrice) {
@@ -75,17 +77,17 @@ public class Auction extends Entity implements Subject {
     }
 
     public void startAuction() {
-        if (status.equals("APPROVED")) {
-            this.status = "RUNNING";
+        if (status == AuctionStatus.APPROVED) {
+            this.status = AuctionStatus.RUNNING;
             System.out.println("Phiên " + auctionId + " bắt đầu!");
             AuctionTimer.getInstance().schedule(this);
         } else {
-            throw new AuctionClosedException(auctionId, status);
+            throw new AuctionClosedException(auctionId, status.name());
         }
     }
 
     public void closeAuction() {
-        this.status = "FINISHED";
+        this.status = AuctionStatus.FINISHED;
         if (currentWinner != null) {
             System.out.println("Phiên kết thúc. Người thắng: " + currentWinner
                     + " | Giá: " + currentPrice);
@@ -95,6 +97,7 @@ public class Auction extends Entity implements Subject {
         notifyObservers(this, currentPrice, currentWinner != null ? currentWinner : "");
     }
 
+    // Observer
     @Override
     public void addObserver(AuctionObserver o)    { observers.add(o); }
     @Override
@@ -109,13 +112,13 @@ public class Auction extends Entity implements Subject {
     public Item getItem()                       { return item; }
     public double getCurrentPrice()             { return currentPrice; }
     public double getStartPrice()               { return startPrice; }
-    public double getMinIncrement()             { return minIncrement; } // thêm cho AuctionDAO
-    public LocalDateTime getStartTime()         { return startTime; }   // thêm cho AuctionDAO
+    public double getMinIncrement()             { return minIncrement; }
+    public LocalDateTime getStartTime()         { return startTime; }
     public LocalDateTime getEndTime()           { return endTime; }
     public String getCurrentWinner()            { return currentWinner; }
     public List<BidTransaction> getBidHistory() { return bidHistory; }
-    public String getStatus()                   { return status; }
-    public void setStatus(String status)        { this.status = status; }
+    public AuctionStatus getStatus()            { return status; }           // ← trả về enum
+    public void setStatus(AuctionStatus status) { this.status = status; }   // ← nhận enum
     public void setName(String name)            { item.setName(name); }
     public void setStartPrice(double price)     { item.setStartPrice(price); }
 }
