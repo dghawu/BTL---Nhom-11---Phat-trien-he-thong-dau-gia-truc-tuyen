@@ -3,6 +3,7 @@ package server;
 import model.auction.Auction;
 import model.enums.AuctionStatus;
 import model.item.Item;
+import observer.AuctionObserver;
 import org.junit.jupiter.api.*;
 import service.AuctionTimer;
 
@@ -11,107 +12,116 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit test cho AuctionTimer (scheduling & threading).
+ *
+ * Lưu ý thiết kế:
+ * - Auction.startAuction() yêu cầu status == APPROVED trước khi chuyển RUNNING.
+ * - AuctionTimer.schedule() gọi auction.closeAuction() sau khi hết giờ.
+ * - Mỗi test dùng auctionId khác nhau để tránh conflict trên Singleton scheduler.
+ * - Thêm NoOpObserver để notifyObservers() không bị NullPointerException.
+ */
 @DisplayName("AuctionTimer Threading & Scheduling Tests")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuctionTimerTest {
 
+    // ── Fake observer (không cần DB hay Socket) ────────────────────
+    static class NoOpObserver implements AuctionObserver {
+        @Override public void update(Auction auction, double newPrice, String lastBidderId) {}
+    }
+
+    // ── Helper: tạo Auction đã sẵn sàng để lên lịch ───────────────
+    private static Auction makeAuction(String id, int durationSeconds) {
+        Item item = Item.ItemType.ETC.create(
+                "S01", "Timer Item", id + "-ITEM", "Desc", 1000.0, Item.ItemStatus.APPROVED);
+        Auction a = new Auction(id, item, 1000.0, 100.0,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusSeconds(durationSeconds));
+        a.addObserver(new NoOpObserver()); // tránh NPE khi closeAuction notifyObservers
+        a.setStatus(AuctionStatus.RUNNING); // đặt trực tiếp để không cần qua startAuction()
+        return a;
+    }
+
+    // ── Fields ─────────────────────────────────────────────────────
     private AuctionTimer timer;
-    private Auction testAuction;
-    private final String auctionId = "TIMER-AUC-001";
 
     @BeforeEach
     void setUp() {
         timer = AuctionTimer.getInstance();
-
-        // Tạo Item và Auction mẫu
-        Item item = Item.ItemType.ETC.create("S01", "Timer Item", "I-TIME", "Desc", 1000.0, Item.ItemStatus.APPROVED);
-
-        // Tạo phiên kết thúc sau 2 giây để test cho nhanh
-        testAuction = new Auction(auctionId, item, 1000.0, 100.0,
-                LocalDateTime.now(), LocalDateTime.now().plusSeconds(2));
     }
 
     @AfterAll
-    static void tearDown() {
-        // Tắt scheduler sau khi chạy xong tất cả test để tránh rò rỉ luồng
+    static void globalTearDown() {
         AuctionTimer.getInstance().shutdown();
     }
 
-    // ── Test 1: Đóng phiên tự động ────────────────────────────────
-
-    @Test
-    @Order(1)
+    // ── Test 1: Tự động đóng phiên ────────────────────────────────
+    @Test @Order(1)
     @DisplayName("Schedule: Tự động đóng phiên sau khi hết thời gian")
     void testAutoCloseAuction() throws InterruptedException {
-        // Bắt đầu phiên và đưa vào bộ đếm giờ
-        testAuction.setStatus(AuctionStatus.RUNNING);
-        timer.schedule(testAuction);
+        Auction auction = makeAuction("TIMER-AUC-T1", 2);
 
-        // Đợi 3 giây (nhiều hơn 2 giây của phiên)
+        timer.schedule(auction);
+
         TimeUnit.SECONDS.sleep(3);
 
-        // Kiểm tra xem AuctionTimer đã gọi closeAuction() chưa
-        assertEquals(AuctionStatus.FINISHED, testAuction.getStatus(),
+        assertEquals(AuctionStatus.FINISHED, auction.getStatus(),
                 "Phiên đấu giá phải tự động chuyển sang FINISHED sau khi hết giờ");
     }
 
-    // ── Test 2: Hủy lịch (Cancel Task) ───────────────────────────
-
-    @Test
-    @Order(2)
+    // ── Test 2: Hủy lịch ─────────────────────────────────────────
+    @Test @Order(2)
     @DisplayName("Cancel: Hủy lịch đóng phiên thành công")
     void testCancelTask() throws InterruptedException {
-        testAuction.setStatus(AuctionStatus.RUNNING);
-        timer.schedule(testAuction);
+        Auction auction = makeAuction("TIMER-AUC-T2", 2);
 
-        // Hủy ngay lập tức
-        timer.cancelTask(auctionId);
+        timer.schedule(auction);
+        timer.cancelTask("TIMER-AUC-T2");
 
-        // Đợi đến khi hết giờ (2 giây)
         TimeUnit.SECONDS.sleep(3);
 
-        // Vì đã hủy lịch, phiên không được phép tự đóng (vẫn phải là RUNNING)
-        assertNotEquals(AuctionStatus.FINISHED, testAuction.getStatus(),
+        assertNotEquals(AuctionStatus.FINISHED, auction.getStatus(),
                 "Phiên không được đóng nếu task đã bị hủy");
     }
 
-    // ── Test 3: Lên lịch lại (Reschedule) ──────────────────────────
-
-    @Test
-    @Order(3)
+    // ── Test 3: Lên lịch lại ──────────────────────────────────────
+    @Test @Order(3)
     @DisplayName("Reschedule: Lên lịch lại khi thời gian được gia hạn")
     void testRescheduleAuction() throws InterruptedException {
-        testAuction.setStatus(AuctionStatus.RUNNING);
-        timer.schedule(testAuction);
+        Auction auction = makeAuction("TIMER-AUC-T3", 2);
 
-        // Giả lập gia hạn thêm 2 giây nữa (tổng là 4s từ đầu)
-        testAuction.setEndTime(testAuction.getEndTime().plusSeconds(2));
-        timer.reschedule(testAuction);
+        timer.schedule(auction);
 
-        // Đợi 3 giây (lúc này mốc 2s ban đầu đã qua)
+        // Gia hạn thêm 2 giây → tổng ~4s từ lúc bắt đầu
+        auction.setEndTime(auction.getEndTime().plusSeconds(2));
+        timer.reschedule(auction);
+
+        // Đợi 3s — nếu không reschedule thì đã FINISHED, nhưng vì gia hạn nên vẫn RUNNING
         TimeUnit.SECONDS.sleep(3);
-
-        // Phiên vẫn phải đang chạy vì đã được gia hạn
-        assertEquals(AuctionStatus.RUNNING, testAuction.getStatus(),
+        assertEquals(AuctionStatus.RUNNING, auction.getStatus(),
                 "Phiên phải tiếp tục chạy do đã được gia hạn thêm thời gian");
 
-        // Đợi thêm 2 giây nữa để phiên thực sự kết thúc
-        TimeUnit.SECONDS.sleep(2);
-        assertEquals(AuctionStatus.FINISHED, testAuction.getStatus());
+        // Đợi thêm ~2s cho lần đóng thực sự
+        TimeUnit.SECONDS.sleep(3);
+        assertEquals(AuctionStatus.FINISHED, auction.getStatus(),
+                "Phiên phải FINISHED sau khi gia hạn hết hạn");
     }
 
-    // ── Test 4: Xử lý phiên đã hết hạn ngay lập tức ───────────────
-
-    @Test
-    @Order(4)
+    // ── Test 4: Đóng ngay nếu đã quá giờ ─────────────────────────
+    @Test @Order(4)
     @DisplayName("Schedule: Đóng ngay lập tức nếu phiên đã quá giờ")
     void testSchedulePastAuction() {
-        // Thiết lập thời gian kết thúc ở quá khứ
-        testAuction.setEndTime(LocalDateTime.now().minusMinutes(1));
+        Item item = Item.ItemType.ETC.create(
+                "S01", "Past Item", "PAST-ITEM", "Desc", 1000.0, Item.ItemStatus.APPROVED);
+        Auction auction = new Auction("TIMER-AUC-T4", item, 1000.0, 100.0,
+                LocalDateTime.now().minusHours(2),
+                LocalDateTime.now().minusMinutes(1)); // endTime ở quá khứ
+        auction.addObserver(new NoOpObserver());
+        auction.setStatus(AuctionStatus.RUNNING);
 
-        timer.schedule(testAuction);
+        timer.schedule(auction);
 
-        assertEquals(AuctionStatus.FINISHED, testAuction.getStatus(),
+        assertEquals(AuctionStatus.FINISHED, auction.getStatus(),
                 "Nếu thời gian kết thúc ở quá khứ, phiên phải đóng ngay lập tức");
     }
 }
