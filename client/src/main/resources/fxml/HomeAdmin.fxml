@@ -9,70 +9,69 @@
 <?import javafx.scene.text.Font?>
 
 <!-- Screen 2.1: Home - Admin -->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controller.HomeAdminController"
+      stylesheets="@../css/style.css"
+      prefWidth="1280" prefHeight="720"
+      style="-fx-background-color: #FFFFFF;">
 
-<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.HomeAdminController">
-
-    <!-- Navigation Bar -->
-    <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
-
-        <HBox alignment="CENTER_LEFT" styleClass="nav-wrapper">
-
-            <Button onAction="#handleHome" prefHeight="95" prefWidth="400" styleClass="tab-first" stylesheets="@../css/style.css" text="Home">
-                <font>
-                    <Font size="4.0" />
-                </font></Button>
-
-            <Button onAction="#handleAdminCentre" prefHeight="95" prefWidth="400" styleClass="tab-mid" stylesheets="@../css/style.css" text="Admin centre" />
-
-            <Button onAction="#handleUserReport" prefHeight="95" prefWidth="400" styleClass="tab-mid" stylesheets="@../css/style.css" text="User's report" />
-
-            <Button onAction="#handleSettings" prefHeight="95" prefWidth="400" styleClass="tab-last" stylesheets="@../css/style.css" text="Settings" />
-
-        </HBox>
+    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
+        <Button text="Home" styleClass="nav-tab-active"
+                onAction="#handleHome"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+        <Button text="Admin centre" styleClass="nav-tab"
+                onAction="#handleAdminCentre"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+        <Button text="User's report" styleClass="nav-tab"
+                onAction="#handleUserReport"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+        <Button text="Settings" styleClass="nav-tab"
+                onAction="#handleSettings"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
     </HBox>
 
-    <!-- Content -->
-    <VBox spacing="0" styleClass="content-area" VBox.vgrow="ALWAYS">
+    <VBox styleClass="content-area" VBox.vgrow="ALWAYS" spacing="0">
 
-        <!-- Welcome heading -->
-        <Label fx:id="welcomeLabel" style="-fx-font-size: 34px;" styleClass="welcome-title" stylesheets="@../css/style.css" text="CHÀO MỪNG  Admin @tên_người_dùng">
-            <VBox.margin>
-                <Insets left="40.0" right="20.0" top="40.0" />
-            </VBox.margin></Label>
+        <Label fx:id="welcomeLabel"
+               text="CHÀO MỪNG  Admin @tên_người_dùng"
+               styleClass="welcome-title"
+               style="-fx-font-size: 34px;"/>
 
-        <Region prefHeight="69.0" prefWidth="1280.0" />
+        <Region prefHeight="50"/>
 
-        <!-- 3 Quick-access cards -->
-        <HBox alignment="CENTER_LEFT" spacing="50">
+        <HBox spacing="30" alignment="CENTER_LEFT">
 
-            <!-- Card 1: Quản lý -->
-            <VBox pickOnBounds="false" spacing="8.0" styleClass="home-card" stylesheets="@../css/style.css">
-                <Label prefHeight="25.0" prefWidth="207.0" styleClass="window-dots" stylesheets="@../css/style.css" text="_ □ ×" HBox.hgrow="ALWAYS">
-                    <VBox.margin>
-                        <Insets />
-                    </VBox.margin></Label>
-                <Label styleClass="home-card-subtitle" stylesheets="@../css/style.css" text="quản lý" />
-                <Label prefHeight="87.0" prefWidth="239.0" styleClass="home-card-title" stylesheets="@../css/style.css" text="PHIÊN ĐẤU GIÁ&#10;SẢN PHẨM&#10;NGƯỜI DÙNG" wrapText="true" />
-                <HBox.margin>
-                    <Insets left="30.0" />
-                </HBox.margin>
+            <VBox styleClass="home-card" spacing="8"
+                  onMouseClicked="#handleAdminCentre"
+                  prefWidth="300" prefHeight="160">
+                <HBox alignment="CENTER_RIGHT">
+                    <Label text="_ □ ×" styleClass="window-dots"/>
+                </HBox>
+                <Label text="quản lý" styleClass="home-card-subtitle"/>
+                <Label text="PHIÊN ĐẤU GIÁ&#10;SẢN PHẨM&#10;NGƯỜI DÙNG"
+                       styleClass="home-card-title" wrapText="true"/>
             </VBox>
 
-            <!-- Card 2: Giải quyết -->
-            <VBox spacing="8" styleClass="home-card" stylesheets="@../css/style.css">
-                <Label prefHeight="25.0" prefWidth="264.0" styleClass="window-dots" stylesheets="@../css/style.css" text="_ □ ×" />
-                <Label styleClass="home-card-subtitle" stylesheets="@../css/style.css" text="giải quyết" />
-                <Label prefWidth="173.0" styleClass="home-card-title" text="CÁC VẤN ĐỀ&#10;CỦA NGƯỜI DÙNG" wrapText="true" />
-                <HBox.margin>
-                    <Insets />
-                </HBox.margin>
+            <VBox styleClass="home-card" spacing="8"
+                  onMouseClicked="#handleUserReport"
+                  prefWidth="300" prefHeight="160">
+                <HBox alignment="CENTER_RIGHT">
+                    <Label text="_ □ ×" styleClass="window-dots"/>
+                </HBox>
+                <Label text="giải quyết" styleClass="home-card-subtitle"/>
+                <Label text="CÁC VẤN ĐỀ&#10;CỦA NGƯỜI DÙNG"
+                       styleClass="home-card-title" wrapText="true"/>
             </VBox>
 
-            <!-- Card 3: Chỉnh sửa -->
-            <VBox spacing="8" styleClass="home-card" stylesheets="@../css/style.css">
-                <Label prefHeight="25.0" prefWidth="286.0" styleClass="window-dots" stylesheets="@../css/style.css" text="_ □ ×" />
-                <Label styleClass="home-card-subtitle" stylesheets="@../css/style.css" text="chỉnh sửa" />
-                <Label styleClass="home-card-title" text="THÔNG TIN&#10;TÀI KHOẢN" wrapText="true" />
+            <VBox styleClass="home-card" spacing="8"
+                  onMouseClicked="#handleSettings"
+                  prefWidth="300" prefHeight="160">
+                <HBox alignment="CENTER_RIGHT">
+                    <Label text="_ □ ×" styleClass="window-dots"/>
+                </HBox>
+                <Label text="chỉnh sửa" styleClass="home-card-subtitle"/>
+                <Label text="THÔNG TIN&#10;TÀI KHOẢN"
+                       styleClass="home-card-title" wrapText="true"/>
             </VBox>
 
         </HBox>
