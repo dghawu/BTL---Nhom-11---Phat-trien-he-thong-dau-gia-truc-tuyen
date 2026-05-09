@@ -6,7 +6,6 @@ import model.item.Item;
 import observer.AuctionObserver;
 import observer.SocketBroadcaster;
 import org.junit.jupiter.api.*;
-import service.AuctionTimer;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -17,6 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit test cho AuctionService (business logic đấu giá).
  * Dùng in-memory store + stub Observer để tránh phụ thuộc vào DB và Socket thật.
+ *
+ * QUAN TRỌNG: Không gọi AuctionTimer.shutdown() ở đây vì AuctionTimer là Singleton
+ * dùng chung toàn bộ JVM test session — shutdown sẽ phá hủy scheduler cho các test khác.
  */
 @DisplayName("AuctionService Business Logic Tests")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -58,21 +60,19 @@ class AuctionServiceTest {
 
         /**
          * Bắt đầu phiên: approve nếu cần → đăng ký observers → RUNNING + AuctionTimer.
+         * Auction.startAuction() yêu cầu status == APPROVED.
          */
         void startAuction(Auction auction) {
-            // Auction.startAuction() chỉ chạy khi status == APPROVED
             if (auction.getStatus() == AuctionStatus.PENDING) {
                 auction.setStatus(AuctionStatus.APPROVED);
             }
-            // Đăng ký observer giả
             auction.addObserver(new NoOpObserver());
 
             FakeBroadcaster broadcaster = new FakeBroadcaster(auction.getAuctionId());
             auction.addObserver(broadcaster);
             broadcasters.put(auction.getAuctionId(), broadcaster);
 
-            // Chuyển → RUNNING và lên lịch AuctionTimer
-            auction.startAuction();
+            auction.startAuction(); // → RUNNING + lên lịch AuctionTimer
         }
 
         /** Đóng phiên và giải phóng broadcaster. */
@@ -104,11 +104,7 @@ class AuctionServiceTest {
                 "SELLER-01", "Macbook Test", "ITEM-999", "Mô tả", 2000.0, Item.ItemStatus.APPROVED);
     }
 
-    @AfterAll
-    static void tearDown() {
-        // Tắt AuctionTimer tránh thread leak
-        AuctionTimer.getInstance().shutdown();
-    }
+    // KHÔNG có @AfterAll shutdown() — để AuctionTimer Singleton sống xuyên suốt test session
 
     // ── Test 1: Singleton ──────────────────────────────────────────
     @Test @Order(1)

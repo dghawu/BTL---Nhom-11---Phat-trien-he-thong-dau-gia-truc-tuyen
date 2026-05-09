@@ -24,7 +24,7 @@ public class AuctionDAO {
     public void save(Auction auction) {
         itemDAO.save(auction.getItem());
         String sql = """
-                INSERT INTO auctions
+                INSERT IGNORE INTO auctions
                 (id, item_id, start_price, current_price, min_increment,
                  current_winner, start_time, end_time, status, created_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

@@ -14,22 +14,24 @@ import java.util.concurrent.TimeUnit;
 /**
  * AuctionTimer quản lý việc tự động đóng phiên đấu giá khi hết thời gian.
  * Dùng ScheduledExecutorService để chạy ngầm, không block luồng chính.
+ *
+ * Lưu ý: scheduler được tự động khởi động lại nếu đã bị shutdown,
+ * đảm bảo hoạt động đúng cả trong môi trường production lẫn unit test.
  */
 public class AuctionTimer {
 
     // Singleton
     private static volatile AuctionTimer instance;
 
-    // Thread pool — mỗi phiên đấu giá 1 task lên lịch
-    private final ScheduledExecutorService scheduler;
+    // Thread pool — dùng volatile để đảm bảo visibility khi restart
+    private volatile ScheduledExecutorService scheduler;
 
     // Lưu task của từng phiên để có thể hủy nếu cần
     private final Map<String, ScheduledFuture<?>> scheduledTasks;
 
     private AuctionTimer() {
-        // 4 luồng xử lý song song — đủ cho demo, tăng lên khi cần
-        this.scheduler       = Executors.newScheduledThreadPool(4);
-        this.scheduledTasks  = new ConcurrentHashMap<>();
+        this.scheduler      = Executors.newScheduledThreadPool(4);
+        this.scheduledTasks = new ConcurrentHashMap<>();
     }
 
     public static AuctionTimer getInstance() {
@@ -41,6 +43,18 @@ public class AuctionTimer {
             }
         }
         return instance;
+    }
+
+    /**
+     * Đảm bảo scheduler đang hoạt động.
+     * Tự động tạo lại nếu đã bị shutdown (hữu ích trong môi trường test).
+     */
+    private synchronized ScheduledExecutorService getActiveScheduler() {
+        if (scheduler.isShutdown() || scheduler.isTerminated()) {
+            System.out.println("[AuctionTimer] Scheduler đã dừng, khởi động lại...");
+            scheduler = Executors.newScheduledThreadPool(4);
+        }
+        return scheduler;
     }
 
     /**
@@ -66,7 +80,7 @@ public class AuctionTimer {
         System.out.println("[AuctionTimer] Lên lịch đóng phiên "
                 + auctionId + " sau " + delaySeconds + " giây.");
 
-        ScheduledFuture<?> task = scheduler.schedule(() -> {
+        ScheduledFuture<?> task = getActiveScheduler().schedule(() -> {
             // Kiểm tra lại endTime vì anti-sniping có thể đã gia hạn
             if (LocalDateTime.now().isBefore(auction.getEndTime())) {
                 // Phiên đã được gia hạn → lên lịch lại
@@ -114,6 +128,7 @@ public class AuctionTimer {
     /**
      * Tắt toàn bộ scheduler khi thoát ứng dụng.
      * Gọi trong Main khi shutdown.
+     * Sau khi gọi, getInstance().schedule() vẫn hoạt động vì scheduler tự restart.
      */
     public void shutdown() {
         scheduler.shutdown();
