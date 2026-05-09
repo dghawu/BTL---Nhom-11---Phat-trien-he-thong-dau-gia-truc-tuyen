@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!-- Screen 6.2.1: Seller Centre - Thêm sản phẩm -->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controller.SellerCentreController"
+      stylesheets="@../css/style.css"
+      prefWidth="1280" prefHeight="720"
+      style="-fx-background-color: #FFFFFF;">
+
+    <!-- Nav -->
+    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
+        <Button text="Home" styleClass="nav-tab" onAction="#handleHome"/>
+        <Button text="Auctions" styleClass="nav-tab" onAction="#handleAuctions"/>
+        <Button text="Seller centre" styleClass="nav-tab-active" onAction="#handleSellerCentre"/>
+        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+    </HBox>
+
+    <!-- Body -->
+    <HBox VBox.vgrow="ALWAYS">
+
+        <!-- Sidebar -->
+        <VBox styleClass="sidebar" spacing="4">
+            <Label text="Quản lý sản phẩm" styleClass="sidebar-section-title"/>
+            <Button fx:id="btnThemSanPham" text="· Thêm sản phẩm"
+                    styleClass="sidebar-item-active"
+                    onAction="#handleThemSanPham"/>
+            <Button fx:id="btnXemSanPham" text="· Xem tất cả sản phẩm"
+                    styleClass="sidebar-item"
+                    onAction="#handleXemSanPham"/>
+            <Label text="Quản phiên đấu giá" styleClass="sidebar-section-title"/>
+            <Button fx:id="btnTaoPhien" text="· Tạo phiên mới"
+                    styleClass="sidebar-item"
+                    onAction="#handleTaoPhien"/>
+            <Button fx:id="btnXemPhien" text="· Xem tất cả phiên"
+                    styleClass="sidebar-item"
+                    onAction="#handleXemPhien"/>
+            <Label text="Thống kê..." styleClass="sidebar-section-title"
+                   style="-fx-cursor: hand;" onMouseClicked="#handleThongKe"/>
+        </VBox>
+
+        <!-- Detail Panel: Thêm sản phẩm -->
+        <VBox HBox.hgrow="ALWAYS" styleClass="detail-panel">
+
+            <!-- Header -->
+            <Label text="Chi tiết" styleClass="detail-header"
+                   maxWidth="Infinity"/>
+            <Separator style="-fx-padding: 0 0 16 0;"/>
+
+            <!-- Form grid -->
+            <GridPane hgap="20" vgap="14"
+                      style="-fx-padding: 20 20 0 20;">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="120" prefWidth="140"/>
+                    <ColumnConstraints hgrow="ALWAYS" minWidth="300"/>
+                </columnConstraints>
+
+                <Label text="Tên sản phẩm" styleClass="detail-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="tenField" styleClass="text-field-underline"
+                           GridPane.rowIndex="0" GridPane.columnIndex="1" maxWidth="Infinity"/>
+
+                <Label text="Phân loại" styleClass="detail-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="phanLoaiBox" promptText="Chọn phân loại"
+                          styleClass="combo-box-rounded"
+                          GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity"/>
+
+                <Label text="Mô tả" styleClass="detail-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="moTaField" styleClass="text-field-underline"
+                           GridPane.rowIndex="2" GridPane.columnIndex="1" maxWidth="Infinity"/>
+
+                <Label text="Giá khởi điểm" styleClass="detail-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="giaField" styleClass="text-field-underline"
+                           GridPane.rowIndex="3" GridPane.columnIndex="1" maxWidth="Infinity"/>
+
+                <Label text="Ảnh" styleClass="detail-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+            </GridPane>
+
+            <!-- Image area -->
+            <HBox style="-fx-padding: 10 20 0 160;">
+                <Pane styleClass="image-placeholder"
+                      fx:id="imagePane"
+                      prefWidth="240" prefHeight="220"
+                      onMouseClicked="#handleChooseImage"/>
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Action buttons -->
+            <HBox alignment="CENTER_RIGHT" spacing="12"
+                  style="-fx-padding: 0 20 16 0;">
+                <Button text="EDIT" styleClass="btn-secondary" onAction="#handleEdit"/>
+                <Button text="SAVE" styleClass="btn-primary" onAction="#handleSave"/>
+            </HBox>
+
+        </VBox>
+    </HBox>
+</VBox>
