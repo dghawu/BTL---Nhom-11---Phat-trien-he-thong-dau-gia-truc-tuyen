@@ -89,7 +89,7 @@ public class ServerService {
      * Đổi username.
      * Request:  {"action":"changeUsername","userId":1,"newUsername":"...","password":"..."}
      */
-    public static UserResult changeUsername(int userId, String newUsername, String password) {
+    public static UserResult changeUsername(String userId, String newUsername, String password) {
         JSONObject req = new JSONObject();
         req.put("action",      "changeUsername");
         req.put("userId",      userId);
@@ -106,7 +106,7 @@ public class ServerService {
      * Đổi mật khẩu.
      * Request:  {"action":"changePassword","userId":1,"oldPassword":"...","newPassword":"..."}
      */
-    public static UserResult changePassword(int userId, String oldPassword, String newPassword) {
+    public static UserResult changePassword(String userId, String oldPassword, String newPassword) {
         JSONObject req = new JSONObject();
         req.put("action",      "changePassword");
         req.put("userId",      userId);

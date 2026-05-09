@@ -15,21 +15,21 @@ public abstract class BaseController {
     protected String currentUsername;
     /** Role hiện tại: ADMIN / SELLER / BIDDER */
     protected String currentRole;
+    protected String currentUserId;
 
     // ------------------------------------------------------------------ //
-    //  Navigation helpers
+    //  Navigation
     // ------------------------------------------------------------------ //
-
     protected void navigateTo(String fxmlPath, Stage stage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent root = loader.load();
 
-            // Truyền session info sang controller mới
             Object ctrl = loader.getController();
             if (ctrl instanceof BaseController bc) {
                 bc.currentUsername = this.currentUsername;
                 bc.currentRole     = this.currentRole;
+                bc.currentUserId   = this.currentUserId;
             }
 
             stage.setScene(new Scene(root));
@@ -39,20 +39,17 @@ public abstract class BaseController {
         }
     }
 
-    /** Lấy Stage từ bất kỳ node nào trong scene */
     protected Stage getStage(javafx.scene.Node node) {
         return (Stage) node.getScene().getWindow();
     }
 
-    /** Hiển thị notification popup với message tùy ý */
     protected void showNotification(Stage owner, String message) {
-        com.example.controller.NotificationController.show(owner, message);
+        NotificationController.show(owner, message);
     }
 
     // ------------------------------------------------------------------ //
-    //  Common nav handlers - override nếu cần logic đặc biệt
+    //  Common navigation
     // ------------------------------------------------------------------ //
-
     protected void goHome(Stage stage) {
         switch (currentRole == null ? "" : currentRole.toUpperCase()) {
             case "ADMIN"  -> navigateTo("/fxml/HomeAdmin.fxml",  stage);
@@ -61,8 +58,13 @@ public abstract class BaseController {
         }
     }
 
+    /** Settings theo đúng role */
     protected void goSettings(Stage stage) {
-        navigateTo("/fxml/Settings.fxml", stage);
+        switch (currentRole == null ? "" : currentRole.toUpperCase()) {
+            case "ADMIN"  -> navigateTo("/fxml/SettingsAdmin.fxml",  stage);
+            case "SELLER" -> navigateTo("/fxml/SettingsSeller.fxml", stage);
+            default       -> navigateTo("/fxml/SettingsBidder.fxml", stage);
+        }
     }
 
     protected void goAuctions(Stage stage) {

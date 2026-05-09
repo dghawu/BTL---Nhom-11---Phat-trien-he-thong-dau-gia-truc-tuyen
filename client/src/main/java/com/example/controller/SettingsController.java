@@ -1,46 +1,46 @@
 package com.example.controller;
 
+import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 /**
- * SettingsController - Settings.fxml
- * Dùng chung cho Admin, Seller, Bidder.
+ * SettingsController v3 - thêm nav handlers cho cả 3 role.
  */
-public class SettingsController extends com.example.controller.BaseController {
+public class SettingsController extends BaseController {
 
     @FXML private Label         accountTitleLabel;
     @FXML private TextField     displayUsername;
     @FXML private TextField     displayRole;
     @FXML private TextField     displayTimeCreate;
-
     @FXML private TextField     newUsernameField;
     @FXML private PasswordField passwordForUsernameField;
-
     @FXML private PasswordField oldPasswordField;
     @FXML private PasswordField newPasswordField;
-
     @FXML private Label         messageLabel;
 
     @FXML
     public void initialize() {
-        // Điền thông tin từ session (set bởi BaseController.navigateTo)
         if (currentUsername != null) {
             accountTitleLabel.setText("Your account @" + currentUsername);
             displayUsername.setText(currentUsername);
             displayRole.setText(currentRole);
             displayTimeCreate.setText("-- / -- / ----");
-            // TODO: lấy thời gian tạo tài khoản từ server
         }
     }
 
     // ------------------------------------------------------------------ //
-    //  Nav
+    //  Nav handlers - dùng chung cho cả 3 role
     // ------------------------------------------------------------------ //
-    @FXML private void handleHome() { goHome(getStage(displayUsername)); }
+    @FXML private void handleHome()         { goHome(getStage(displayUsername)); }
+    @FXML private void handleAdminCentre()  { navigateTo("/fxml/AdminCentre.fxml",      getStage(displayUsername)); }
+    @FXML private void handleUserReport()   { navigateTo("/fxml/AdminCentre.fxml",      getStage(displayUsername)); }
+    @FXML private void handleAuctions()     { goAuctions(getStage(displayUsername)); }
+    @FXML private void handleSellerCentre() { navigateTo("/fxml/SellerAddProduct.fxml", getStage(displayUsername)); }
+    @FXML private void handleBidderCentre() { navigateTo("/fxml/BidderCentre.fxml",     getStage(displayUsername)); }
 
     // ------------------------------------------------------------------ //
-    //  Change Username
+    //  Đổi username
     // ------------------------------------------------------------------ //
     @FXML
     private void handleSaveUsername() {
@@ -52,19 +52,23 @@ public class SettingsController extends com.example.controller.BaseController {
             return;
         }
 
-        // TODO: ServerService.changeUsername(currentUsername, newName, pass);
-        // Nếu thành công:
-        currentUsername = newName;
-        displayUsername.setText(newName);
-        accountTitleLabel.setText("Your account @" + newName);
-        newUsernameField.clear();
-        passwordForUsernameField.clear();
+        ServerService.UserResult result =
+                ServerService.changeUsername(currentUserId, newName, pass);
 
-        showNotification(getStage(displayUsername), "ĐỔI TÊN THÀNH CÔNG!");
+        if (result.success) {
+            currentUsername = newName;
+            displayUsername.setText(newName);
+            accountTitleLabel.setText("Your account @" + newName);
+            newUsernameField.clear();
+            passwordForUsernameField.clear();
+            showNotification(getStage(displayUsername), "ĐỔI TÊN THÀNH CÔNG!");
+        } else {
+            showMsg(result.message.isEmpty() ? "Đổi tên thất bại." : result.message, false);
+        }
     }
 
     // ------------------------------------------------------------------ //
-    //  Change Password
+    //  Đổi mật khẩu
     // ------------------------------------------------------------------ //
     @FXML
     private void handleSavePassword() {
@@ -80,10 +84,16 @@ public class SettingsController extends com.example.controller.BaseController {
             return;
         }
 
-        // TODO: ServerService.changePassword(currentUsername, oldPass, newPass);
-        oldPasswordField.clear();
-        newPasswordField.clear();
-        showNotification(getStage(displayUsername), "ĐỔI MẬT KHẨU THÀNH CÔNG!");
+        ServerService.UserResult result =
+                ServerService.changePassword(currentUserId, oldPass, newPass);
+
+        if (result.success) {
+            oldPasswordField.clear();
+            newPasswordField.clear();
+            showNotification(getStage(displayUsername), "ĐỔI MẬT KHẨU THÀNH CÔNG!");
+        } else {
+            showMsg(result.message.isEmpty() ? "Đổi mật khẩu thất bại." : result.message, false);
+        }
     }
 
     // ------------------------------------------------------------------ //
@@ -91,15 +101,13 @@ public class SettingsController extends com.example.controller.BaseController {
     // ------------------------------------------------------------------ //
     @FXML
     private void handleLogout() {
-        // TODO: ServerService.logout(currentUsername);
+        com.example.socket.SocketClient.getInstance().disconnect();
         currentUsername = null;
-        currentRole = null;
+        currentRole     = null;
+        currentUserId   = null;
         navigateTo("/fxml/Login.fxml", getStage(displayUsername));
     }
 
-    // ------------------------------------------------------------------ //
-    //  Helper
-    // ------------------------------------------------------------------ //
     private void showMsg(String msg, boolean success) {
         messageLabel.setText(msg);
         messageLabel.setStyle("-fx-font-size: 13px; -fx-padding: 10 0 0 0; -fx-text-fill: "

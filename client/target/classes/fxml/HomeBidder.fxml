@@ -13,9 +13,9 @@
     <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
         <Button text="Home"    styleClass="nav-tab-active"
                 maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleHome"/>
-        <Button text="Tab 2"   styleClass="nav-tab"
+        <Button text="Auctions"   styleClass="nav-tab"
                 maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleAuctions"/>
-        <Button text="Tab 3"   styleClass="nav-tab"
+        <Button text="Bidder Centre"   styleClass="nav-tab"
                 maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleBidderCentre"/>
         <Button text="Settings" styleClass="nav-tab"
                 maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleSettings"/>

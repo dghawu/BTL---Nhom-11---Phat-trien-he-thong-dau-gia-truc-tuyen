@@ -19,27 +19,27 @@
     <VBox alignment="TOP_LEFT" spacing="0" style="-fx-padding: 80 100 0 60;" HBox.hgrow="ALWAYS">
 
         <!-- Title -->
-        <Label style="-fx-font-size: 42px; -fx-font-weight: bold;" styleClass="page-title" stylesheets="@../../../../../server/src/main/resources/css/style.css" text="WELCOME TO..." />
+        <Label style="-fx-font-size: 42px; -fx-font-weight: bold;" styleClass="page-title" stylesheets="@../css/style.css" text="WELCOME TO..." />
 
         <Region prefHeight="30" />
 
         <!-- Subtitle -->
-        <Label style="-fx-font-size: 20px; -fx-text-fill: #333333;" stylesheets="@../../../../../server/src/main/resources/css/style.css" text="Log in with your account" />
+        <Label style="-fx-font-size: 20px; -fx-text-fill: #333333;" stylesheets="@../css/style.css" text="Log in with your account" />
 
         <Region prefHeight="16" />
 
         <!-- Username field -->
-        <TextField fx:id="usernameField" maxWidth="500" prefWidth="500" promptText="Username" styleClass="text-field-rounded" stylesheets="@../../../../../server/src/main/resources/css/style.css" />
+        <TextField fx:id="usernameField" maxWidth="500" prefWidth="500" promptText="Username" styleClass="text-field-rounded" stylesheets="@../css/style.css" />
 
         <Region prefHeight="10" />
 
         <!-- Password field -->
-        <PasswordField fx:id="passwordField" maxWidth="500" prefWidth="500" promptText="Password" styleClass="text-field-rounded" stylesheets="@../../../../../server/src/main/resources/css/style.css" />
+        <PasswordField fx:id="passwordField" maxWidth="500" prefWidth="500" promptText="Password" styleClass="text-field-rounded" stylesheets="@../css/style.css" />
 
         <Region prefHeight="10" />
 
         <!-- Login button -->
-        <Button fx:id="loginBtn" maxWidth="500" onAction="#handleLogin" prefWidth="500" styleClass="btn-primary" stylesheets="@../../../../../server/src/main/resources/css/style.css" text="LOG IN" />
+        <Button fx:id="loginBtn" maxWidth="500" onAction="#handleLogin" prefWidth="500" styleClass="btn-primary" stylesheets="@../css/style.css" text="LOG IN" />
 
         <Region prefHeight="6" />
 
@@ -52,12 +52,12 @@
         <Region prefHeight="30" />
 
         <!-- Separator -->
-        <Label style="-fx-font-size: 18px; -fx-text-fill: #222222;" stylesheets="@../../../../../server/src/main/resources/css/style.css" text="Don't have an account?" />
+        <Label style="-fx-font-size: 18px; -fx-text-fill: #222222;" stylesheets="@../css/style.css" text="Don't have an account?" />
 
         <Region prefHeight="12" />
 
         <!-- Register button -->
-        <Button maxWidth="500" onAction="#handleGoRegister" prefWidth="500" styleClass="btn-primary" stylesheets="@../../../../../server/src/main/resources/css/style.css" text="Creat new account" />
+        <Button maxWidth="500" onAction="#handleGoRegister" prefWidth="500" styleClass="btn-primary" stylesheets="@../css/style.css" text="Creat new account" />
 
     </VBox>
 </HBox>

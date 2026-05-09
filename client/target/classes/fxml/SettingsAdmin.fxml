@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controller.SettingsController"
+      stylesheets="@../css/style.css"
+      prefWidth="1280" prefHeight="720"
+      style="-fx-background-color: #FFFFFF;">
+
+    <!-- Nav - Admin -->
+    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
+        <Button text="Home"          styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleHome"/>
+        <Button text="Admin centre"  styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleAdminCentre"/>
+        <Button text="User's report" styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleUserReport"/>
+        <Button text="Settings"      styleClass="nav-tab-active"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true"
+                style="-fx-padding: 0; -fx-background-color: transparent;">
+        <VBox style="-fx-padding: 40 100 40 60;" spacing="0">
+
+            <Label fx:id="accountTitleLabel" text="Your account @tên_người dùng"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Region prefHeight="12"/>
+            <VBox spacing="8" maxWidth="440">
+                <TextField fx:id="displayUsername" promptText="Username"
+                           styleClass="text-field-rounded" editable="false"
+                           style="-fx-text-fill: #888; -fx-background-color: #F8F8F8;"/>
+                <TextField fx:id="displayRole" promptText="Role"
+                           styleClass="text-field-rounded" editable="false"
+                           style="-fx-text-fill: #888; -fx-background-color: #F8F8F8;"/>
+                <TextField fx:id="displayTimeCreate" promptText="Time Create"
+                           styleClass="text-field-rounded" editable="false"
+                           style="-fx-text-fill: #888; -fx-background-color: #F8F8F8;"/>
+            </VBox>
+
+            <Region prefHeight="30"/>
+            <Label text="Change Username" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Region prefHeight="12"/>
+            <VBox spacing="8" maxWidth="440">
+                <TextField fx:id="newUsernameField" promptText="New Username"
+                           styleClass="text-field-rounded"/>
+                <PasswordField fx:id="passwordForUsernameField" promptText="Password"
+                               styleClass="text-field-rounded"/>
+                <HBox alignment="CENTER_RIGHT">
+                    <Button text="SAVE" styleClass="btn-primary" onAction="#handleSaveUsername"/>
+                </HBox>
+            </VBox>
+
+            <Region prefHeight="30"/>
+            <Label text="Change Password" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+            <Region prefHeight="12"/>
+            <VBox spacing="8" maxWidth="440">
+                <PasswordField fx:id="oldPasswordField" promptText="Old Password"
+                               styleClass="text-field-rounded"/>
+                <PasswordField fx:id="newPasswordField" promptText="New Password"
+                               styleClass="text-field-rounded"/>
+                <HBox alignment="CENTER_RIGHT">
+                    <Button text="SAVE" styleClass="btn-primary" onAction="#handleSavePassword"/>
+                </HBox>
+            </VBox>
+
+            <Label fx:id="messageLabel"
+                   style="-fx-font-size: 13px; -fx-padding: 10 0 0 0;"
+                   visible="false" managed="false"/>
+        </VBox>
+    </ScrollPane>
+
+    <HBox alignment="CENTER_RIGHT" style="-fx-padding: 0 30 20 0;">
+        <Button text="LOG OUT" styleClass="btn-secondary" onAction="#handleLogout"/>
+    </HBox>
+</VBox>

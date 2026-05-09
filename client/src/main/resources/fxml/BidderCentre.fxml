@@ -11,7 +11,7 @@
         <Button text="Auctions"      styleClass="nav-tab"
                 maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleAuctions"/>
         <Button text="Bidder centre" styleClass="nav-tab-active"
-                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleBidderCentre"/>
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" />
         <Button text="Settings"      styleClass="nav-tab"
                 maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
     </HBox>
