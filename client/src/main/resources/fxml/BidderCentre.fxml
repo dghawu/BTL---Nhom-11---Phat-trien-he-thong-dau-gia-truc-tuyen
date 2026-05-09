@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
 
-<!-- Screen 10: Bidder Centre -->
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.controller.BidderCentreController"
-      stylesheets="@../css/style.css"
-      prefWidth="1280" prefHeight="720"
-      style="-fx-background-color: #FFFFFF;">
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.BidderCentreController">
 
     <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
-        <Button text="Home" styleClass="nav-tab" onAction="#handleHome"/>
-        <Button text="Auctions" styleClass="nav-tab" onAction="#handleAuctions"/>
-        <Button text="Bidder centre" styleClass="nav-tab-active"/>
-        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+        <Button text="Home"          styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleHome"/>
+        <Button text="Auctions"      styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleAuctions"/>
+        <Button text="Bidder centre" styleClass="nav-tab-active"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleBidderCentre"/>
+        <Button text="Settings"      styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
@@ -23,47 +21,35 @@
         <!-- Sidebar -->
         <VBox styleClass="sidebar" spacing="4" style="-fx-min-width: 200px; -fx-pref-width: 200px;">
             <Button fx:id="btnGiaoDich" text="Quản lý giao dịch"
-                    styleClass="sidebar-item-active"
-                    onAction="#handleShowGiaoDich"/>
+                    styleClass="sidebar-item-active" onAction="#handleShowGiaoDich"/>
             <Region prefHeight="8"/>
-            <Label text="Sản phẩm đã đấu&#10;giá thành công."
-                   wrapText="true"
-                   style="-fx-font-size: 13px; -fx-text-fill: #555; -fx-padding: 0 0 0 8;"/>
             <Button fx:id="btnSanPhamDauGia" text="Sản phẩm đã đấu&#10;giá thành công."
-                    styleClass="sidebar-item"
-                    wrapText="true"
-                    prefWidth="175"
+                    styleClass="sidebar-item" wrapText="true" prefWidth="175"
                     onAction="#handleShowSanPhamDauGia"/>
         </VBox>
 
-        <!-- Main content area - switches between 2 views -->
+        <!-- Content stack -->
         <StackPane HBox.hgrow="ALWAYS" fx:id="contentStack">
 
-            <!-- View 1: Quản lý giao dịch (Table) -->
+            <!-- View 1: Giao dịch -->
             <VBox fx:id="viewGiaoDich" style="-fx-padding: 20;" spacing="10">
-
                 <TableView fx:id="giaoDichTable" VBox.vgrow="ALWAYS" styleClass="table-view">
                     <columns>
-                        <TableColumn fx:id="colMa" text="Mã" prefWidth="80"/>
-                        <TableColumn fx:id="colPhien" text="Phiên" prefWidth="120"/>
-                        <TableColumn fx:id="colSanPham" text="Sản phẩm" prefWidth="160"/>
+                        <TableColumn fx:id="colMa"        text="Mã"        prefWidth="80"/>
+                        <TableColumn fx:id="colPhien"     text="Phiên"     prefWidth="120"/>
+                        <TableColumn fx:id="colSanPham"   text="Sản phẩm"  prefWidth="160"/>
                         <TableColumn fx:id="colTinhTrang" text="Tình trạng" prefWidth="260"/>
-                        <TableColumn fx:id="colThoiGian" text="Thời gian" prefWidth="120"/>
-                        <TableColumn fx:id="colBaoCao" text="Báo cáo" prefWidth="200"/>
+                        <TableColumn fx:id="colThoiGian"  text="Thời gian"  prefWidth="120"/>
+                        <TableColumn fx:id="colBaoCao"    text="Báo cáo"   prefWidth="200"/>
                     </columns>
                 </TableView>
-
-                <!-- Note: Rows with "Chưa thanh toán" will have a THANH TOÁN button
-                     rendered via custom TableCell in controller -->
-
             </VBox>
 
-            <!-- View 2: Sản phẩm đã đấu giá thành công (card grid) -->
+            <!-- View 2: Sản phẩm đã đấu giá thành công -->
             <VBox fx:id="viewSanPham" visible="false" managed="false" style="-fx-padding: 20;">
                 <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true"
                             style="-fx-background-color: transparent;">
-                    <FlowPane fx:id="wonProductGrid"
-                              hgap="20" vgap="20"
+                    <FlowPane fx:id="wonProductGrid" hgap="20" vgap="20"
                               style="-fx-padding: 4; -fx-background-color: transparent;"/>
                 </ScrollPane>
             </VBox>

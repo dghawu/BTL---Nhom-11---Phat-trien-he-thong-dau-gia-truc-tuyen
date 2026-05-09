@@ -1,58 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
 
-<!-- Screen 2.2: Home - Seller -->
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.controller.HomeSellerController"
-      stylesheets="@../css/style.css"
-      prefWidth="1280" prefHeight="720"
-      style="-fx-background-color: #FFFFFF;">
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.AdminCentreController">
 
-    <!-- Navigation Bar -->
     <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
-        <Button text="Home" styleClass="nav-tab-active" onAction="#handleHome"/>
-        <Button text="Auctions" styleClass="nav-tab" onAction="#handleAuctions"/>
-        <Button text="Seller centre" styleClass="nav-tab" onAction="#handleSellerCentre"/>
-        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+        <Button text="Home"          styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleHome"/>
+        <Button text="Admin centre"      styleClass="nav-tab-active"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleAdminCentre"/>
+        <Button text="User's report" styleClass="nav-tab-active"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleUserReport"/>
+        <Button text="Settings"      styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
     </HBox>
 
-    <!-- Content -->
-    <VBox styleClass="content-area" VBox.vgrow="ALWAYS" spacing="0">
+    <HBox VBox.vgrow="ALWAYS">
 
-        <Label fx:id="welcomeLabel"
-               text="CHÀO MỪNG Seller @tên_người_dùng&#10;ĐẾN VỚI ABCXYZ"
-               styleClass="welcome-title"
-               wrapText="true"
-               style="-fx-font-size: 32px; -fx-line-spacing: 4;"/>
+        <!-- Sidebar -->
+        <VBox styleClass="sidebar" spacing="4">
+            <Button fx:id="btnNguoiDung" text="Người dùng" styleClass="sidebar-item-active" onAction="#handleShowNguoiDung"/>
+            <Button fx:id="btnSanPham"   text="Sản phẩm"   styleClass="sidebar-item"        onAction="#handleShowSanPham"/>
+            <Button fx:id="btnPhien"     text="Phiên"       styleClass="sidebar-item"        onAction="#handleShowPhien"/>
+            <Button fx:id="btnGiaoDich"  text="Giao dịch"   styleClass="sidebar-item"        onAction="#handleShowGiaoDich"/>
+        </VBox>
 
-        <Region prefHeight="50"/>
+        <!-- Main panel -->
+        <VBox HBox.hgrow="ALWAYS" style="-fx-padding: 20;">
+            <TableView fx:id="dataTable" VBox.vgrow="ALWAYS" styleClass="table-view">
+                <columns>
+                    <TableColumn fx:id="colId"        text="ID"                prefWidth="80"/>
+                    <TableColumn fx:id="colTen"       text="Tên"               prefWidth="180"/>
+                    <TableColumn fx:id="colThongTin"  text="Các thông tin khác" prefWidth="300"/>
+                    <TableColumn fx:id="colExtra"     text="....."             prefWidth="200"/>
+                    <TableColumn fx:id="colTrangThai" text="Trạng thái"        prefWidth="160" visible="false"/>
+                </columns>
+            </TableView>
 
-        <HBox spacing="30" alignment="CENTER_LEFT">
-
-            <VBox styleClass="home-card" spacing="8" onMouseClicked="#handleGoAuctions">
-                <Label text="_ □ ×" styleClass="window-dots"/>
-                <Label text="xem ngay" styleClass="home-card-subtitle"/>
-                <Label text="CÁC PHIÊN&#10;ĐẤU GIÁ"
-                       styleClass="home-card-title" wrapText="true"/>
-            </VBox>
-
-            <VBox styleClass="home-card" spacing="8" onMouseClicked="#handleGoSellerCentre">
-                <Label text="_ □ ×" styleClass="window-dots"/>
-                <Label text="quản lý" styleClass="home-card-subtitle"/>
-                <Label text="PHIÊN ĐẤU GIÁ,&#10;SẢN PHẨM"
-                       styleClass="home-card-title" wrapText="true"/>
-            </VBox>
-
-            <VBox styleClass="home-card" spacing="8" onMouseClicked="#handleGoSettings">
-                <Label text="_ □ ×" styleClass="window-dots"/>
-                <Label text="chỉnh sửa" styleClass="home-card-subtitle"/>
-                <Label text="THÔNG TIN&#10;TÀI KHOẢN"
-                       styleClass="home-card-title" wrapText="true"/>
-            </VBox>
-
-        </HBox>
-    </VBox>
+            <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 16 0 0 0;">
+                <Button fx:id="btnBan"       text="BAN"   styleClass="btn-danger"   onAction="#handleBan"/>
+                <Button fx:id="btnMakeAdmin" text="ADMIN" styleClass="btn-success"  onAction="#handleMakeAdmin"/>
+                <Button fx:id="btnEdit"      text="EDIT"  styleClass="btn-secondary" onAction="#handleEdit" visible="false" managed="false"/>
+                <Button fx:id="btnSave"      text="SAVE"  styleClass="btn-primary"  onAction="#handleSave"/>
+            </HBox>
+        </VBox>
+    </HBox>
 </VBox>

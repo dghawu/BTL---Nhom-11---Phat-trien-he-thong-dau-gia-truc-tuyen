@@ -1,98 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
 
-<!-- Screen 6.2.2 - Xem chi tiết sản phẩm (shown in detail panel) -->
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.controller.SellerProductDetailController"
-      stylesheets="@../css/style.css"
-      prefWidth="1280" prefHeight="720"
-      style="-fx-background-color: #FFFFFF;">
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.SellerProductDetailController">
 
     <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
-        <Button text="Home" styleClass="nav-tab" onAction="#handleHome"/>
-        <Button text="Auctions" styleClass="nav-tab" onAction="#handleAuctions"/>
-        <Button text="Seller centre" styleClass="nav-tab-active"/>
-        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+        <Button text="Home"          styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleHome"/>
+        <Button text="Auctions"      styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleAuctions"/>
+        <Button text="Seller centre" styleClass="nav-tab-active"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleSellerCentre"/>
+        <Button text="Settings"      styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
-
-        <!-- Sidebar -->
         <VBox styleClass="sidebar" spacing="4">
             <Label text="Quản lý sản phẩm" styleClass="sidebar-section-title"/>
-            <Button text="· Thêm sản phẩm" styleClass="sidebar-item"
-                    onAction="#handleThemSanPham"/>
-            <Button text="· Xem tất cả sản phẩm" styleClass="sidebar-item-active"/>
+            <Button text="· Thêm sản phẩm"       styleClass="sidebar-item"        onAction="#handleThemSanPham"/>
+            <Button text="· Xem tất cả sản phẩm" styleClass="sidebar-item-active" onAction="#handleXemSanPham"/>
             <Label text="Quản phiên đấu giá" styleClass="sidebar-section-title"/>
-            <Button text="· Tạo phiên mới" styleClass="sidebar-item"
-                    onAction="#handleTaoPhien"/>
-            <Button text="· Xem tất cả phiên" styleClass="sidebar-item"
-                    onAction="#handleXemPhien"/>
+            <Button text="· Tạo phiên mới"    styleClass="sidebar-item" onAction="#handleTaoPhien"/>
+            <Button text="· Xem tất cả phiên" styleClass="sidebar-item" onAction="#handleXemPhien"/>
             <Label text="Thống kê..." styleClass="sidebar-section-title"/>
         </VBox>
 
-        <!-- Detail Panel: Xem chi tiết sản phẩm -->
         <VBox HBox.hgrow="ALWAYS" styleClass="detail-panel">
             <Label text="Chi tiết" styleClass="detail-header" maxWidth="Infinity"/>
             <Separator/>
+            <Label text="Xem chi tiết sản phẩm" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 16 0 8 0;"/>
 
-            <Label text="Xem chi tiết sản phẩm"
-                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 16 0 8 0;"/>
-
-            <GridPane hgap="20" vgap="12"
-                      style="-fx-padding: 0 20 0 0;">
+            <GridPane hgap="20" vgap="12" style="-fx-padding: 0 20 0 0;">
                 <columnConstraints>
                     <ColumnConstraints minWidth="120" prefWidth="140"/>
                     <ColumnConstraints hgrow="ALWAYS"/>
                 </columnConstraints>
-
-                <Label text="Tên" styleClass="detail-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                <Label fx:id="lblTen" text="— — — — — — — — — —"
-                       styleClass="field-label" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-
-                <Label text="ID" styleClass="detail-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                <Label fx:id="lblId" text="— — — — — — — — — —"
-                       styleClass="field-label" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
-                <Label text="Phân loại" styleClass="detail-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <Label fx:id="lblPhanLoai" text="— — — — — — — — — —"
-                       styleClass="field-label" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-
+                <Label text="Tên"        styleClass="detail-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <Label fx:id="lblTen"    text="— — — — —"           GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Label text="ID"         styleClass="detail-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label fx:id="lblId"     text="— — — — —"           GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <Label text="Phân loại"  styleClass="detail-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <Label fx:id="lblPhanLoai" text="— — — — —"         GridPane.rowIndex="2" GridPane.columnIndex="1"/>
                 <Label text="Ngày mở bán" styleClass="detail-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <Label fx:id="lblNgayMoBan" text="— — — — — — — — — —"
-                       styleClass="field-label" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-
-                <Label text="Giá" styleClass="detail-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <Label fx:id="lblGia" text="— — — — — — — — — —"
-                       styleClass="field-label" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-
-                <Label text="Mô tả" styleClass="detail-label" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                <Label fx:id="lblMoTa" text="— — — — — — — — — —"
-                       styleClass="field-label" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-
+                <Label fx:id="lblNgayMoBan" text="— — — — —"        GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <Label text="Giá"        styleClass="detail-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <Label fx:id="lblGia"    text="— — — — —"           GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <Label text="Mô tả"      styleClass="detail-label" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <Label fx:id="lblMoTa"   text="— — — — —"           GridPane.rowIndex="5" GridPane.columnIndex="1"/>
                 <Label text="Tình trạng" styleClass="detail-label" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-                <Label fx:id="lblTinhTrang" text="— — — — — — — — — —"
-                       styleClass="field-label" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
-
-                <Label text="Ảnh" styleClass="detail-label" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+                <Label fx:id="lblTinhTrang" text="— — — — —"        GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                <Label text="Ảnh"        styleClass="detail-label" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
             </GridPane>
 
-            <!-- Image -->
             <HBox style="-fx-padding: 8 0 0 140;">
-                <Pane styleClass="image-placeholder"
-                      fx:id="imgPane"
-                      prefWidth="180" prefHeight="160"/>
+                <Pane styleClass="image-placeholder" fx:id="imgPane" prefWidth="180" prefHeight="160"/>
             </HBox>
 
             <Region VBox.vgrow="ALWAYS"/>
-
-            <HBox alignment="CENTER_RIGHT" spacing="12"
-                  style="-fx-padding: 0 20 16 0;">
+            <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 0;">
                 <Button text="EDIT" styleClass="btn-secondary" onAction="#handleEdit"/>
-                <Button text="SAVE" styleClass="btn-primary" onAction="#handleSave"/>
+                <Button text="SAVE" styleClass="btn-primary"   onAction="#handleSave"/>
             </HBox>
         </VBox>
     </HBox>

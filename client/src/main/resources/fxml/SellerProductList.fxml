@@ -1,59 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
+<?import javafx.scene.layout.*?>
 
-<!-- Screen 6.2.2: Seller Centre - Xem tất cả sản phẩm (card grid) -->
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.example.controller.SellerProductListController"
-      stylesheets="@../css/style.css"
-      prefWidth="1280" prefHeight="720"
-      style="-fx-background-color: #FFFFFF;">
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.SellerProductListController">
 
     <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
-        <Button text="Home" styleClass="nav-tab" onAction="#handleHome"/>
-        <Button text="Auctions" styleClass="nav-tab" onAction="#handleAuctions"/>
-        <Button text="Seller centre" styleClass="nav-tab-active"/>
-        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+        <Button text="Home"          styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleHome"/>
+        <Button text="Auctions"      styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleAuctions"/>
+        <Button text="Seller centre" styleClass="nav-tab-active"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleSellerCentre"/>
+        <Button text="Settings"      styleClass="nav-tab"
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
-
-        <!-- Sidebar -->
         <VBox styleClass="sidebar" spacing="4">
             <Label text="Quản lý sản phẩm" styleClass="sidebar-section-title"/>
-            <Button text="· Thêm sản phẩm" styleClass="sidebar-item"
-                    onAction="#handleThemSanPham"/>
-            <Button text="· Xem tất cả sản phẩm" styleClass="sidebar-item-active"
-                    onAction="#handleXemSanPham"/>
+            <Button text="· Thêm sản phẩm"       styleClass="sidebar-item"        onAction="#handleThemSanPham"/>
+            <Button text="· Xem tất cả sản phẩm" styleClass="sidebar-item-active" onAction="#handleXemSanPham"/>
             <Label text="Quản phiên đấu giá" styleClass="sidebar-section-title"/>
-            <Button text="· Tạo phiên mới" styleClass="sidebar-item"
-                    onAction="#handleTaoPhien"/>
-            <Button text="· Xem tất cả phiên" styleClass="sidebar-item"
-                    onAction="#handleXemPhien"/>
+            <Button text="· Tạo phiên mới"    styleClass="sidebar-item" onAction="#handleTaoPhien"/>
+            <Button text="· Xem tất cả phiên" styleClass="sidebar-item" onAction="#handleXemPhien"/>
             <Label text="Thống kê..." styleClass="sidebar-section-title"/>
         </VBox>
 
-        <!-- Detail Panel -->
         <VBox HBox.hgrow="ALWAYS" styleClass="detail-panel">
             <Label text="Chi tiết" styleClass="detail-header" maxWidth="Infinity"/>
             <Separator/>
-
-            <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true"
-                        style="-fx-padding: 16;">
-                <!-- Product cards grid - populated dynamically by controller -->
-                <FlowPane fx:id="productGrid"
-                          hgap="20" vgap="20"
-                          style="-fx-padding: 10;"/>
+            <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-padding: 16;">
+                <FlowPane fx:id="productGrid" hgap="20" vgap="20" style="-fx-padding: 10;"/>
             </ScrollPane>
-
-            <Region VBox.vgrow="NEVER" prefHeight="8"/>
-
-            <HBox alignment="CENTER_RIGHT" spacing="12"
-                  style="-fx-padding: 0 20 16 0;">
+            <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 0;">
                 <Button text="EDIT" styleClass="btn-secondary" onAction="#handleEdit"/>
-                <Button text="SAVE" styleClass="btn-primary" onAction="#handleSave"/>
+                <Button text="SAVE" styleClass="btn-primary"   onAction="#handleSave"/>
             </HBox>
         </VBox>
     </HBox>

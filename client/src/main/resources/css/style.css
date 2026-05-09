@@ -4,7 +4,7 @@
    ======================================== */
 
 * {
-    -fx-font-family: "Montserrat", "Segoe UI", sans-serif;
+    -fx-font-family: "Montserrat", "Helvetica Neue", sans-serif;
 }
 
 /* ---- ROOT / BACKGROUND ---- */
@@ -19,6 +19,76 @@
     -fx-padding: 0;
     -fx-pref-height: 60px;
     -fx-min-height: 60px;
+}
+
+/* Nav wrapper - chứa các tab trải đều */
+.nav-wrapper {
+    -fx-pref-width: Infinity;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Tab đầu tiên - bo góc trên trái */
+.tab-first {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #111111;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-background-radius: 10 0 0 0;
+    -fx-border-radius: 10 0 0 0;
+    -fx-cursor: hand;
+    -fx-pref-height: 60px;
+}
+
+.tab-first:hover {
+    -fx-background-color: #F0F0F0;
+}
+
+/* Tab giữa */
+.tab-mid {
+    -fx-background-color: #EFEFEF;
+    -fx-text-fill: #111111;
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-alignment: CENTER;
+    -fx-background-radius: 10 10 0 0;
+    -fx-border-radius: 10 10 0 0;
+    -fx-cursor: hand;
+    -fx-pref-height: 60px;
+}
+
+.tab-mid:hover {
+    -fx-background-color: #DDDDDD;
+}
+
+/* Tab cuối - bo góc trên phải */
+.tab-last {
+    -fx-background-color: #EFEFEF;
+    -fx-text-fill: #111111;
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-alignment: CENTER;
+    -fx-background-radius: 0 10 0 0;
+    -fx-border-radius: 0 10 0 0;
+    -fx-cursor: hand;
+    -fx-pref-height: 60px;
+}
+
+.tab-last:hover {
+    -fx-background-color: #DDDDDD;
+}
+
+/* Tab active (dùng cho bất kỳ tab nào đang active) */
+.tab-active {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #111111;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER;
+    -fx-background-radius: 10 10 0 0;
+    -fx-border-radius: 10 10 0 0;
+    -fx-cursor: hand;
+    -fx-pref-height: 60px;
 }
 
 .nav-tab {
@@ -317,12 +387,12 @@
     -fx-border-radius: 8px;
     -fx-background-radius: 8px;
     -fx-padding: 20;
-    -fx-pref-width: 250px;
-    -fx-pref-height: 180px;
+    -fx-pref-width: 300px;
+    -fx-pref-height: 160px;
 }
 
 .home-card-subtitle {
-    -fx-font-size: 14px;
+    -fx-font-size: 12px;
     -fx-text-fill: #888888;
     -fx-font-style: italic;
 }
@@ -335,8 +405,8 @@
 
 /* Window control dots (decorative) */
 .window-dots {
-    -fx-font-size: 25px;
-    -fx-text-fill: #111111;
+    -fx-font-size: 13px;
+    -fx-text-fill: #AAAAAA;
     -fx-alignment: CENTER_RIGHT;
     -fx-padding: 0 0 8 0;
 }
@@ -421,46 +491,4 @@
 }
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
-}
-/* khung ngoài */
-.nav-wrapper{
-    -fx-background-color:#f4f4f4;
-    -fx-border-color:black;
-    -fx-border-width:1;
-}
-
-/* tất cả button */
-.nav-wrapper .button{
-    -fx-background-color:transparent;
-    -fx-border-width:0;
-    -fx-font-size:30px;
-    -fx-font-family:"Montserrat";
-    -fx-alignment:center-left;
-    -fx-padding:0 0 0 35;
-    -fx-cursor:hand;
-}
-
-/* đường chia tab */
-.tab-mid{
-    -fx-border-color:black transparent transparent black;
-    -fx-border-width:0 0 0 1;
-}
-.tab-last{
-    -fx-border-color:black transparent transparent black;
-    -fx-border-width:0 0 0 1;
-}
-
-/* tab đầu */
-.tab-first{
-    -fx-background-radius:0 0 0 30;
-}
-
-/* tab cuối */
-.tab-last{
-    -fx-background-radius:0 0 30 0;
-}
-
-/* hover */
-.button:hover{
-    -fx-background-color:#ececec;
 }
