@@ -121,4 +121,5 @@ public class Auction extends Entity implements Subject {
     public void setStatus(AuctionStatus status) { this.status = status; }   // ← nhận enum
     public void setName(String name)            { item.setName(name); }
     public void setStartPrice(double price)     { item.setStartPrice(price); }
+    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
 }
