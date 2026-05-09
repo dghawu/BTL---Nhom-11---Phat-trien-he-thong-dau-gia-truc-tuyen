@@ -5,14 +5,17 @@
 
 <VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.AuctionRoomController">
 
-    <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
-        <HBox alignment="CENTER_LEFT" styleClass="nav-wrapper">
-            <Button onAction="#handleHome"         prefHeight="95" prefWidth="400" styleClass="tab-mid" stylesheets="@../css/style.css"   text="Home" />
-            <Button onAction="#handleAuctions"     prefHeight="95" prefWidth="400" styleClass="tab-first" stylesheets="@../css/style.css" text="Auctions" />
-            <Button onAction="#handleBidderCentre" prefHeight="95" prefWidth="400" styleClass="tab-mid" stylesheets="@../css/style.css"   text="Bidder centre" />
-            <Button onAction="#handleSettings"     prefHeight="95" prefWidth="400" styleClass="tab-last" stylesheets="@../css/style.css"  text="Settings" />
-        </HBox>
+    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
+        <Button text="Home"     styleClass="nav-tab"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleHome"/>
+        <Button text="Auctions" styleClass="nav-tab-active"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+        <Button text="Bidder Centre" styleClass="nav-tab"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleBidderCentre"/>
+        <Button text="Settings" styleClass="nav-tab"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
     </HBox>
+
 
     <!-- Back link -->
     <HBox style="-fx-padding: 8 16 0 16;">

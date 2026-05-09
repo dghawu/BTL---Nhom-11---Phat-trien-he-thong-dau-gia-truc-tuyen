@@ -13,7 +13,6 @@
 
     <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
         <Button text="Home" styleClass="nav-tab-active"
-                onAction="#handleHome"
                 maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
         <Button text="Admin centre" styleClass="nav-tab"
                 onAction="#handleAdminCentre"

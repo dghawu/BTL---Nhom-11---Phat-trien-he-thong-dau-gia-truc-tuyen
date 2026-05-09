@@ -10,7 +10,7 @@
         <Button text="Home"          styleClass="nav-tab"
                 maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleHome"/>
         <Button text="Admin centre"      styleClass="nav-tab-active"
-                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleAdminCentre"/>
+                maxWidth="Infinity"  HBox.hgrow="ALWAYS" />
         <Button text="User's report" styleClass="nav-tab"
                 maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleUserReport"/>
         <Button text="Settings"      styleClass="nav-tab"
