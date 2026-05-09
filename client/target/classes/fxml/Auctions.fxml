@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!-- Screen 7 / 9.1: Auctions - Danh sách phiên đấu giá (Seller hoặc Bidder xem) -->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controller.AuctionsController"
+      stylesheets="@../css/style.css"
+      prefWidth="1280" prefHeight="720"
+      style="-fx-background-color: #FFFFFF;">
+
+    <!-- Nav - controller set nav-tab-active dựa trên role -->
+    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
+        <Button text="Home" styleClass="nav-tab" onAction="#handleHome"/>
+        <Button text="Auctions" styleClass="nav-tab-active"/>
+        <!-- Middle tab injected by controller -->
+        <Button fx:id="middleTabBtn" text="Seller centre" styleClass="nav-tab" onAction="#handleMiddleTab"/>
+        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+    </HBox>
+
+    <!-- Category filter bar -->
+    <HBox style="-fx-padding: 0; -fx-border-color: transparent transparent #DDDDDD transparent;
+                 -fx-border-width: 0 0 1px 0; -fx-background-color: #FAFAFA;">
+        <Button fx:id="btnTatCa" text="Tất cả"
+                style="-fx-background-color: #F5E9A0; -fx-font-weight: bold;
+                       -fx-font-size: 15px; -fx-padding: 14 22 14 22;
+                       -fx-background-radius: 0; -fx-cursor: hand;"
+                onAction="#handleFilterTatCa"/>
+        <Button fx:id="btnDienTu" text="Đồ điện tử"
+                style="-fx-background-color: transparent; -fx-font-size: 15px;
+                       -fx-padding: 14 22 14 22; -fx-background-radius: 0;
+                       -fx-border-color: transparent transparent transparent #DDDDDD;
+                       -fx-border-width: 0 0 0 1px; -fx-cursor: hand;"
+                onAction="#handleFilterDienTu"/>
+        <Button fx:id="btnPhuongTien" text="Phương tiện"
+                style="-fx-background-color: transparent; -fx-font-size: 15px;
+                       -fx-padding: 14 22 14 22; -fx-background-radius: 0;
+                       -fx-border-color: transparent transparent transparent #DDDDDD;
+                       -fx-border-width: 0 0 0 1px; -fx-cursor: hand;"
+                onAction="#handleFilterPhuongTien"/>
+        <Button fx:id="btnThoiTrang" text="Thời trang"
+                style="-fx-background-color: transparent; -fx-font-size: 15px;
+                       -fx-padding: 14 22 14 22; -fx-background-radius: 0;
+                       -fx-border-color: transparent transparent transparent #DDDDDD;
+                       -fx-border-width: 0 0 0 1px; -fx-cursor: hand;"
+                onAction="#handleFilterThoiTrang"/>
+        <Button fx:id="btnNgheThuat" text="Nghệ thuật"
+                style="-fx-background-color: transparent; -fx-font-size: 15px;
+                       -fx-padding: 14 22 14 22; -fx-background-radius: 0;
+                       -fx-border-color: transparent transparent transparent #DDDDDD;
+                       -fx-border-width: 0 0 0 1px; -fx-cursor: hand;"
+                onAction="#handleFilterNgheThuat"/>
+        <Button fx:id="btnMucKhac" text="Mục khác"
+                style="-fx-background-color: transparent; -fx-font-size: 15px;
+                       -fx-padding: 14 22 14 22; -fx-background-radius: 0;
+                       -fx-border-color: transparent transparent transparent #DDDDDD;
+                       -fx-border-width: 0 0 0 1px; -fx-cursor: hand;"
+                onAction="#handleFilterMucKhac"/>
+    </HBox>
+
+    <!-- Auction card grid -->
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true"
+                style="-fx-background-color: #FFFFFF; -fx-padding: 0;">
+        <FlowPane fx:id="auctionGrid"
+                  hgap="24" vgap="24"
+                  style="-fx-padding: 24; -fx-background-color: #FFFFFF;"/>
+    </ScrollPane>
+
+</VBox>

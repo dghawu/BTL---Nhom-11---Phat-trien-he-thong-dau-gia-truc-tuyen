@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  Notification Popup - dùng chung cho tất cả thông báo:
+  - PHIÊN ĐẤU GIÁ ĐÃ KẾT THÚC!!!
+  - PHIÊN ĐẤU GIÁ CHƯA BẮT ĐẦU!!!
+  - BẠN PHẢI ĐĂNG NHẬP VỚI VAI TRÒ BIDDER...
+  - ĐỔI MẬT KHẨU THÀNH CÔNG!
+  - ĐỔI TÊN THÀNH CÔNG!
+  - THANH TOÁN THÀNH CÔNG!
+
+  Usage: Notificationcom.example.controller.show("PHIÊN ĐẤU GIÁ ĐÃ KẾT THÚC!!!");
+  Load bằng: Stage stage = new Stage(); stage.initModality(Modality.APPLICATION_MODAL);
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controller.NotificationController"
+      stylesheets="@../css/style.css"
+      prefWidth="400" prefHeight="200"
+      alignment="TOP_LEFT"
+      style="-fx-background-color: #FFFFFF;
+             -fx-border-color: #222222; -fx-border-width: 1.5px;
+             -fx-border-radius: 10px; -fx-background-radius: 10px;
+             -fx-padding: 0;
+             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0, 0, 4);">
+
+    <!-- Window chrome bar -->
+    <HBox alignment="CENTER_RIGHT"
+          style="-fx-padding: 8 12 6 12;
+                 -fx-border-color: transparent transparent #EEEEEE transparent;
+                 -fx-border-width: 0 0 1px 0;">
+        <Label text="_ □ ×"
+               style="-fx-font-size: 13px; -fx-text-fill: #AAAAAA; -fx-cursor: hand;"
+               onMouseClicked="#handleClose"/>
+    </HBox>
+
+    <!-- Body -->
+    <VBox VBox.vgrow="ALWAYS" style="-fx-padding: 20 24 24 24;" spacing="6">
+        <Label text="thông báo"
+               style="-fx-font-size: 13px; -fx-font-style: italic; -fx-text-fill: #666666;"/>
+        <Label fx:id="messageLabel"
+               text="THÔNG BÁO"
+               wrapText="true"
+               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #111111;"/>
+    </VBox>
+
+</VBox>

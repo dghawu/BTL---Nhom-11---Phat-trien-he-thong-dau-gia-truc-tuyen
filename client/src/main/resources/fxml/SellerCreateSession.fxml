@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!-- Screen 6.1.1: Seller Centre - Tạo phiên mới -->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controller.SellerCreateSessionController"
+      stylesheets="@../css/style.css"
+      prefWidth="1280" prefHeight="720"
+      style="-fx-background-color: #FFFFFF;">
+
+    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
+        <Button text="Home" styleClass="nav-tab" onAction="#handleHome"/>
+        <Button text="Auctions" styleClass="nav-tab" onAction="#handleAuctions"/>
+        <Button text="Seller centre" styleClass="nav-tab-active"/>
+        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+    </HBox>
+
+    <HBox VBox.vgrow="ALWAYS">
+
+        <!-- Sidebar -->
+        <VBox styleClass="sidebar" spacing="4">
+            <Label text="Quản lý sản phẩm" styleClass="sidebar-section-title"/>
+            <Button text="· Thêm sản phẩm" styleClass="sidebar-item"
+                    onAction="#handleThemSanPham"/>
+            <Button text="· Xem tất cả sản phẩm" styleClass="sidebar-item"
+                    onAction="#handleXemSanPham"/>
+            <Label text="Quản phiên đấu giá" styleClass="sidebar-section-title"/>
+            <Button text="· Tạo phiên mới" styleClass="sidebar-item-active"/>
+            <Button text="· Xem tất cả phiên" styleClass="sidebar-item"
+                    onAction="#handleXemPhien"/>
+            <Label text="Thống kê..." styleClass="sidebar-section-title"/>
+        </VBox>
+
+        <!-- Detail Panel: Tạo phiên mới -->
+        <VBox HBox.hgrow="ALWAYS" styleClass="detail-panel">
+            <Label text="Chi tiết" styleClass="detail-header" maxWidth="Infinity"/>
+            <Separator/>
+
+            <!-- Form + Image side by side -->
+            <HBox spacing="30" style="-fx-padding: 20 20 0 20;" HBox.hgrow="ALWAYS">
+
+                <!-- Form fields -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS">
+
+                    <!-- Chọn sản phẩm -->
+                    <ComboBox fx:id="sanPhamBox"
+                              promptText="Chọn sản phẩm"
+                              styleClass="text-field-rounded"
+                              maxWidth="Infinity"
+                              onAction="#handleSelectSanPham"/>
+
+                    <!-- Thời gian mở phiên -->
+                    <TextField fx:id="thoiGianMoField"
+                               promptText="Thời gian mở phiên"
+                               styleClass="text-field-rounded"
+                               maxWidth="Infinity"/>
+
+                    <!-- Thời gian đóng phiên -->
+                    <TextField fx:id="thoiGianDongField"
+                               promptText="Thời gian đóng phiên"
+                               styleClass="text-field-rounded"
+                               maxWidth="Infinity"/>
+
+                    <!-- Bước giá -->
+                    <TextField fx:id="buocGiaField"
+                               promptText="Bước giá"
+                               styleClass="text-field-rounded"
+                               maxWidth="Infinity"/>
+
+                    <!-- Giá khởi điểm + mô tả (auto-filled) -->
+                    <TextArea fx:id="moTaArea"
+                              promptText="Giá khởi điểm + Các mô tả&#10;&#10;Sau khi chọn sản phẩm&#10;-> Hệ thống tự điền các mổ tả còn lại vào đây"
+                              styleClass="text-area-rounded"
+                              maxWidth="Infinity"
+                              prefRowCount="5"
+                              wrapText="true"
+                              editable="false"/>
+
+                </VBox>
+
+                <!-- Image preview (auto-filled after product selected) -->
+                <Pane styleClass="image-placeholder"
+                      fx:id="imgPreviewPane"
+                      prefWidth="240" minWidth="200" prefHeight="240"/>
+
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <HBox alignment="CENTER_RIGHT" spacing="12"
+                  style="-fx-padding: 0 20 16 0;">
+                <Button text="EDIT" styleClass="btn-secondary" onAction="#handleEdit"/>
+                <Button text="SAVE" styleClass="btn-primary" onAction="#handleSave"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

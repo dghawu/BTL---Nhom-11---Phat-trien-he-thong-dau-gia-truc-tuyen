@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!-- Screen 2.2: Home - Seller -->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controller.HomeSellerController"
+      stylesheets="@../css/style.css"
+      prefWidth="1280" prefHeight="720"
+      style="-fx-background-color: #FFFFFF;">
+
+    <!-- Navigation Bar -->
+    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
+        <Button text="Home" styleClass="nav-tab-active" onAction="#handleHome"/>
+        <Button text="Auctions" styleClass="nav-tab" onAction="#handleAuctions"/>
+        <Button text="Seller centre" styleClass="nav-tab" onAction="#handleSellerCentre"/>
+        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+    </HBox>
+
+    <!-- Content -->
+    <VBox styleClass="content-area" VBox.vgrow="ALWAYS" spacing="0">
+
+        <Label fx:id="welcomeLabel"
+               text="CHÀO MỪNG Seller @tên_người_dùng&#10;ĐẾN VỚI ABCXYZ"
+               styleClass="welcome-title"
+               wrapText="true"
+               style="-fx-font-size: 32px; -fx-line-spacing: 4;"/>
+
+        <Region prefHeight="50"/>
+
+        <HBox spacing="30" alignment="CENTER_LEFT">
+
+            <VBox styleClass="home-card" spacing="8" onMouseClicked="#handleGoAuctions">
+                <Label text="_ □ ×" styleClass="window-dots"/>
+                <Label text="xem ngay" styleClass="home-card-subtitle"/>
+                <Label text="CÁC PHIÊN&#10;ĐẤU GIÁ"
+                       styleClass="home-card-title" wrapText="true"/>
+            </VBox>
+
+            <VBox styleClass="home-card" spacing="8" onMouseClicked="#handleGoSellerCentre">
+                <Label text="_ □ ×" styleClass="window-dots"/>
+                <Label text="quản lý" styleClass="home-card-subtitle"/>
+                <Label text="PHIÊN ĐẤU GIÁ,&#10;SẢN PHẨM"
+                       styleClass="home-card-title" wrapText="true"/>
+            </VBox>
+
+            <VBox styleClass="home-card" spacing="8" onMouseClicked="#handleGoSettings">
+                <Label text="_ □ ×" styleClass="window-dots"/>
+                <Label text="chỉnh sửa" styleClass="home-card-subtitle"/>
+                <Label text="THÔNG TIN&#10;TÀI KHOẢN"
+                       styleClass="home-card-title" wrapText="true"/>
+            </VBox>
+
+        </HBox>
+    </VBox>
+</VBox>

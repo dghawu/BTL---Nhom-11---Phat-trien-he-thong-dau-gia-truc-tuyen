@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!-- Screen 6.1.2: Seller Centre - Xem tất cả phiên (card grid) -->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.controller.SellerSessionListController"
+      stylesheets="@../css/style.css"
+      prefWidth="1280" prefHeight="720"
+      style="-fx-background-color: #FFFFFF;">
+
+    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
+        <Button text="Home" styleClass="nav-tab" onAction="#handleHome"/>
+        <Button text="Auctions" styleClass="nav-tab" onAction="#handleAuctions"/>
+        <Button text="Seller centre" styleClass="nav-tab-active"/>
+        <Button text="Settings" styleClass="nav-tab" onAction="#handleSettings"/>
+    </HBox>
+
+    <HBox VBox.vgrow="ALWAYS">
+
+        <!-- Sidebar -->
+        <VBox styleClass="sidebar" spacing="4">
+            <Label text="Quản lý sản phẩm" styleClass="sidebar-section-title"/>
+            <Button text="· Thêm sản phẩm" styleClass="sidebar-item"
+                    onAction="#handleThemSanPham"/>
+            <Button text="· Xem tất cả sản phẩm" styleClass="sidebar-item"
+                    onAction="#handleXemSanPham"/>
+            <Label text="Quản phiên đấu giá" styleClass="sidebar-section-title"/>
+            <Button text="· Tạo phiên mới" styleClass="sidebar-item"
+                    onAction="#handleTaoPhien"/>
+            <Button text="· Xem tất cả phiên" styleClass="sidebar-item-active"/>
+            <Label text="Thống kê..." styleClass="sidebar-section-title"/>
+        </VBox>
+
+        <!-- Detail Panel -->
+        <VBox HBox.hgrow="ALWAYS" styleClass="detail-panel">
+            <Label text="Chi tiết" styleClass="detail-header" maxWidth="Infinity"/>
+            <Separator/>
+
+            <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true"
+                        style="-fx-padding: 16;">
+                <!-- Session cards grid - populated dynamically -->
+                <FlowPane fx:id="sessionGrid"
+                          hgap="20" vgap="20"
+                          style="-fx-padding: 10;"/>
+            </ScrollPane>
+
+            <HBox alignment="CENTER_RIGHT" spacing="12"
+                  style="-fx-padding: 0 20 16 0;">
+                <Button text="EDIT" styleClass="btn-secondary" onAction="#handleEdit"/>
+                <Button text="SAVE" styleClass="btn-primary" onAction="#handleSave"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>
