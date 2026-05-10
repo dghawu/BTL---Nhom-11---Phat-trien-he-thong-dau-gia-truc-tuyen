@@ -1,56 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.BidderCentreController">
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.BidderCentreController">
 
-    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
-        <Button text="Home"          styleClass="nav-tab"
-                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleHome"/>
-        <Button text="Auctions"      styleClass="nav-tab"
-                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleAuctions"/>
-        <Button text="Bidder centre" styleClass="nav-tab-active"
-                maxWidth="Infinity"  HBox.hgrow="ALWAYS" />
-        <Button text="Settings"      styleClass="nav-tab"
-                maxWidth="Infinity"  HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
+    <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
+        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleAuctions" styleClass="nav-tab" text="Auctions" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Bidder centre" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS" />
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
 
         <!-- Sidebar -->
-        <VBox styleClass="sidebar" spacing="4" style="-fx-min-width: 200px; -fx-pref-width: 200px;">
-            <Button fx:id="btnGiaoDich" text="Quản lý giao dịch"
-                    styleClass="sidebar-item-active" onAction="#handleShowGiaoDich"/>
-            <Region prefHeight="8"/>
-            <Button fx:id="btnSanPhamDauGia" text="Sản phẩm đã đấu&#10;giá thành công."
-                    styleClass="sidebar-item" wrapText="true" prefWidth="175"
-                    onAction="#handleShowSanPhamDauGia"/>
+        <VBox spacing="4" style="-fx-min-width: 200px; -fx-pref-width: 200px;" styleClass="sidebar">
+            <Button fx:id="btnGiaoDich" onAction="#handleShowGiaoDich" styleClass="sidebar-item-active" text="Transaction management" />
+            <Region prefHeight="8" />
+            <Button fx:id="btnSanPhamDauGia" onAction="#handleShowSanPhamDauGia" prefWidth="175" styleClass="sidebar-item" text="The product has been successfully auctioned." wrapText="true" />
         </VBox>
 
         <!-- Content stack -->
-        <StackPane HBox.hgrow="ALWAYS" fx:id="contentStack">
+        <StackPane fx:id="contentStack" HBox.hgrow="ALWAYS">
 
             <!-- View 1: Giao dịch -->
-            <VBox fx:id="viewGiaoDich" style="-fx-padding: 20;" spacing="10">
-                <TableView fx:id="giaoDichTable" VBox.vgrow="ALWAYS" styleClass="table-view">
+            <VBox fx:id="viewGiaoDich" spacing="10" style="-fx-padding: 20;">
+                <TableView fx:id="giaoDichTable" styleClass="table-view" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colMa"        text="Mã"        prefWidth="80"/>
-                        <TableColumn fx:id="colPhien"     text="Phiên"     prefWidth="120"/>
-                        <TableColumn fx:id="colSanPham"   text="Sản phẩm"  prefWidth="160"/>
-                        <TableColumn fx:id="colTinhTrang" text="Tình trạng" prefWidth="260"/>
-                        <TableColumn fx:id="colThoiGian"  text="Thời gian"  prefWidth="120"/>
-                        <TableColumn fx:id="colBaoCao"    text="Báo cáo"   prefWidth="200"/>
+                        <TableColumn fx:id="colMa" prefWidth="80" text="Id" />
+                        <TableColumn fx:id="colPhien" prefWidth="120" text="Session" />
+                        <TableColumn fx:id="colSanPham" prefWidth="160" text="Product" />
+                        <TableColumn fx:id="colTinhTrang" prefWidth="260" text="Status" />
+                        <TableColumn fx:id="colThoiGian" prefWidth="120" text="Time" />
+                        <TableColumn fx:id="colBaoCao" prefWidth="200" text="Report" />
                     </columns>
                 </TableView>
             </VBox>
 
             <!-- View 2: Sản phẩm đã đấu giá thành công -->
-            <VBox fx:id="viewSanPham" visible="false" managed="false" style="-fx-padding: 20;">
-                <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true"
-                            style="-fx-background-color: transparent;">
-                    <FlowPane fx:id="wonProductGrid" hgap="20" vgap="20"
-                              style="-fx-padding: 4; -fx-background-color: transparent;"/>
+            <VBox fx:id="viewSanPham" managed="false" style="-fx-padding: 20;" visible="false">
+                <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                    <FlowPane fx:id="wonProductGrid" hgap="20" style="-fx-padding: 4; -fx-background-color: transparent;" vgap="20" />
                 </ScrollPane>
             </VBox>
 

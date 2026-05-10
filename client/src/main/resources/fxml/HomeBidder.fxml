@@ -6,24 +6,18 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.HomeBidderController">
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.HomeBidderController">
 
-    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
-        <Button text="Home"    styleClass="nav-tab-active"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-        <Button text="Auctions"   styleClass="nav-tab"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleAuctions"/>
-        <Button text="Bidder Centre"   styleClass="nav-tab"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleBidderCentre"/>
-        <Button text="Settings" styleClass="nav-tab"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
+    <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Home" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleAuctions" styleClass="nav-tab" text="Auctions" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleBidderCentre" styleClass="nav-tab" text="Bidder Centre" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS" />
     </HBox>
     <VBox spacing="0" styleClass="content-area" VBox.vgrow="ALWAYS">
 
-        <Label fx:id="welcomeLabel" style="-fx-font-size: 32px;" styleClass="welcome-title"
-               text="CHÀO MỪNG Bidder @tên_người_dùng&#10;ĐẾN VỚI ABCXYZ" wrapText="true">
+        <Label fx:id="welcomeLabel" prefHeight="94.0" prefWidth="855.0" style="-fx-font-size: 32px;" styleClass="welcome-title" text="WELCOME BIDDER @USER_NAME TO ABCXYZ" textAlignment="CENTER" wrapText="true">
             <VBox.margin><Insets left="40.0" right="20.0" top="40.0" /></VBox.margin>
         </Label>
 
@@ -31,23 +25,23 @@
 
         <HBox alignment="CENTER_LEFT" spacing="50">
 
-            <VBox spacing="8.0" styleClass="home-card" onMouseClicked="#handleGoAuctions">
+            <VBox onMouseClicked="#handleGoAuctions" spacing="8.0" styleClass="home-card">
                 <Label prefHeight="25.0" prefWidth="207.0" styleClass="window-dots" text="_ □ ×" />
-                <Label styleClass="home-card-subtitle" text="xem ngay" />
-                <Label styleClass="home-card-title" text="CÁC PHIÊN&#10;ĐẤU GIÁ" wrapText="true" />
+                <Label styleClass="home-card-subtitle" text="View now" />
+                <Label styleClass="home-card-title" text="Auction sessions" wrapText="true" />
                 <HBox.margin><Insets left="30.0" /></HBox.margin>
             </VBox>
 
-            <VBox spacing="8" styleClass="home-card" onMouseClicked="#handleGoBidderCentre">
+            <VBox onMouseClicked="#handleGoBidderCentre" spacing="8" styleClass="home-card">
                 <Label prefHeight="25.0" prefWidth="264.0" styleClass="window-dots" text="_ □ ×" />
-                <Label styleClass="home-card-subtitle" text="quản lý" />
-                <Label styleClass="home-card-title" text="CÁC GIAO DỊCH&#10;CỦA BẠN" wrapText="true" />
+                <Label styleClass="home-card-subtitle" text="Management" />
+                <Label styleClass="home-card-title" text="Your transactions" wrapText="true" />
             </VBox>
 
-            <VBox spacing="8" styleClass="home-card" onMouseClicked="#handleGoSettings">
+            <VBox onMouseClicked="#handleGoSettings" spacing="8" styleClass="home-card">
                 <Label prefHeight="25.0" prefWidth="286.0" styleClass="window-dots" text="_ □ ×" />
-                <Label styleClass="home-card-subtitle" text="chỉnh sửa" />
-                <Label styleClass="home-card-title" text="THÔNG TIN&#10;TÀI KHOẢN" wrapText="true" />
+                <Label styleClass="home-card-subtitle" text="Modification" />
+                <Label styleClass="home-card-title" text="Account information" wrapText="true" />
             </VBox>
 
         </HBox>

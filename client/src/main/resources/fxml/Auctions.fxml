@@ -1,46 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.AuctionsController">
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.AuctionsController">
 
-    <HBox styleClass="nav-bar" alignment="CENTER_LEFT">
-        <Button text="Home"     styleClass="nav-tab"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleHome"/>
-        <Button text="Auctions" styleClass="nav-tab-active"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
-        <Button fx:id="middleTabBtn" text="Seller centre" styleClass="nav-tab"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleMiddleTab"/>
-        <Button text="Settings" styleClass="nav-tab"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleSettings"/>
+    <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
+        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Auctions" HBox.hgrow="ALWAYS" />
+        <Button fx:id="middleTabBtn" maxWidth="Infinity" onAction="#handleMiddleTab" styleClass="nav-tab" text="Seller centre" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS" />
     </HBox>
 
     <!-- Category filter bar -->
-    <HBox style="-fx-padding: 0; -fx-border-color: transparent transparent #DDDDDD transparent;
-                 -fx-border-width: 0 0 1px 0; -fx-background-color: #FAFAFA;">
-        <Button fx:id="btnTatCa"      text="Tất cả"       onAction="#handleFilterTatCa"
-                style="-fx-background-color: #F5E9A0; -fx-font-weight: bold; -fx-font-size: 15px;
-                       -fx-padding: 14 22 14 22; -fx-background-radius: 0; -fx-cursor: hand;"/>
-        <Button fx:id="btnDienTu"     text="Đồ điện tử"   onAction="#handleFilterDienTu"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;
-                       -fx-background-radius: 0; -fx-cursor: hand;"/>
-        <Button fx:id="btnPhuongTien" text="Phương tiện"  onAction="#handleFilterPhuongTien"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;
-                       -fx-background-radius: 0; -fx-cursor: hand;"/>
-        <Button fx:id="btnThoiTrang"  text="Thời trang"   onAction="#handleFilterThoiTrang"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;
-                       -fx-background-radius: 0; -fx-cursor: hand;"/>
-        <Button fx:id="btnNgheThuat"  text="Nghệ thuật"   onAction="#handleFilterNgheThuat"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;
-                       -fx-background-radius: 0; -fx-cursor: hand;"/>
-        <Button fx:id="btnMucKhac"    text="Mục khác"     onAction="#handleFilterMucKhac"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;
-                       -fx-background-radius: 0; -fx-cursor: hand;"/>
+    <HBox style="-fx-padding: 0; -fx-border-color: transparent transparent #DDDDDD transparent;                  -fx-border-width: 0 0 1px 0; -fx-background-color: #FAFAFA;">
+        <Button fx:id="btnTatCa" onAction="#handleFilterTatCa" style="-fx-background-color: #F5E9A0; -fx-font-weight: bold; -fx-font-size: 15px;                        -fx-padding: 14 22 14 22; -fx-background-radius: 0; -fx-cursor: hand;" text="All" />
+        <Button fx:id="btnDienTu" onAction="#handleFilterDienTu" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Electronics" />
+        <Button fx:id="btnPhuongTien" onAction="#handleFilterPhuongTien" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Vehicles" />
+        <Button fx:id="btnThoiTrang" onAction="#handleFilterThoiTrang" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Fashion" />
+        <Button fx:id="btnNgheThuat" onAction="#handleFilterNgheThuat" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Art" />
+        <Button fx:id="btnMucKhac" onAction="#handleFilterMucKhac" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Others" />
     </HBox>
 
-    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-background-color: #FFFFFF; -fx-padding: 0;">
-        <FlowPane fx:id="auctionGrid" hgap="24" vgap="24" style="-fx-padding: 24; -fx-background-color: #FFFFFF;"/>
+    <ScrollPane fitToWidth="true" style="-fx-background-color: #FFFFFF; -fx-padding: 0;" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="auctionGrid" hgap="24" style="-fx-padding: 24; -fx-background-color: #FFFFFF;" vgap="24" />
     </ScrollPane>
 </VBox>

@@ -10,7 +10,7 @@
 
 <!-- Screen 1: Login -->
 
-<HBox prefHeight="640" prefWidth="1024" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="com.example.controller.LoginController">
+<HBox prefHeight="640" prefWidth="1024" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.LoginController">
 
     <!-- Left half: decorative / branding space -->
     <Region HBox.hgrow="ALWAYS" />
@@ -57,7 +57,7 @@
         <Region prefHeight="12" />
 
         <!-- Register button -->
-        <Button maxWidth="500" onAction="#handleGoRegister" prefWidth="500" styleClass="btn-primary" stylesheets="@../css/style.css" text="Creat new account" />
+        <Button maxWidth="500" onAction="#handleGoRegister" prefWidth="500" styleClass="btn-primary" stylesheets="@../css/style.css" text="Create new account" />
 
     </VBox>
 </HBox>
