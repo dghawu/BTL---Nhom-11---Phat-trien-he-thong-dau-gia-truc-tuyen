@@ -18,7 +18,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
 
     @FXML
     public void initialize() {
-        loadSessions();
+        Platform.runLater(() -> loadSessions()); // chạy sau khi navigateTo set xong
     }
 
     private void loadSessions() {

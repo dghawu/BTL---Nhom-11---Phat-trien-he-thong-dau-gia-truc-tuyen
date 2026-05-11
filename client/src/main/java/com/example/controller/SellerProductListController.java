@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.socket.ServerService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,7 +21,7 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
     @FXML
     public void initialize() {
-        javafx.application.Platform.runLater(() -> loadProducts());
+        Platform.runLater(() -> loadProducts()); // chạy sau khi navigateTo set xong
     }
 
     private void loadProducts() {

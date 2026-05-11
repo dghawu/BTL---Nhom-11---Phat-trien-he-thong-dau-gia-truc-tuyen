@@ -23,21 +23,15 @@ public abstract class BaseController {
     protected void navigateTo(String fxmlPath, Stage stage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load(); // initialize() chạy ở đây
 
-            // ✅ Dùng controller factory để set data TRƯỚC khi initialize() chạy
-            loader.setControllerFactory(controllerClass -> {
-                try {
-                    BaseController bc = (BaseController) controllerClass.getDeclaredConstructor().newInstance();
-                    bc.currentUsername = this.currentUsername;
-                    bc.currentRole     = this.currentRole;
-                    bc.currentUserId   = this.currentUserId;
-                    return bc;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            Object ctrl = loader.getController();
+            if (ctrl instanceof BaseController bc) {
+                bc.currentUsername = this.currentUsername;
+                bc.currentRole     = this.currentRole;
+                bc.currentUserId   = this.currentUserId;
+            }
 
-            Parent root = loader.load(); // initialize() chạy ở đây, lúc này đã có currentUserId rồi
             stage.setScene(new Scene(root));
             stage.show();
         } catch (Exception e) {
