@@ -29,20 +29,20 @@
             <VBox onMouseClicked="#handleGoAuctions" spacing="8.0" styleClass="home-card">
                 <Label prefHeight="25.0" prefWidth="207.0" styleClass="window-dots" text="_ □ ×" />
                 <Label styleClass="home-card-subtitle" text="View now" />
-                <Label styleClass="home-card-title" text="Auction sessions" wrapText="true" />
+                <Label styleClass="home-card-title" text="AUCTION SESSIONS" wrapText="true" />
                 <HBox.margin><Insets left="30.0" /></HBox.margin>
             </VBox>
 
             <VBox onMouseClicked="#handleGoSellerCentre" spacing="8" styleClass="home-card">
                 <Label prefHeight="25.0" prefWidth="264.0" styleClass="window-dots" text="_ □ ×" />
                 <Label styleClass="home-card-subtitle" text="Management" />
-                <Label styleClass="home-card-title" text="Auctions, Products" wrapText="true" />
+                <Label styleClass="home-card-title" text="AUCTION, PRODUCTS" wrapText="true" />
             </VBox>
 
             <VBox onMouseClicked="#handleGoSettings" spacing="8" styleClass="home-card">
                 <Label prefHeight="25.0" prefWidth="286.0" styleClass="window-dots" text="_ □ ×" />
                 <Label styleClass="home-card-subtitle" text="Modification" />
-                <Label styleClass="home-card-title" text="Account information" wrapText="true" />
+                <Label styleClass="home-card-title" text="ACCOUNT INFORMATION" wrapText="true" />
             </VBox>
 
         </HBox>
