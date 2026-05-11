@@ -1,9 +1,12 @@
 package com.example.controller;
 
+import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
+import model.item.Item;
+
 import java.io.File;
 
 /**
@@ -17,13 +20,6 @@ public class SellerCentreController extends com.example.controller.BaseControlle
     @FXML private TextField     moTaField;
     @FXML private TextField     giaField;
     @FXML private Pane          imagePane;
-
-    @FXML
-    public void initialize() {
-        phanLoaiBox.getItems().addAll(
-                "Đồ điện tử", "Phương tiện", "Thời trang", "Nghệ thuật", "Mục khác"
-        );
-    }
 
     // ------------------------------------------------------------------ //
     //  Nav
@@ -72,21 +68,33 @@ public class SellerCentreController extends com.example.controller.BaseControlle
 
     @FXML
     private void handleSave() {
-        String ten     = tenField.getText().trim();
+        String ten      = tenField.getText().trim();
         String phanLoai = phanLoaiBox.getValue();
-        String moTa    = moTaField.getText().trim();
-        String gia     = giaField.getText().trim();
+        String moTa     = moTaField.getText().trim();
+        String giaStr   = giaField.getText().trim();
 
-        if (ten.isEmpty() || phanLoai == null || gia.isEmpty()) {
+        if (ten.isEmpty() || phanLoai == null || giaStr.isEmpty()) {
             showNotification(getStage(tenField), "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!");
             return;
         }
 
-        // TODO: gửi sản phẩm lên server
-        // ServerService.addProduct(new Item(ten, phanLoai, moTa, Double.parseDouble(gia)));
+        double gia;
+        try {
+            gia = Double.parseDouble(giaStr.replace(",", "").replace(".", ""));
+        } catch (NumberFormatException e) {
+            showNotification(getStage(tenField), "GIÁ KHÔNG HỢP LỆ!");
+            return;
+        }
 
-        showNotification(getStage(tenField), "THÊM SẢN PHẨM THÀNH CÔNG!");
-        clearForm();
+        // Gọi vào ServerService
+        boolean ok = ServerService.addItem(currentUserId, ten, phanLoai, moTa, gia);
+
+        if (ok) {
+            showNotification(getStage(tenField), "THÊM SẢN PHẨM THÀNH CÔNG!");
+            clearForm();
+        } else {
+            showNotification(getStage(tenField), "THÊM SẢN PHẨM THẤT BẠI!");
+        }
     }
 
     private void clearForm() {

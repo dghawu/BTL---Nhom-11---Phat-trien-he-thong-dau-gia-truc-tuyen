@@ -10,9 +10,10 @@ public class HomeBidderController extends com.example.controller.BaseController 
 
     @FXML private Label welcomeLabel;
 
-    public void initData(String username, int userId) {
+    public void initData(String username, String userId) {
         currentUsername = username;
         currentRole = "BIDDER";
+        currentUserId = userId;
         welcomeLabel.setText("CHÀO MỪNG Bidder @" + username + "\nĐẾN VỚI ABCXYZ");
     }
 

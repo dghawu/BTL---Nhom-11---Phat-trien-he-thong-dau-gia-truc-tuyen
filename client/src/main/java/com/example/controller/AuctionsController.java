@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -31,7 +32,7 @@ public class AuctionsController extends com.example.controller.BaseController {
 
     @FXML
     public void initialize() {
-        loadAuctions("ALL");
+        Platform.runLater(() -> loadAuctions("ALL"));
     }
 
     /** Gọi sau navigateTo để cấu hình theo role */
@@ -87,18 +88,26 @@ public class AuctionsController extends com.example.controller.BaseController {
     // ------------------------------------------------------------------ //
     private void loadAuctions(String filter) {
         auctionGrid.getChildren().clear();
-        // TODO: List<AuctionSession> list = ServerService.getSessionsByCategory(filter);
-        // for (AuctionSession s : list) auctionGrid.getChildren().add(buildCard(s));
 
-        // Mock: 4 card mẫu
-        for (int i = 1; i <= 4; i++) {
-            auctionGrid.getChildren().add(buildMockCard(
-                    "Sản phẩm " + i, "10/5/2025", "1.000.000đ", "seller001", "Điện tử"
-            ));
+        org.json.JSONArray sessions = com.example.socket.ServerService.getAllSessions(filter);
+        if (sessions == null) return;
+
+        for (int i = 0; i < sessions.length(); i++) {
+            org.json.JSONObject s = sessions.getJSONObject(i);
+            auctionGrid.getChildren().add(buildCard(s));
         }
     }
 
-    private VBox buildMockCard(String ten, String thoiGianMo, String gia, String sellerId, String phanLoai) {
+    private VBox buildCard(org.json.JSONObject s) {
+        String id        = s.getString("id");
+        String ten       = s.getString("itemName");
+        String gia       = String.format("%,.0fđ", s.getDouble("startPrice"));
+        String giaHT     = String.format("%,.0fđ", s.getDouble("currentPrice"));
+        String sellerId  = s.getString("sellerId");
+        String category  = s.getString("category");
+        String endTime   = s.getString("endTime");
+        String status    = s.getString("status");
+
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
@@ -114,55 +123,48 @@ public class AuctionsController extends com.example.controller.BaseController {
         VBox info = new VBox(3);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
-                new Label("Tên sản phẩm: " + ten),
-                new Label("Thời gian mở phiên: " + thoiGianMo),
+                new Label("Tên: " + ten),
                 new Label("Giá khởi điểm: " + gia),
-                new Label("Id người bán: " + sellerId),
-                new Label("Phân loại: " + phanLoai),
-                new Label("Mô tả: _______________")
+                new Label("Giá hiện tại: " + giaHT),
+                new Label("Kết thúc: " + endTime),
+                new Label("Phân loại: " + category),
+                new Label("Trạng thái: " + status)
         );
 
         Hyperlink linkDetail = new Hyperlink("Xem chi tiết");
         linkDetail.setStyle("-fx-text-fill: #0044CC;");
-        linkDetail.setOnAction(e -> openDetailDialog(ten, gia, sellerId, phanLoai));
-
-        Hyperlink linkWatch = new Hyperlink("Add to Watch List");
-        linkWatch.setStyle("-fx-text-fill: #CC00CC;");
-        linkWatch.setOnAction(e -> handleAddToWatchList(ten));
-
-        info.getChildren().addAll(linkDetail, linkWatch);
+        linkDetail.setOnAction(e -> openDetailDialog(s));
+        info.getChildren().add(linkDetail);
 
         Button btnJoin = new Button("THAM GIA ĐẤU GIÁ");
         btnJoin.getStyleClass().add("btn-primary");
         btnJoin.setMaxWidth(Double.MAX_VALUE);
-        btnJoin.setOnAction(e -> handleJoinAuction(ten));
+        btnJoin.setOnAction(e -> handleJoinAuction(id, ten));
         VBox.setMargin(btnJoin, new javafx.geometry.Insets(8, 10, 10, 10));
 
         card.getChildren().addAll(title, img, info, btnJoin);
         return card;
     }
 
-    private void openDetailDialog(String ten, String gia, String sellerId, String phanLoai) {
+    private void openDetailDialog(org.json.JSONObject s) {
         try {
-            var url = getClass().getResource("/fxml/AuctionDetailDialog.fxml");
-            System.out.println("Dialog URL: " + url);
-
-            FXMLLoader loader = new FXMLLoader(url);
-            //FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionDetailDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionDetailDialog.fxml"));
             Parent root = loader.load();
-            com.example.controller.AuctionDetailDialogController ctrl = loader.getController();
-            ctrl.initData(ten, gia, sellerId, phanLoai);
+            AuctionDetailDialogController ctrl = loader.getController();
+            ctrl.initData(
+                    s.getString("id"),
+                    s.getString("itemName"),
+                    String.format("%,.0fđ", s.getDouble("currentPrice")),
+                    s.getString("sellerId"),
+                    s.getString("category")
+            );
             ctrl.setParentController(this);
-
             Stage dialog = new Stage();
-            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             dialog.initOwner(getStage(auctionGrid));
             dialog.setScene(new Scene(root));
-            dialog.setTitle("Chi tiết phiên đấu giá");
             dialog.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void handleAddToWatchList(String ten) {
@@ -170,12 +172,23 @@ public class AuctionsController extends com.example.controller.BaseController {
         showNotification(getStage(auctionGrid), "ĐÃ THÊM VÀO WATCH LIST!");
     }
 
-    public void handleJoinAuction(String sessionName) {
+    public void handleJoinAuction(String sessionId, String productName) {
         if (!"BIDDER".equalsIgnoreCase(currentRole)) {
             showNotification(getStage(auctionGrid),
                     "BẠN PHẢI ĐĂNG NHẬP VỚI VAI TRÒ BIDDER\nMỚI CÓ THỂ THAM GIA ĐẤU GIÁ");
             return;
         }
-        navigateTo("/fxml/AuctionRoom.fxml", getStage(auctionGrid));
+        // Truyền sessionId vào AuctionRoom
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionRoom.fxml"));
+            Parent root = loader.load();
+            AuctionRoomController ctrl = loader.getController();
+            // Truyền thông tin base
+            ctrl.currentUsername = this.currentUsername;
+            ctrl.currentUserId   = this.currentUserId;
+            ctrl.currentRole     = this.currentRole;
+            ctrl.initSession(sessionId, productName);
+            getStage(auctionGrid).setScene(new Scene(root));
+        } catch (Exception e) { e.printStackTrace(); }
     }
 }

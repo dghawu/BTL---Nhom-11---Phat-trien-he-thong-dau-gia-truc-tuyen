@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
@@ -17,11 +18,21 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     @FXML private TextArea   moTaArea;
     @FXML private Pane       imgPreviewPane;
 
+    private final java.util.Map<String, String> itemNameToId = new java.util.HashMap<>();
+
     @FXML
     public void initialize() {
-        // TODO: load sản phẩm của seller từ server
-        // sanPhamBox.setItems(FXCollections.observableList(ServerService.getMyProductNames()));
-        sanPhamBox.getItems().addAll("Sản phẩm A", "Sản phẩm B", "Sản phẩm C"); // mock
+        Platform.runLater(() -> {
+            org.json.JSONArray items = com.example.socket.ServerService.getMyItems(currentUserId);
+            if (items == null) return;
+            for (int i = 0; i < items.length(); i++) {
+                org.json.JSONObject item = items.getJSONObject(i);
+                String name = item.getString("name");
+                String id   = item.getString("id");
+                itemNameToId.put(name, id);
+                sanPhamBox.getItems().add(name);
+            }
+        });
     }
 
     /** Khi chọn sản phẩm → tự điền mô tả + ảnh */
@@ -29,10 +40,8 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     private void handleSelectSanPham() {
         String sp = sanPhamBox.getValue();
         if (sp == null) return;
-        // TODO: lấy thông tin đầy đủ từ server
-        // Item item = ServerService.getItemByName(sp);
-        // moTaArea.setText("Giá khởi điểm: " + item.getStartPrice() + "\nMô tả: " + item.getDescription());
-        moTaArea.setText("Giá khởi điểm: 1.000.000đ\nMô tả: Đây là mô tả sản phẩm " + sp);
+        // Điền mô tả nếu muốn — có thể để trống
+        moTaArea.setText("Sản phẩm: " + sp);
     }
 
     @FXML
@@ -42,16 +51,58 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
         buocGiaField.setEditable(true);
     }
 
+    private java.time.LocalDateTime parseTime(String input) {
+        try {
+            java.time.format.DateTimeFormatter fmt =
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            return java.time.LocalDateTime.parse(input.trim(), fmt);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     @FXML
     private void handleSave() {
-        if (sanPhamBox.getValue() == null || thoiGianMoField.getText().isEmpty()
-                || thoiGianDongField.getText().isEmpty() || buocGiaField.getText().isEmpty()) {
+        String selectedName = sanPhamBox.getValue();
+        String startStr     = thoiGianMoField.getText().trim();
+        String endStr       = thoiGianDongField.getText().trim();
+        String buocGiaStr   = buocGiaField.getText().trim();
+
+        if (selectedName == null || startStr.isEmpty() || endStr.isEmpty() || buocGiaStr.isEmpty()) {
             showNotification(getStage(buocGiaField), "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!");
             return;
         }
-        // TODO: ServerService.createSession(...)
-        showNotification(getStage(buocGiaField), "TẠO PHIÊN THÀNH CÔNG!");
-        navigateTo("/fxml/SellerSessionList.fxml", getStage(buocGiaField));
+
+        java.time.LocalDateTime startDT = parseTime(startStr);
+        java.time.LocalDateTime endDT   = parseTime(endStr);
+
+        if (startDT == null || endDT == null) {
+            showNotification(getStage(buocGiaField), "SAI ĐỊNH DẠNG THỜI GIAN!\nVD: 2025-05-15 20:00");
+            return;
+        }
+        if (endDT.isBefore(startDT)) {
+            showNotification(getStage(buocGiaField), "THỜI GIAN ĐÓNG PHẢI SAU THỜI GIAN MỞ!");
+            return;
+        }
+
+        String itemId = itemNameToId.get(selectedName);
+        double buocGia;
+        try {
+            buocGia = Double.parseDouble(buocGiaStr);
+        } catch (NumberFormatException e) {
+            showNotification(getStage(buocGiaField), "BƯỚC GIÁ KHÔNG HỢP LỆ!");
+            return;
+        }
+
+        boolean ok = com.example.socket.ServerService.createSession(
+                itemId, startDT.toString(), endDT.toString(), buocGia);
+
+        if (ok) {
+            showNotification(getStage(buocGiaField), "TẠO PHIÊN THÀNH CÔNG!");
+            navigateTo("/fxml/SellerSessionList.fxml", getStage(buocGiaField));
+        } else {
+            showNotification(getStage(buocGiaField), "TẠO PHIÊN THẤT BẠI!");
+        }
     }
 
     @FXML private void handleHome()        { goHome(getStage(buocGiaField)); }

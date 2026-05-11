@@ -13,6 +13,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
 <VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.SellerCentreController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
@@ -46,7 +48,17 @@
                 <TextField fx:id="tenField" maxWidth="Infinity" styleClass="text-field-underline" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                 <Label styleClass="detail-label" text="Category" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                <ComboBox fx:id="phanLoaiBox" maxWidth="Infinity" promptText="Select category" styleClass="combo-box-rounded" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <ComboBox fx:id="phanLoaiBox" maxWidth="Infinity" promptText="Select category" styleClass="combo-box-rounded" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="ELECTRONICS" />
+                            <String fx:value="VEHICLE" />
+                            <String fx:value="FASHION" />
+                            <String fx:value="ART" />
+                            <String fx:value="ETC" />
+                        </FXCollections>
+                    </items>
+                </ComboBox>
 
                 <Label styleClass="detail-label" text="Description" GridPane.columnIndex="0" GridPane.rowIndex="2" />
                 <TextField fx:id="moTaField" maxWidth="Infinity" styleClass="text-field-underline" GridPane.columnIndex="1" GridPane.rowIndex="2" />

@@ -27,7 +27,7 @@ public class ServerService {
         public String  message;
         public String  username;
         public String  role;      // "ADMIN" / "SELLER" / "BIDDER"
-        public int     userId;
+        public String  userId;
 
         public UserResult(boolean success, String message) {
             this.success = success;
@@ -53,7 +53,7 @@ public class ServerService {
         JSONObject res = new JSONObject(raw);
         if (res.getBoolean("success")) {
             UserResult r = new UserResult(true, "OK");
-            r.userId   = res.getInt("userId");
+            r.userId   = res.getString("userId");
             r.username = res.getString("username");
             r.role     = res.getString("role");
             return r;
@@ -125,7 +125,7 @@ public class ServerService {
      * Request:  {"action":"getMyItems","sellerId":1}
      * Response: {"success":true,"items":[{...},{...}]}
      */
-    public static org.json.JSONArray getMyItems(int sellerId) {
+    public static org.json.JSONArray getMyItems(String sellerId) {
         JSONObject req = new JSONObject();
         req.put("action",   "getMyItems");
         req.put("sellerId", sellerId);
@@ -140,7 +140,7 @@ public class ServerService {
      * Thêm sản phẩm mới.
      * Request:  {"action":"addItem","sellerId":1,"name":"...","category":"...","description":"...","startPrice":500000}
      */
-    public static boolean addItem(int sellerId, String name, String category,
+    public static boolean addItem(String sellerId, String name, String category,
                                   String description, double startPrice) {
         JSONObject req = new JSONObject();
         req.put("action",      "addItem");
@@ -161,6 +161,16 @@ public class ServerService {
      * Request:  {"action":"getAllSessions","category":"ALL"}
      * Response: {"success":true,"sessions":[{...}]}
      */
+    public static org.json.JSONArray getMySessions(String sellerId) {
+        JSONObject req = new JSONObject();
+        req.put("action",   "getMySessions");
+        req.put("sellerId", sellerId);
+
+        String raw = client.sendRequest(req.toString());
+        if (raw == null) return new org.json.JSONArray();
+        return new JSONObject(raw).optJSONArray("sessions");
+    }
+
     public static org.json.JSONArray getAllSessions(String category) {
         JSONObject req = new JSONObject();
         req.put("action",   "getAllSessions");
@@ -175,7 +185,7 @@ public class ServerService {
      * Tạo phiên đấu giá mới.
      * Request:  {"action":"createSession","itemId":1,"startTime":"...","endTime":"...","stepPrice":50000}
      */
-    public static boolean createSession(int itemId, String startTime,
+    public static boolean createSession(String itemId, String startTime,
                                         String endTime, double stepPrice) {
         JSONObject req = new JSONObject();
         req.put("action",    "createSession");
@@ -194,7 +204,7 @@ public class ServerService {
      * Đặt giá thủ công.
      * Request:  {"action":"placeBid","sessionId":1,"bidderId":2,"bidAmount":370000}
      */
-    public static boolean placeBid(int sessionId, int bidderId, double bidAmount) {
+    public static boolean placeBid(String sessionId, String bidderId, double bidAmount) {
         JSONObject req = new JSONObject();
         req.put("action",    "placeBid");
         req.put("sessionId", sessionId);
@@ -210,7 +220,7 @@ public class ServerService {
      * Cấu hình đấu giá tự động.
      * Request:  {"action":"setAutoBid","sessionId":1,"bidderId":2,"stepPrice":50000,"maxPrice":500000}
      */
-    public static boolean setAutoBid(int sessionId, int bidderId,
+    public static boolean setAutoBid(String sessionId, String bidderId,
                                      double stepPrice, double maxPrice) {
         JSONObject req = new JSONObject();
         req.put("action",    "setAutoBid");
@@ -229,7 +239,7 @@ public class ServerService {
      * Lấy danh sách giao dịch của bidder.
      * Request:  {"action":"getMyTransactions","bidderId":2}
      */
-    public static org.json.JSONArray getMyTransactions(int bidderId) {
+    public static org.json.JSONArray getMyTransactions(String bidderId) {
         JSONObject req = new JSONObject();
         req.put("action",   "getMyTransactions");
         req.put("bidderId", bidderId);
@@ -243,7 +253,7 @@ public class ServerService {
      * Thanh toán giao dịch.
      * Request:  {"action":"pay","transactionId":5}
      */
-    public static boolean pay(int transactionId) {
+    public static boolean pay(String transactionId) {
         JSONObject req = new JSONObject();
         req.put("action",        "pay");
         req.put("transactionId", transactionId);
@@ -264,7 +274,7 @@ public class ServerService {
     }
 
     /** Ban user. */
-    public static boolean banUser(int userId) {
+    public static boolean banUser(String userId) {
         JSONObject req = new JSONObject();
         req.put("action", "banUser");
         req.put("userId", userId);
@@ -274,7 +284,7 @@ public class ServerService {
     }
 
     /** Cấp quyền Admin. */
-    public static boolean makeAdmin(int userId) {
+    public static boolean makeAdmin(String userId) {
         JSONObject req = new JSONObject();
         req.put("action", "makeAdmin");
         req.put("userId", userId);

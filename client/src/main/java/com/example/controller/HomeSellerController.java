@@ -10,9 +10,10 @@ public class HomeSellerController extends com.example.controller.BaseController 
 
     @FXML private Label welcomeLabel;
 
-    public void initData(String username, int userId) {
+    public void initData(String username, String userId) {
         currentUsername = username;
         currentRole = "SELLER";
+        currentUserId = userId;
         welcomeLabel.setText("CHÀO MỪNG Seller @" + username + "\nĐẾN VỚI ABCXYZ");
     }
 

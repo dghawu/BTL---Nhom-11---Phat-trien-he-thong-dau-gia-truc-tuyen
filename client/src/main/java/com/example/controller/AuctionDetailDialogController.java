@@ -25,8 +25,10 @@ public class AuctionDetailDialogController extends com.example.controller.BaseCo
     @FXML private Pane  imgPane;
 
     private com.example.controller.AuctionsController parentController;
+    private String sessionId;
 
-    public void initData(String ten, String gia, String sellerId, String phanLoai) {
+    public void initData(String sessionId,String ten, String gia, String sellerId, String phanLoai) {
+        this.sessionId = sessionId;
         lblTenSP.setText(ten);
         lblGiaKhoiBan.setText(gia);
         lblIdNguoiBan.setText(sellerId);
@@ -44,7 +46,7 @@ public class AuctionDetailDialogController extends com.example.controller.BaseCo
     private void handleDauGia() {
         handleClose();
         if (parentController != null) {
-            parentController.handleJoinAuction(lblTenSP.getText());
+            parentController.handleJoinAuction(sessionId, lblTenSP.getText());
         }
     }
 

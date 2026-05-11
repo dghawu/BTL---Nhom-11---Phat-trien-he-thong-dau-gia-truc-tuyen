@@ -60,7 +60,26 @@ public class AuctionRoomController extends com.example.controller.BaseController
     public void initSession(String sessionId, String productName) {
         this.sessionId = sessionId;
         lblProductName.setText(productName.toUpperCase());
-        // TODO: load toàn bộ thông tin phiên từ server
+
+        // Load thông tin phiên từ server
+        Platform.runLater(() -> {
+            org.json.JSONArray sessions = com.example.socket.ServerService.getAllSessions("ALL");
+            if (sessions == null) return;
+            for (int i = 0; i < sessions.length(); i++) {
+                org.json.JSONObject s = sessions.getJSONObject(i);
+                if (s.getString("id").equals(sessionId)) {
+                    currentPrice = s.getDouble("currentPrice");
+                    lblGiaKhoiDiem.setText(String.format("%,.0f", s.getDouble("startPrice")));
+                    lblBuocGia.setText(String.format("%,.0f", s.getDouble("stepPrice")));
+                    lblGiaHienTai.setText(String.format("%,.0f", currentPrice));
+                    lblThoiGianBatDau.setText(s.getString("startTime"));
+                    lblThoiGianKetThuc.setText(s.getString("endTime"));
+                    String winner = s.getString("currentWinner");
+                    lblNguoiGiuGia.setText(winner.isEmpty() ? "Chưa có" : winner);
+                    break;
+                }
+            }
+        });
     }
 
     // ------------------------------------------------------------------ //
@@ -108,10 +127,10 @@ public class AuctionRoomController extends com.example.controller.BaseController
         manualBidField.setDisable(!manualEnabled);
     }
 
+
     @FXML
     private void handleManualBid() {
         if (!manualEnabled) return;
-
         String input = manualBidField.getText().trim();
         if (input.isEmpty()) return;
 
@@ -122,14 +141,19 @@ public class AuctionRoomController extends com.example.controller.BaseController
             showNotification(getStage(bidHistoryBox), "GIÁ KHÔNG HỢP LỆ!");
             return;
         }
-
         if (bid <= currentPrice) {
             showNotification(getStage(bidHistoryBox), "GIÁ ĐẶT PHẢI CAO HƠN GIÁ HIỆN TẠI!");
             return;
         }
 
-        // TODO: ServerService.placeBid(sessionId, currentUsername, bid);
-        manualBidField.clear();
+        boolean ok = com.example.socket.ServerService.placeBid(sessionId, currentUserId, bid);
+        if (ok) {
+            updateCurrentPrice(bid, currentUsername);
+            addBidEvent(currentUsername + " đặt giá " + String.format("%,.0f", bid) + "đ");
+            manualBidField.clear();
+        } else {
+            showNotification(getStage(bidHistoryBox), "ĐẶT GIÁ THẤT BẠI!");
+        }
     }
 
     // ------------------------------------------------------------------ //
@@ -152,17 +176,20 @@ public class AuctionRoomController extends com.example.controller.BaseController
     @FXML
     private void handleSaveAutoConfig() {
         if (!autoEnabled) return;
-
         String buocGia = autoBuocGiaField.getText().trim();
         String maxGia  = autoMaxGiaField.getText().trim();
-
         if (buocGia.isEmpty() || maxGia.isEmpty()) {
             showNotification(getStage(bidHistoryBox), "VUI LÒNG NHẬP ĐẦY ĐỦ!");
             return;
         }
 
-        // TODO: ServerService.setAutoBid(sessionId, currentUsername, Double.parseDouble(buocGia), Double.parseDouble(maxGia));
-        showNotification(getStage(bidHistoryBox), "ĐÃ BẬT ĐẤU GIÁ TỰ ĐỘNG!");
+        boolean ok = com.example.socket.ServerService.setAutoBid(
+                sessionId, currentUserId,
+                Double.parseDouble(buocGia),
+                Double.parseDouble(maxGia)
+        );
+        if (ok) showNotification(getStage(bidHistoryBox), "ĐÃ BẬT ĐẤU GIÁ TỰ ĐỘNG!");
+        else    showNotification(getStage(bidHistoryBox), "CÀI ĐẶT TỰ ĐỘNG THẤT BẠI!");
     }
 
     // ------------------------------------------------------------------ //

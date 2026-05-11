@@ -11,9 +11,10 @@ public class HomeAdminController extends com.example.controller.BaseController {
     @FXML private Label welcomeLabel;
 
     /** Gọi sau khi load để set tên user */
-    public void initData(String username, int userId) {
+    public void initData(String username, String userId) {
         currentUsername = username;
         currentRole = "ADMIN";
+        currentUserId = userId;
         welcomeLabel.setText("CHÀO MỪNG  Admin @" + username);
     }
 

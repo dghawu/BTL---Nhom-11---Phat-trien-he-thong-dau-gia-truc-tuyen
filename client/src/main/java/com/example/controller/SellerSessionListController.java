@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -22,18 +23,24 @@ public class SellerSessionListController extends com.example.controller.BaseCont
 
     private void loadSessions() {
         sessionGrid.getChildren().clear();
-        // TODO: List<AuctionSession> sessions = ServerService.getMySessions(currentUsername);
-        // for (AuctionSession s : sessions) sessionGrid.getChildren().add(buildCard(s));
 
-        // Mock cards
-        for (int i = 1; i <= 3; i++) {
-            sessionGrid.getChildren().add(buildMockCard(
-                    "Sản phẩm " + i, "10/5/2025 09:00", "PENDING", "1.000.000đ", "Điện tử"
-            ));
+        org.json.JSONArray sessions = com.example.socket.ServerService.getMySessions(currentUserId);
+        if (sessions == null) return;
+
+        for (int i = 0; i < sessions.length(); i++) {
+            org.json.JSONObject s = sessions.getJSONObject(i);
+            sessionGrid.getChildren().add(buildCard(s));
         }
     }
 
-    private VBox buildMockCard(String ten, String thoiGianMo, String trangThai, String gia, String phanLoai) {
+    private VBox buildCard(org.json.JSONObject s) {
+        String id       = s.getString("id");
+        String ten      = s.getString("itemName");
+        String startTime = s.getString("startTime");
+        String status   = s.getString("status");
+        String gia      = String.format("%,.0fđ", s.getDouble("startPrice"));
+        String category = s.getString("category");
+
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
@@ -50,32 +57,36 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
                 new Label("Tên sản phẩm: " + ten),
-                new Label("Thời gian mở phiên: " + thoiGianMo),
-                new Label("Trạng thái phiên: " + trangThai),
+                new Label("Thời gian mở: " + startTime),
+                new Label("Trạng thái: " + status),
                 new Label("Giá khởi điểm: " + gia),
-                new Label("Phân loại: " + phanLoai)
+                new Label("Phân loại: " + category)
         );
 
         Hyperlink link = new Hyperlink("Xem chi tiết");
         link.getStyleClass().add("link-text");
-        link.setOnAction(e -> openDetail(ten, thoiGianMo, trangThai, gia));
+        link.setOnAction(e -> openDetail(s));
         info.getChildren().add(link);
 
         card.getChildren().addAll(title, img, info);
         return card;
     }
 
-    private void openDetail(String ten, String thoiGianMo, String trangThai, String gia) {
+    private void openDetail(org.json.JSONObject s) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SellerSessionDetail.fxml"));
             Parent root = loader.load();
-            com.example.controller.SellerSessionDetailController ctrl = loader.getController();
+            SellerSessionDetailController ctrl = loader.getController();
             ctrl.currentUsername = currentUsername;
-            ctrl.currentRole = currentRole;
-            ctrl.initData(ten, thoiGianMo, trangThai, gia);
-            Stage stage = getStage(sessionGrid);
-            stage.setScene(new Scene(root));
-            stage.show();
+            ctrl.currentUserId   = currentUserId;
+            ctrl.currentRole     = currentRole;
+            ctrl.initData(
+                    s.getString("itemName"),
+                    s.getString("startTime"),
+                    s.getString("status"),
+                    String.format("%,.0fđ", s.getDouble("startPrice"))
+            );
+            getStage(sessionGrid).setScene(new Scene(root));
         } catch (Exception e) {
             e.printStackTrace();
         }

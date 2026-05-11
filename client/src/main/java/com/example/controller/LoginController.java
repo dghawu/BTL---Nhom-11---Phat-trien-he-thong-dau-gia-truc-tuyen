@@ -61,7 +61,7 @@ public class LoginController {
     //  Helpers
     // ------------------------------------------------------------------ //
 
-    private void navigateToHome(String role, String username, int userId) {
+    private void navigateToHome(String role, String username, String userId) {
         try {
             String fxml = switch (role.toUpperCase()) {
                 case "ADMIN"  -> "/fxml/HomeAdmin.fxml";

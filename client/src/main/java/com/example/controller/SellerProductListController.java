@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,17 +20,25 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
     @FXML
     public void initialize() {
-        loadProducts();
+        javafx.application.Platform.runLater(() -> loadProducts());
     }
 
     private void loadProducts() {
         productGrid.getChildren().clear();
-        // TODO: List<Item> items = ServerService.getMyProducts(currentUsername);
-        // for (Item item : items) productGrid.getChildren().add(buildCard(item));
 
-        // Mock: tạo 3 card mẫu để test UI
-        for (int i = 1; i <= 3; i++) {
-            productGrid.getChildren().add(buildMockCard("Sản phẩm " + i, "SP00" + i, "1.000.000đ", "PENDING"));
+        // ✅ Gọi thật thay vì mock
+        org.json.JSONArray items = ServerService.getMyItems(currentUserId);
+        if (items == null) return;
+
+        for (int i = 0; i < items.length(); i++) {
+            org.json.JSONObject item = items.getJSONObject(i);
+            String id       = item.getString("id");
+            String name     = item.getString("name");
+            String status   = item.getString("status");
+            double price    = item.getDouble("startPrice");
+            String priceStr = String.format("%,.0fđ", price);
+
+            productGrid.getChildren().add(buildMockCard(name, id, priceStr, status));
         }
     }
 

@@ -38,8 +38,13 @@
             <HBox spacing="30" style="-fx-padding: 20 20 0 20;" HBox.hgrow="ALWAYS">
                 <VBox spacing="12" HBox.hgrow="ALWAYS">
                     <ComboBox fx:id="sanPhamBox" maxWidth="Infinity" onAction="#handleSelectSanPham" promptText="Select product" styleClass="text-field-rounded" />
-                    <TextField fx:id="thoiGianMoField" maxWidth="Infinity" promptText="Thời gian mở phiên" styleClass="text-field-rounded" text="Opening time" />
-                    <TextField fx:id="thoiGianDongField" maxWidth="Infinity" promptText="Thời gian đóng phiên" styleClass="text-field-rounded" text="Closing time" />
+                    <TextField fx:id="thoiGianMoField" maxWidth="Infinity"
+                               promptText="VD: 2025-05-15 20:00"
+                               styleClass="text-field-rounded" />
+
+                    <TextField fx:id="thoiGianDongField" maxWidth="Infinity"
+                               promptText="VD: 2025-05-15 21:00"
+                               styleClass="text-field-rounded" />
                     <TextField fx:id="buocGiaField" maxWidth="Infinity" promptText="Bước giá" styleClass="text-field-rounded" text="bid increment" />
                     <TextArea fx:id="moTaArea" editable="false" maxWidth="Infinity" prefRowCount="5" promptText="Giá khởi điểm + Các mô tả&#10;&#10;Sau khi chọn sản phẩm&#10;-&gt; Hệ thống tự điền các mổ tả còn lại vào đây" styleClass="text-area-rounded" text="Starting price + descriptions&#10;After selecting a product, the system will automatically fill in the descriptions here." wrapText="true" />
                 </VBox>
