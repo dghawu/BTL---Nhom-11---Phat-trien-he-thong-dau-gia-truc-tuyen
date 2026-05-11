@@ -144,7 +144,11 @@ public class AuctionsController extends com.example.controller.BaseController {
 
     private void openDetailDialog(String ten, String gia, String sellerId, String phanLoai) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionDetailDialog.fxml"));
+            var url = getClass().getResource("/fxml/AuctionDetailDialog.fxml");
+            System.out.println("Dialog URL: " + url);
+
+            FXMLLoader loader = new FXMLLoader(url);
+            //FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionDetailDialog.fxml"));
             Parent root = loader.load();
             com.example.controller.AuctionDetailDialogController ctrl = loader.getController();
             ctrl.initData(ten, gia, sellerId, phanLoai);

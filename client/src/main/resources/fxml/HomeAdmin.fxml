@@ -30,7 +30,7 @@
                     <Label styleClass="window-dots" text="_ □ ×" />
                 </HBox>
                 <Label styleClass="home-card-subtitle" text="Management" />
-                <Label styleClass="home-card-title" text="Auctions | Products | Users&#10;" wrapText="true" />
+                <Label styleClass="home-card-title" text="AUCTIONS | PRODUCTS | USERS&#10;" wrapText="true" />
             </VBox>
 
             <VBox onMouseClicked="#handleUserReport" prefHeight="160" prefWidth="300" spacing="8" styleClass="home-card">
@@ -38,7 +38,7 @@
                     <Label styleClass="window-dots" text="_ □ ×" />
                 </HBox>
                 <Label styleClass="home-card-subtitle" text="Resolving" />
-                <Label styleClass="home-card-title" text="User issues" wrapText="true" />
+                <Label styleClass="home-card-title" text="USER ISSUES" wrapText="true" />
             </VBox>
 
             <VBox onMouseClicked="#handleSettings" prefHeight="160" prefWidth="300" spacing="8" styleClass="home-card">
@@ -46,7 +46,7 @@
                     <Label styleClass="window-dots" text="_ □ ×" />
                 </HBox>
                 <Label styleClass="home-card-subtitle" text="Modification" />
-                <Label styleClass="home-card-title" text="Account information&#10;" wrapText="true" />
+                <Label styleClass="home-card-title" text="ACCOUNT INFORMATION&#10;" wrapText="true" />
             </VBox>
 
         </HBox>

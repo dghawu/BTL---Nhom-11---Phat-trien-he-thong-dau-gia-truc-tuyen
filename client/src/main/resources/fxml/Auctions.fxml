@@ -16,13 +16,31 @@
     </HBox>
 
     <!-- Category filter bar -->
-    <HBox style="-fx-padding: 0; -fx-border-color: transparent transparent #DDDDDD transparent;                  -fx-border-width: 0 0 1px 0; -fx-background-color: #FAFAFA;">
-        <Button fx:id="btnTatCa" onAction="#handleFilterTatCa" style="-fx-background-color: #F5E9A0; -fx-font-weight: bold; -fx-font-size: 15px;                        -fx-padding: 14 22 14 22; -fx-background-radius: 0; -fx-cursor: hand;" text="All" />
-        <Button fx:id="btnDienTu" onAction="#handleFilterDienTu" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Electronics" />
-        <Button fx:id="btnPhuongTien" onAction="#handleFilterPhuongTien" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Vehicles" />
-        <Button fx:id="btnThoiTrang" onAction="#handleFilterThoiTrang" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Fashion" />
-        <Button fx:id="btnNgheThuat" onAction="#handleFilterNgheThuat" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Art" />
-        <Button fx:id="btnMucKhac" onAction="#handleFilterMucKhac" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Others" />
+    <HBox style="-fx-padding: 0; -fx-border-color: transparent transparent #DDDDDD transparent;
+                      -fx-border-width: 0 0 1px 0; -fx-background-color: #FAFAFA;">
+        <Button fx:id="btnTatCa" onAction="#handleFilterTatCa"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                style="-fx-background-color: #F5E9A0;
+                -fx-font-weight: bold; -fx-font-size: 15px;
+                -fx-padding: 14 22 14 22; -fx-background-radius: 0;
+                -fx-cursor: hand;" text="All" />
+        <Button fx:id="btnDienTu" onAction="#handleFilterDienTu"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                style="-fx-background-color: transparent;
+                -fx-font-size: 15px; -fx-padding: 14 22 14 22;
+                -fx-background-radius: 0; -fx-cursor: hand;" text="Electronics" />
+        <Button fx:id="btnPhuongTien" onAction="#handleFilterPhuongTien"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Vehicles" />
+        <Button fx:id="btnThoiTrang" onAction="#handleFilterThoiTrang"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Fashion" />
+        <Button fx:id="btnNgheThuat" onAction="#handleFilterNgheThuat"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Art" />
+        <Button fx:id="btnMucKhac" onAction="#handleFilterMucKhac"
+                maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Others" />
     </HBox>
 
     <ScrollPane fitToWidth="true" style="-fx-background-color: #FFFFFF; -fx-padding: 0;" VBox.vgrow="ALWAYS">
