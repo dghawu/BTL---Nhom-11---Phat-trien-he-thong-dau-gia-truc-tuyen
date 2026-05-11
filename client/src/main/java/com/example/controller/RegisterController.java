@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +24,9 @@ public class RegisterController {
     @FXML private Label         errorLabel;
 
     private boolean waitingForRole = false;
+    private String savedName;
+    private String savedEmail;
+    private String savedPassword;
 
     @FXML
     public void initialize() {
@@ -37,8 +41,8 @@ public class RegisterController {
     private void handleSubmit() {
         if (!waitingForRole) {
             // --- Bước 1: validate form ---
-            String name     = nameField.getText().trim();
-            String email    = emailField.getText().trim();
+            String name    = nameField.getText().trim();
+            String email   = emailField.getText().trim();
             String password = passwordField.getText();
             String confirm  = confirmPasswordField.getText();
 
@@ -50,6 +54,11 @@ public class RegisterController {
                 showError("Mật khẩu xác nhận không khớp.");
                 return;
             }
+
+            // Lưu lại để dùng ở bước 2
+            savedName     = name;
+            savedEmail    = email;
+            savedPassword = password;
 
             // Hiện ComboBox chọn role
             roleLabelVisibility.setVisible(true);
@@ -67,15 +76,20 @@ public class RegisterController {
                 return;
             }
 
-            // TODO: gọi server đăng ký tài khoản
-            // ServerService.register(name, email, password, role);
-
-            // Sau khi đăng ký thành công → về Login
-            com.example.controller.NotificationController.show(
-                    (Stage) nameField.getScene().getWindow(),
-                    "ĐĂNG KÝ THÀNH CÔNG!"
+            // Gọi server đăng ký
+            ServerService.UserResult result = ServerService.register(
+                    savedName, savedEmail, savedPassword, role.toUpperCase()
             );
-            handleGoLogin();
+
+            if (result.success) {
+                com.example.controller.NotificationController.show(
+                        (Stage) nameField.getScene().getWindow(),
+                        "ĐĂNG KÝ THÀNH CÔNG!"
+                );
+                handleGoLogin();
+            } else {
+                showError(result.message.isEmpty() ? "Đăng ký thất bại." : result.message);
+            }
         }
     }
 

@@ -4,21 +4,22 @@ import dao.UserDAO;
 import dao.ItemDAO;
 import dao.AuctionDAO;
 import dao.BidTransactionDAO;
+import model.user.User;
+import model.item.Item;
+import model.auction.Auction;
+import model.auction.BidTransaction;
+import model.enums.AuctionStatus;
 import org.json.JSONObject;
 import org.json.JSONArray;
 
 import java.io.*;
 import java.net.Socket;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 /**
- * ClientHandler - chạy trong thread riêng, xử lý tất cả request từ 1 client.
- *
- * Mỗi request là 1 dòng JSON, mỗi response cũng là 1 dòng JSON.
- * Format request bắt buộc phải có field "action" để biết làm gì.
- *
- * Ví dụ:
- *   Request:  {"action":"login","username":"abc","password":"123"}
- *   Response: {"success":true,"userId":1,"username":"abc","role":"SELLER"}
+ * ClientHandler v2 - kết nối DAO thật.
  */
 public class ClientHandler implements Runnable {
 
@@ -54,210 +55,339 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    //  Router - phân phối đến đúng handler
+    // ------------------------------------------------------------------ //
+    //  Router
+    // ------------------------------------------------------------------ //
     private String handleRequest(String jsonStr) {
         try {
             JSONObject req = new JSONObject(jsonStr);
             String action = req.getString("action");
-
             return switch (action) {
-                // Auth
-                case "login"          -> handleLogin(req);
-                case "register"       -> handleRegister(req);
-                case "changeUsername" -> handleChangeUsername(req);
-                case "changePassword" -> handleChangePassword(req);
-
-                // Items
-                case "getMyItems"     -> handleGetMyItems(req);
-                case "addItem"        -> handleAddItem(req);
-                case "getAllItems"     -> handleGetAllItems(req);
-
-                // Sessions
-                case "getAllSessions"  -> handleGetAllSessions(req);
-                case "createSession"  -> handleCreateSession(req);
-                case "getMySessions"  -> handleGetMySessions(req);
-
-                // Bidding
-                case "placeBid"       -> handlePlaceBid(req);
-                case "setAutoBid"     -> handleSetAutoBid(req);
-
-                // Transactions
+                case "login"             -> handleLogin(req);
+                case "register"          -> handleRegister(req);
+                case "changeUsername"    -> handleChangeUsername(req);
+                case "changePassword"    -> handleChangePassword(req);
+                case "getMyItems"        -> handleGetMyItems(req);
+                case "addItem"           -> handleAddItem(req);
+                case "getAllItems"        -> handleGetAllItems(req);
+                case "getAllSessions"     -> handleGetAllSessions(req);
+                case "createSession"     -> handleCreateSession(req);
+                case "getMySessions"     -> handleGetMySessions(req);
+                case "placeBid"          -> handlePlaceBid(req);
+                case "setAutoBid"        -> handleSetAutoBid(req);
                 case "getMyTransactions" -> handleGetMyTransactions(req);
                 case "pay"               -> handlePay(req);
-
-                // Admin
-                case "getAllUsers"    -> handleGetAllUsers(req);
-                case "banUser"        -> handleBanUser(req);
-                case "makeAdmin"      -> handleMakeAdmin(req);
-
-                default -> error("Action không hợp lệ: " + action);
+                case "getAllUsers"        -> handleGetAllUsers(req);
+                case "banUser"           -> handleBanUser(req);
+                case "makeAdmin"         -> handleMakeAdmin(req);
+                default -> fail("Action không hợp lệ: " + action);
             };
-
         } catch (Exception e) {
-            System.err.println("[Server] Lỗi xử lý request: " + e.getMessage());
-            return error("Lỗi server: " + e.getMessage());
+            System.err.println("[Server] Lỗi: " + e.getMessage());
+            return fail("Lỗi server: " + e.getMessage());
         }
     }
 
-    //  AUTH handlers
+    // ================================================================== //
+    //  AUTH
+    // ================================================================== //
+
     private String handleLogin(JSONObject req) {
         String username = req.getString("username");
         String password = req.getString("password");
 
-        // TODO: gọi userDAO.findByCredentials(username, password)
-        // Thay đoạn mock dưới bằng:
-        // model.User user = userDAO.findByCredentials(username, password);
-        // if (user == null) return fail("Sai tên đăng nhập hoặc mật khẩu.");
-        // JSONObject res = new JSONObject();
-        // res.put("success",  true);
-        // res.put("userId",   user.getId());
-        // res.put("username", user.getUsername());
-        // res.put("role",     user.getRole());
-        // return res.toString();
+        User user = userDAO.findByName(username);
+        if (user == null)
+            return fail("Tên đăng nhập không tồn tại.");
+        if (!user.getPassword().equals(password))
+            return fail("Sai mật khẩu.");
 
-        // --- Mock tạm để test UI ---
-        if (username.startsWith("admin")) {
-            return success().put("userId", 1).put("username", username).put("role", "ADMIN").toString();
-        } else if (username.startsWith("seller")) {
-            return success().put("userId", 2).put("username", username).put("role", "SELLER").toString();
-        } else if (username.startsWith("bidder")) {
-            return success().put("userId", 3).put("username", username).put("role", "BIDDER").toString();
-        } else {
-            return fail("Sai tên đăng nhập hoặc mật khẩu.");
-        }
+        return success()
+                .put("userId",   user.getId())
+                .put("username", user.getName())
+                .put("role",     user.getRole())
+                .toString();
     }
 
     private String handleRegister(JSONObject req) {
         String name     = req.getString("name");
-        String email    = req.getString("email");
         String password = req.getString("password");
-        String role     = req.getString("role");
+        String role     = req.getString("role").toUpperCase();
 
-        // TODO: userDAO.register(name, email, password, role)
-        // boolean ok = userDAO.register(new model.User(name, email, password, role));
-        // return ok ? success().toString() : fail("Email đã tồn tại.");
+        if (userDAO.findByName(name) != null)
+            return fail("Tên đăng nhập đã tồn tại.");
 
-        return success().toString(); // mock
+        User newUser = switch (role) {
+            case "SELLER" -> new model.user.Seller(UUID.randomUUID().toString(), name, password);
+            default       -> new model.user.Bidder(UUID.randomUUID().toString(), name, password);
+        };
+
+        userDAO.save(newUser);
+        return success().put("message", "Đăng ký thành công!").toString();
     }
 
     private String handleChangeUsername(JSONObject req) {
-        int    userId      = req.getInt("userId");
+        String userId      = req.getString("userId");
         String newUsername = req.getString("newUsername");
         String password    = req.getString("password");
 
-        // TODO: userDAO.changeUsername(userId, newUsername, password)
+        User user = userDAO.findById(userId);
+        if (user == null) return fail("Không tìm thấy user.");
+        if (!user.getPassword().equals(password)) return fail("Sai mật khẩu.");
+        if (userDAO.findByName(newUsername) != null) return fail("Tên đã tồn tại.");
+
+        userDAO.updateName(userId, newUsername);
         return success().toString();
     }
 
     private String handleChangePassword(JSONObject req) {
-        int    userId      = req.getInt("userId");
+        String userId      = req.getString("userId");
         String oldPassword = req.getString("oldPassword");
         String newPassword = req.getString("newPassword");
 
-        // TODO: userDAO.changePassword(userId, oldPassword, newPassword)
+        User user = userDAO.findById(userId);
+        if (user == null) return fail("Không tìm thấy user.");
+        if (!user.getPassword().equals(oldPassword)) return fail("Sai mật khẩu cũ.");
+
+        userDAO.updatePassword(userId, newPassword);
         return success().toString();
     }
 
-    //  ITEMS handlers
+    // ================================================================== //
+    //  ITEMS
+    // ================================================================== //
+
     private String handleGetMyItems(JSONObject req) {
-        int sellerId = req.getInt("sellerId");
-        // TODO: List<Item> items = itemDAO.findBySeller(sellerId);
-        // JSONArray arr = new JSONArray(items.stream().map(this::itemToJson).toList());
-        // return success().put("items", arr).toString();
-        return success().put("items", new JSONArray()).toString(); // mock
+        String sellerId = req.getString("sellerId");
+        List<Item> items = itemDAO.findBySellerId(sellerId);
+        JSONArray arr = new JSONArray();
+        for (Item item : items) {
+            arr.put(new JSONObject()
+                    .put("id",          item.getId())
+                    .put("name",        item.getName())
+                    .put("description", item.getDescription())
+                    .put("startPrice",  item.getStartPrice())
+                    .put("status",      item.getStatus().name())
+                    .put("type",        item.getClass().getSimpleName())
+                    .put("sellerId",    item.getSellerId())
+            );
+        }
+        return success().put("items", arr).toString();
     }
 
     private String handleAddItem(JSONObject req) {
-        // TODO: itemDAO.insert(new Item(...))
-        return success().toString();
+        String sellerId    = req.getString("sellerId");
+        String name        = req.getString("name");
+        String category    = req.getString("category");
+        String description = req.getString("description");
+        double startPrice  = req.getDouble("startPrice");
+
+        try {
+            Item.ItemType type = Item.ItemType.valueOf(
+                    category.toUpperCase().replace(" ", "_").replace("Đ", "D")
+            );
+            Item newItem = type.create(
+                    sellerId, name,
+                    UUID.randomUUID().toString(),
+                    description, startPrice,
+                    Item.ItemStatus.PENDING
+            );
+            itemDAO.save(newItem);
+            return success().toString();
+        } catch (Exception e) {
+            return fail("Không tạo được sản phẩm: " + e.getMessage());
+        }
     }
 
     private String handleGetAllItems(JSONObject req) {
-        // TODO: itemDAO.findAll()
-        return success().put("items", new JSONArray()).toString();
+        List<Item> items = itemDAO.findAll();
+        JSONArray arr = new JSONArray();
+        for (Item item : items) {
+            arr.put(new JSONObject()
+                    .put("id",         item.getId())
+                    .put("name",       item.getName())
+                    .put("startPrice", item.getStartPrice())
+                    .put("status",     item.getStatus().name())
+                    .put("sellerId",   item.getSellerId())
+            );
+        }
+        return success().put("items", arr).toString();
     }
 
-    //  SESSIONS handlers
+    // ================================================================== //
+    //  SESSIONS
+    // ================================================================== //
+
     private String handleGetAllSessions(JSONObject req) {
         String category = req.optString("category", "ALL");
-        // TODO: auctionDAO.findByCategory(category)
-        return success().put("sessions", new JSONArray()).toString();
-    }
-
-    private String handleCreateSession(JSONObject req) {
-        // TODO: auctionDAO.createSession(...)
-        return success().toString();
+        List<Auction> auctions = auctionDAO.findAll();
+        JSONArray arr = new JSONArray();
+        for (Auction a : auctions) {
+            // Lọc theo category nếu không phải ALL
+            if (!"ALL".equals(category)) {
+                String itemType = a.getItem().getClass().getSimpleName().toUpperCase();
+                if (!itemType.contains(category.replace("_", ""))) continue;
+            }
+            arr.put(auctionToJson(a));
+        }
+        return success().put("sessions", arr).toString();
     }
 
     private String handleGetMySessions(JSONObject req) {
-        int sellerId = req.getInt("sellerId");
-        // TODO: auctionDAO.findBySeller(sellerId)
-        return success().put("sessions", new JSONArray()).toString();
+        String sellerId = req.getString("sellerId");
+        List<Auction> auctions = auctionDAO.findAll();
+        JSONArray arr = new JSONArray();
+        for (Auction a : auctions) {
+            if (sellerId.equals(a.getItem().getSellerId())) {
+                arr.put(auctionToJson(a));
+            }
+        }
+        return success().put("sessions", arr).toString();
     }
 
-    //  BIDDING handlers
+    private String handleCreateSession(JSONObject req) {
+        String itemId    = req.getString("itemId");
+        String startTime = req.getString("startTime");
+        String endTime   = req.getString("endTime");
+        double stepPrice = req.getDouble("stepPrice");
+
+        Item item = itemDAO.findById(itemId);
+        if (item == null) return fail("Không tìm thấy sản phẩm.");
+
+        Auction auction = new Auction(
+                UUID.randomUUID().toString(),
+                item,
+                item.getStartPrice(),
+                stepPrice,
+                LocalDateTime.parse(startTime),
+                LocalDateTime.parse(endTime)
+        );
+        auctionDAO.save(auction);
+        return success().toString();
+    }
+
+    // ================================================================== //
+    //  BIDDING
+    // ================================================================== //
+
     private String handlePlaceBid(JSONObject req) {
-        int    sessionId = req.getInt("sessionId");
-        int    bidderId  = req.getInt("bidderId");
+        String sessionId = req.getString("sessionId");
+        String bidderId  = req.getString("bidderId");
         double bidAmount = req.getDouble("bidAmount");
 
-        // TODO: gọi AuctionService.placeBid(sessionId, bidderId, bidAmount)
-        // AuctionService đã có sẵn trong server của bạn!
-        return success().toString();
+        Auction auction = auctionDAO.findById(sessionId);
+        if (auction == null) return fail("Không tìm thấy phiên.");
+        if (bidAmount <= auction.getCurrentPrice())
+            return fail("Giá đặt phải cao hơn giá hiện tại.");
+
+        // Lưu bid transaction
+        BidTransaction bid = new BidTransaction(bidderId, sessionId, bidAmount);
+        bidDAO.save(bid);
+
+        // Cập nhật giá hiện tại
+        User bidder = userDAO.findById(bidderId);
+        String winnerName = bidder != null ? bidder.getName() : bidderId;
+        auctionDAO.updateBid(sessionId, bidAmount, winnerName);
+
+        return success()
+                .put("currentPrice", bidAmount)
+                .put("currentWinner", winnerName)
+                .toString();
     }
 
     private String handleSetAutoBid(JSONObject req) {
-        // TODO: AuctionService.setAutoBid(...)
+        // TODO: tích hợp với AuctionService.setAutoBid() của server
+        // AuctionService đã có sẵn trong project
         return success().toString();
     }
 
-    //  TRANSACTIONS handlers
+    // ================================================================== //
+    //  TRANSACTIONS
+    // ================================================================== //
+
     private String handleGetMyTransactions(JSONObject req) {
-        int bidderId = req.getInt("bidderId");
-        // TODO: bidDAO.findByBidder(bidderId)
-        return success().put("transactions", new JSONArray()).toString();
+        String bidderId = req.getString("bidderId");
+        List<BidTransaction> txList = bidDAO.findByBidderId(bidderId);
+        JSONArray arr = new JSONArray();
+        for (BidTransaction tx : txList) {
+            Auction auction = auctionDAO.findById(tx.getAuctionId());
+            arr.put(new JSONObject()
+                    .put("id",         tx.getId())
+                    .put("auctionId",  tx.getAuctionId())
+                    .put("itemName",   auction != null ? auction.getItem().getName() : "")
+                    .put("amount",     tx.getAmount())
+                    .put("timestamp",  tx.getTimestamp().toString())
+                    .put("status",     auction != null ? auction.getStatus().name() : "")
+            );
+        }
+        return success().put("transactions", arr).toString();
     }
 
     private String handlePay(JSONObject req) {
-        int transactionId = req.getInt("transactionId");
-        // TODO: bidDAO.markAsPaid(transactionId)
+        String transactionId = req.getString("transactionId");
+        // Cập nhật trạng thái auction liên quan
+        // TODO: thêm bảng payments nếu cần theo dõi chi tiết
         return success().toString();
     }
 
+    // ================================================================== //
+    //  ADMIN
+    // ================================================================== //
 
-    //  ADMIN handlers
     private String handleGetAllUsers(JSONObject req) {
-        // TODO: userDAO.findAll()
-        return success().put("users", new JSONArray()).toString();
+        List<User> users = userDAO.findAll();
+        JSONArray arr = new JSONArray();
+        for (User u : users) {
+            arr.put(new JSONObject()
+                    .put("id",   u.getId())
+                    .put("name", u.getName())
+                    .put("role", u.getRole())
+            );
+        }
+        return success().put("users", arr).toString();
     }
 
     private String handleBanUser(JSONObject req) {
-        int userId = req.getInt("userId");
-        // TODO: userDAO.banUser(userId)
+        String userId = req.getString("userId");
+        userDAO.delete(userId);
         return success().toString();
     }
 
     private String handleMakeAdmin(JSONObject req) {
-        int userId = req.getInt("userId");
-        // TODO: userDAO.setRole(userId, "ADMIN")
+        String userId = req.getString("userId");
+        userDAO.updateRole(userId, "ADMIN");
         return success().toString();
     }
 
+    // ================================================================== //
     //  Helpers
-    /** Tạo JSONObject success base */
+    // ================================================================== //
+
+    private JSONObject auctionToJson(Auction a) {
+        return new JSONObject()
+                .put("id",          a.getAuctionId())
+                .put("itemId",      a.getItem().getId())
+                .put("itemName",    a.getItem().getName())
+                .put("description", a.getItem().getDescription())
+                .put("sellerId",    a.getItem().getSellerId())
+                .put("startPrice",  a.getStartPrice())
+                .put("currentPrice", a.getCurrentPrice())
+                .put("stepPrice",   a.getMinIncrement())
+                .put("startTime",   a.getStartTime().toString())
+                .put("endTime",     a.getEndTime().toString())
+                .put("status",      a.getStatus().name())
+                .put("category",    a.getItem().getClass().getSimpleName())
+                .put("currentWinner", a.getCurrentWinner() != null ? a.getCurrentWinner() : "");
+    }
+
     private JSONObject success() {
         return new JSONObject().put("success", true);
     }
 
-    /** Trả về JSON lỗi có message */
     private String fail(String message) {
         return new JSONObject()
                 .put("success", false)
                 .put("message", message)
                 .toString();
-    }
-
-    private String error(String message) {
-        return fail(message);
     }
 }
