@@ -41,7 +41,7 @@ public class AdminCentreController extends com.example.controller.BaseController
     // ------------------------------------------------------------------ //
     @FXML private void handleHome()         { goHome(getStage(dataTable)); }
     @FXML private void handleAdminCentre()  { /* đã ở đây */ }
-    @FXML private void handleUserReport()   { /* TODO: User report */ }
+    @FXML private void handleUserReport()   { /* chưa làm */}
     @FXML private void handleSettings()     { goSettings(getStage(dataTable)); }
 
     // ------------------------------------------------------------------ //

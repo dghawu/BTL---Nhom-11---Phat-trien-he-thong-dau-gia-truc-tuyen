@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * ClientHandler v2 - kết nối DAO thật.
+ * ClientHandler - kết nối DAO.
  */
 public class ClientHandler implements Runnable {
 
