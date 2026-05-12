@@ -21,18 +21,19 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     private final java.util.Map<String, String> itemNameToId = new java.util.HashMap<>();
 
     @FXML
-    public void initialize() {
-        Platform.runLater(() -> {
-            org.json.JSONArray items = com.example.socket.ServerService.getMyItems(currentUserId);
-            if (items == null) return;
-            for (int i = 0; i < items.length(); i++) {
-                org.json.JSONObject item = items.getJSONObject(i);
-                String name = item.getString("name");
-                String id   = item.getString("id");
-                itemNameToId.put(name, id);
-                sanPhamBox.getItems().add(name);
-            }
-        });
+    public void initialize() { }
+
+    @Override
+    protected void onReady() {
+        org.json.JSONArray items = com.example.socket.ServerService.getMyItems(currentUserId);
+        if (items == null) return;
+        for (int i = 0; i < items.length(); i++) {
+            org.json.JSONObject item = items.getJSONObject(i);
+            String name = item.getString("name");
+            String id   = item.getString("id");
+            itemNameToId.put(name, id);
+            sanPhamBox.getItems().add(name);
+        }
     }
 
     /** Khi chọn sản phẩm → tự điền mô tả + ảnh */

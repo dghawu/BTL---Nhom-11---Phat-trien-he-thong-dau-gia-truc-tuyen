@@ -23,21 +23,23 @@ public abstract class BaseController {
     protected void navigateTo(String fxmlPath, Stage stage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent root = loader.load(); // initialize() chạy ở đây
-
+            //Set controller TRƯỚC khi load
+            Parent root = loader.load();
             Object ctrl = loader.getController();
             if (ctrl instanceof BaseController bc) {
                 bc.currentUsername = this.currentUsername;
                 bc.currentRole     = this.currentRole;
                 bc.currentUserId   = this.currentUserId;
+                //Gọi onReady() sau khi set xong
+                bc.onReady();
             }
-
             stage.setScene(new Scene(root));
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    protected void onReady() {}
 
     protected Stage getStage(javafx.scene.Node node) {
         return (Stage) node.getScene().getWindow();

@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import java.io.*;
 import java.net.Socket;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -254,13 +255,14 @@ public class ClientHandler implements Runnable {
         Item item = itemDAO.findById(itemId);
         if (item == null) return fail("Không tìm thấy sản phẩm.");
 
+        java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         Auction auction = new Auction(
                 UUID.randomUUID().toString(),
                 item,
                 item.getStartPrice(),
                 stepPrice,
-                LocalDateTime.parse(startTime),
-                LocalDateTime.parse(endTime)
+                LocalDateTime.parse(startTime, fmt),
+                LocalDateTime.parse(endTime,   fmt)
         );
         auctionDAO.save(auction);
         return success().toString();

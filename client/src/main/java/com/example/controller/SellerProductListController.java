@@ -20,14 +20,17 @@ public class SellerProductListController extends com.example.controller.BaseCont
     @FXML private FlowPane productGrid;
 
     @FXML
-    public void initialize() {
-        Platform.runLater(() -> loadProducts()); // chạy sau khi navigateTo set xong
+    public void initialize() { }
+
+    @Override
+    public void onReady() {
+        loadProducts();
     }
 
     private void loadProducts() {
         productGrid.getChildren().clear();
 
-        // ✅ Gọi thật thay vì mock
+        //Gọi thật thay vì mock
         org.json.JSONArray items = ServerService.getMyItems(currentUserId);
         if (items == null) return;
 

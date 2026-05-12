@@ -149,10 +149,9 @@ public class AuctionDAO {
                 item,
                 rs.getDouble("start_price"),
                 rs.getDouble("min_increment"),
-                LocalDateTime.parse(rs.getString("start_time")),
-                LocalDateTime.parse(rs.getString("end_time"))
+                rs.getTimestamp("start_time").toLocalDateTime(),
+                rs.getTimestamp("end_time").toLocalDateTime()
         );
-        // ← AuctionStatus.valueOf() chuyển "PENDING" → AuctionStatus.PENDING
         auction.setStatus(AuctionStatus.valueOf(rs.getString("status")));
         return auction;
     }

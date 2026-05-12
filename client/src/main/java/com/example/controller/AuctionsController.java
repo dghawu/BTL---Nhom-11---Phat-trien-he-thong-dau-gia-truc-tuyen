@@ -31,8 +31,10 @@ public class AuctionsController extends com.example.controller.BaseController {
     private String activeFilter = "ALL";
 
     @FXML
-    public void initialize() {
-        Platform.runLater(() -> loadAuctions("ALL"));
+    public void initialize() { }
+    @Override
+    public void onReady() {
+        loadAuctions("ALL");
     }
 
     /** Gọi sau navigateTo để cấu hình theo role */
