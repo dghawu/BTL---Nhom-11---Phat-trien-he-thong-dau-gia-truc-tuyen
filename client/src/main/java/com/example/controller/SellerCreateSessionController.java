@@ -25,7 +25,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
     @Override
     protected void onReady() {
-        org.json.JSONArray items = com.example.socket.ServerService.getMyItems(currentUserId);
+        org.json.JSONArray items = com.example.socket.ServerService.getMyItems();
         if (items == null) return;
         for (int i = 0; i < items.length(); i++) {
             org.json.JSONObject item = items.getJSONObject(i);

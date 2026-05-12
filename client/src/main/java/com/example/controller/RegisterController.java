@@ -78,7 +78,7 @@ public class RegisterController {
 
             // Gọi server đăng ký
             ServerService.UserResult result = ServerService.register(
-                    savedName, savedEmail, savedPassword, role.toUpperCase()
+                    savedName, savedEmail, role.toUpperCase()
             );
 
             if (result.success) {

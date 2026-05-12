@@ -53,7 +53,7 @@ public class SettingsController extends BaseController {
         }
 
         ServerService.UserResult result =
-                ServerService.changeUsername(currentUserId, newName, pass);
+                ServerService.changeUsername(newName, pass);
 
         if (result.success) {
             currentUsername = newName;
@@ -85,7 +85,7 @@ public class SettingsController extends BaseController {
         }
 
         ServerService.UserResult result =
-                ServerService.changePassword(currentUserId, oldPass, newPass);
+                ServerService.changePassword(oldPass, newPass);
 
         if (result.success) {
             oldPasswordField.clear();
@@ -101,6 +101,7 @@ public class SettingsController extends BaseController {
     // ------------------------------------------------------------------ //
     @FXML
     private void handleLogout() {
+        ServerService.clearToken();  // ✅ Thêm dòng này
         com.example.socket.SocketClient.getInstance().disconnect();
         currentUsername = null;
         currentRole     = null;

@@ -87,7 +87,7 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         }
 
         // Gọi vào ServerService
-        boolean ok = ServerService.addItem(currentUserId, ten, phanLoai, moTa, gia);
+        boolean ok = ServerService.addItem(ten, phanLoai, moTa, gia);
 
         if (ok) {
             showNotification(getStage(tenField), "THÊM SẢN PHẨM THÀNH CÔNG!");

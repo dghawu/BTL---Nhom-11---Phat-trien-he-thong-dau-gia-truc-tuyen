@@ -146,7 +146,7 @@ public class AuctionRoomController extends com.example.controller.BaseController
             return;
         }
 
-        boolean ok = com.example.socket.ServerService.placeBid(sessionId, currentUserId, bid);
+        boolean ok = com.example.socket.ServerService.placeBid(sessionId, bid);
         if (ok) {
             updateCurrentPrice(bid, currentUsername);
             addBidEvent(currentUsername + " đặt giá " + String.format("%,.0f", bid) + "đ");
@@ -184,7 +184,7 @@ public class AuctionRoomController extends com.example.controller.BaseController
         }
 
         boolean ok = com.example.socket.ServerService.setAutoBid(
-                sessionId, currentUserId,
+                sessionId,
                 Double.parseDouble(buocGia),
                 Double.parseDouble(maxGia)
         );

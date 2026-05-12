@@ -4,6 +4,7 @@ import model.user.Admin;
 import model.user.Bidder;
 import model.user.Seller;
 import model.user.User;
+import util.PasswordUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,13 +24,13 @@ public class UserDAO {
     // ── INSERT ─────────────────────────────────────────────────────
 
     public void save(User user) {
-        // Sửa: INSERT IGNORE thay vì INSERT OR IGNORE (MySQL syntax)
         String sql = "INSERT IGNORE INTO users (id, name, password, role, created_at) " +
                 "VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user.getId());
             ps.setString(2, user.getName());
-            ps.setString(3, user.getPassword());
+            // Luôn hash mật khẩu trước khi lưu — không bao giờ lưu plain-text
+            ps.setString(3, PasswordUtil.hash(user.getPassword()));
             ps.setString(4, user.getRole());
             ps.setString(5, user.getCreatedAt().toString());
             ps.executeUpdate();
@@ -37,6 +38,28 @@ public class UserDAO {
         } catch (SQLException e) {
             System.out.println("[UserDAO] Lỗi save: " + e.getMessage());
         }
+    }
+
+    /**
+     * Tìm user theo tên VÀ xác thực mật khẩu — dùng cho handleLogin.
+     * Trả về null nếu sai tên hoặc sai mật khẩu.
+     */
+    public User findByCredentials(String name, String rawPassword) {
+        String sql = "SELECT * FROM users WHERE name = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String hashInDB = rs.getString("password");
+                // Dùng BCrypt verify — không so sánh string trực tiếp
+                if (PasswordUtil.verify(rawPassword, hashInDB)) {
+                    return mapToUser(rs);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("[UserDAO] Lỗi findByCredentials: " + e.getMessage());
+        }
+        return null; // sai tên hoặc sai mật khẩu
     }
 
     // ── SELECT ─────────────────────────────────────────────────────
@@ -95,7 +118,8 @@ public class UserDAO {
     public void updatePassword(String userId, String newPassword) {
         String sql = "UPDATE users SET password = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, newPassword);
+            // Hash mật khẩu mới trước khi cập nhật
+            ps.setString(1, PasswordUtil.hash(newPassword));
             ps.setString(2, userId);
             ps.executeUpdate();
             System.out.println("[UserDAO] Đổi mật khẩu: " + userId);

@@ -31,7 +31,7 @@ public class SellerProductListController extends com.example.controller.BaseCont
         productGrid.getChildren().clear();
 
         //Gọi thật thay vì mock
-        org.json.JSONArray items = ServerService.getMyItems(currentUserId);
+        org.json.JSONArray items = ServerService.getMyItems();
         if (items == null) return;
 
         for (int i = 0; i < items.length(); i++) {

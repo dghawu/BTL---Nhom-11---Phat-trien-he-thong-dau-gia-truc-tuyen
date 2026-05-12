@@ -28,7 +28,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
     private void loadSessions() {
         sessionGrid.getChildren().clear();
 
-        org.json.JSONArray sessions = com.example.socket.ServerService.getMySessions(currentUserId);
+        org.json.JSONArray sessions = com.example.socket.ServerService.getMySessions();
         if (sessions == null) return;
 
         for (int i = 0; i < sessions.length(); i++) {
