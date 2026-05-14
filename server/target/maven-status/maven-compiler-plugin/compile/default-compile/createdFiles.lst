@@ -1,8 +1,8 @@
 model\user\Bidder.class
 dao\ItemDAO.class
 dao\BidTransactionDAO.class
-socket\ClientHandler.class
 model\item\Item.class
+com\example\server\SocketServer.class
 model\item\Electronics.class
 service\UserService.class
 observer\Subject.class
@@ -12,6 +12,7 @@ exception\AuctionClosedException.class
 Main.class
 model\item\ETC.class
 observer\BidHistoryLogger.class
+auth\AuthResult.class
 model\item\Fashion.class
 dao\UserDAO.class
 observer\SocketBroadcaster.class
@@ -21,14 +22,18 @@ service\AuctionService.class
 com\example\main\ServerMain.class
 exception\UserNotFoundException.class
 model\item\Item$ItemType.class
+model\enums\AuctionStatus.class
 model\user\Seller.class
 model\auction\BidTransaction.class
-socket\SocketServer.class
+auth\TokenGuard.class
 model\entity\Entity.class
 service\AuctionManager.class
+com\example\server\ClientHandler.class
 dao\AuctionDAO.class
 dao\DatabaseConnection.class
 model\item\Art.class
+auth\JwtUtil.class
+util\PasswordUtil.class
 model\item\Vehicle.class
 exception\InvalidBidException.class
 model\item\Item$ItemStatus.class
