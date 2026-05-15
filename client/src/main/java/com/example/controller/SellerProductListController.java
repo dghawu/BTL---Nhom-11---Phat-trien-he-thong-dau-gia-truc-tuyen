@@ -38,15 +38,17 @@ public class SellerProductListController extends com.example.controller.BaseCont
             org.json.JSONObject item = items.getJSONObject(i);
             String id       = item.getString("id");
             String name     = item.getString("name");
+            String category     = item.optString("type", "N/A");
+            String description  = item.optString("description", "");
             String status   = item.getString("status");
             double price    = item.getDouble("startPrice");
             String priceStr = String.format("%,.0fđ", price);
 
-            productGrid.getChildren().add(buildMockCard(name, id, priceStr, status));
+            productGrid.getChildren().add(buildMockCard(name, id, priceStr, status, category, description));
         }
     }
 
-    private VBox buildMockCard(String ten, String id, String gia, String tinhTrang) {
+    private VBox buildMockCard(String ten, String id, String gia, String tinhTrang, String category, String description ) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
@@ -71,21 +73,21 @@ public class SellerProductListController extends com.example.controller.BaseCont
         Hyperlink link = new Hyperlink("Xem chi tiết");
         link.getStyleClass().add("link-text");
         link.setStyle("-fx-text-fill: #0044CC;");
-        link.setOnAction(e -> openDetail(ten, id, gia, tinhTrang));
+        link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang));
         info.getChildren().add(link);
 
         card.getChildren().addAll(title, img, info);
         return card;
     }
 
-    private void openDetail(String ten, String id, String gia, String tinhTrang) {
+    private void openDetail(String id, String ten, String category, String gia, String moTa, String tinhTrang) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SellerProductDetail.fxml"));
             Parent root = loader.load();
             com.example.controller.SellerProductDetailController ctrl = loader.getController();
             ctrl.currentUsername = currentUsername;
             ctrl.currentRole = currentRole;
-            ctrl.initData(ten, id, gia, tinhTrang);
+            ctrl.initData(id, ten, category, gia, moTa, tinhTrang);
             Stage stage = getStage(productGrid);
             stage.setScene(new Scene(root));
             stage.show();

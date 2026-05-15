@@ -136,6 +136,21 @@ public class ServerService {
 
         return send(req).getBoolean("success");
     }
+    public static boolean updateItem(String itemId, String name, String description,
+                                     String price, String status) {
+        JSONObject req = req("updateItem");
+        req.put("itemId",      itemId);
+        req.put("name",        name);
+        req.put("description", description);
+        try {
+            req.put("startPrice", Double.parseDouble(price.replace(",", "").replace("đ", "").trim()));
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        req.put("status",      status);
+
+        return send(req).getBoolean("success");
+    }
 
     // ================================================================== //
     //  SESSIONS
@@ -230,3 +245,4 @@ public class ServerService {
         return send(req).getBoolean("success");
     }
 }
+
