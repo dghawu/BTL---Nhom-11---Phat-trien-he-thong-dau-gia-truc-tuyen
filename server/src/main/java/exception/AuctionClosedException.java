@@ -1,10 +1,23 @@
 package exception;
 
-public class AuctionClosedException  extends  RuntimeException{
+import model.enums.AuctionStatus;
+
+/**
+ * Ném khi cố thao tác (đặt giá, sửa...) trên phiên không ở trạng thái RUNNING.
+ */
+public class AuctionClosedException extends AuctionSystemException {
+
     private final String auctionId;
-    public AuctionClosedException(String auctionId, String status) {
-        super("Phiên đấu giá '" + auctionId + "' không thể đặt giá (trạng thái: " + status + ")");
-        this.auctionId = auctionId;
+    private final AuctionStatus currentStatus;
+
+    public AuctionClosedException(String auctionId, AuctionStatus currentStatus) {
+        super("AUCTION_CLOSED",
+                "Phiên '" + auctionId + "' không thể thao tác — trạng thái hiện tại: "
+                        + currentStatus.name());
+        this.auctionId     = auctionId;
+        this.currentStatus = currentStatus;
     }
-    public String getAuctionId() {return auctionId;}
+
+    public String getAuctionId()             { return auctionId; }
+    public AuctionStatus getCurrentStatus()  { return currentStatus; }
 }

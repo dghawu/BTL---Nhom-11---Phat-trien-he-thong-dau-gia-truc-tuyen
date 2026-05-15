@@ -1,8 +1,7 @@
 package model.auction;
 
+import exception.*;
 import model.enums.AuctionStatus;
-import exception.AuctionClosedException;
-import exception.InvalidBidException;
 import model.entity.Entity;
 import model.item.Item;
 import observer.AuctionObserver;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Auction extends Entity implements Subject {
+
     private String auctionId;
     private Item item;
     private double startPrice;
@@ -22,13 +22,15 @@ public class Auction extends Entity implements Subject {
     private String currentWinner;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private AuctionStatus status; // ← đổi từ String sang enum
+    private AuctionStatus status;
     private List<BidTransaction> bidHistory;
     private List<AuctionObserver> observers;
 
     public Auction(String id, Item item, double startPrice, double minIncrement,
                    LocalDateTime startTime, LocalDateTime endTime) {
         super(id);
+        if (startPrice <= 0)   throw new InvalidItemPriceException("startPrice",   startPrice);
+        if (minIncrement <= 0) throw new InvalidItemPriceException("minIncrement", minIncrement);
         this.auctionId    = id;
         this.item         = item;
         this.startPrice   = startPrice;
@@ -36,7 +38,7 @@ public class Auction extends Entity implements Subject {
         this.minIncrement = minIncrement;
         this.startTime    = startTime;
         this.endTime      = endTime;
-        this.status       = AuctionStatus.PENDING; // ← enum thay vì "PENDING"
+        this.status       = AuctionStatus.PENDING;
         this.bidHistory   = new ArrayList<>();
         this.observers    = new ArrayList<>();
     }
@@ -50,14 +52,18 @@ public class Auction extends Entity implements Subject {
         System.out.println("Kết thúc    : " + endTime);
     }
 
+    /** Đặt giá — kiểm tra đầy đủ trạng thái, thời gian, và mức giá */
     public synchronized void handleNewBid(BidTransaction bid) {
-        // ← so sánh bằng == thay vì .equals()
         if (status != AuctionStatus.RUNNING) {
-            throw new AuctionClosedException(auctionId, status.name());
+            throw new AuctionClosedException(auctionId, status);
         }
         if (LocalDateTime.now().isAfter(endTime)) {
             closeAuction();
-            throw new AuctionClosedException(auctionId, AuctionStatus.FINISHED.name());
+            throw new AuctionClosedException(auctionId, AuctionStatus.FINISHED);
+        }
+        // Chặn tự đặt giá khi đang thắng
+        if (bid.getBidderId().equals(currentWinner)) {
+            throw new SelfBidException(bid.getBidderId(), auctionId);
         }
         double requiredPrice = currentPrice + minIncrement;
         if (bid.getAmount() < requiredPrice) {
@@ -76,14 +82,14 @@ public class Auction extends Entity implements Subject {
         System.out.println("Đặt giá thành công! Giá hiện tại: " + currentPrice);
     }
 
+    /** Bắt đầu phiên — yêu cầu status == APPROVED */
     public void startAuction() {
-        if (status == AuctionStatus.APPROVED) {
-            this.status = AuctionStatus.RUNNING;
-            System.out.println("Phiên " + auctionId + " bắt đầu!");
-            AuctionTimer.getInstance().schedule(this);
-        } else {
-            throw new AuctionClosedException(auctionId, status.name());
+        if (status != AuctionStatus.APPROVED) {
+            throw new AuctionNotApprovedException(auctionId);
         }
+        this.status = AuctionStatus.RUNNING;
+        System.out.println("Phiên " + auctionId + " bắt đầu!");
+        AuctionTimer.getInstance().schedule(this);
     }
 
     public void closeAuction() {
@@ -98,28 +104,25 @@ public class Auction extends Entity implements Subject {
     }
 
     // Observer
-    @Override
-    public void addObserver(AuctionObserver o)    { observers.add(o); }
-    @Override
-    public void removeObserver(AuctionObserver o) { observers.remove(o); }
-    @Override
-    public void notifyObservers(Auction auction, double newPrice, String lastBidderId) {
+    @Override public void addObserver(AuctionObserver o)    { observers.add(o); }
+    @Override public void removeObserver(AuctionObserver o) { observers.remove(o); }
+    @Override public void notifyObservers(Auction auction, double newPrice, String lastBidderId) {
         for (AuctionObserver o : observers) o.update(this, newPrice, lastBidderId);
     }
 
     // Getters & Setters
-    public String getAuctionId()                { return auctionId; }
-    public Item getItem()                       { return item; }
-    public double getCurrentPrice()             { return currentPrice; }
-    public double getStartPrice()               { return startPrice; }
-    public double getMinIncrement()             { return minIncrement; }
-    public LocalDateTime getStartTime()         { return startTime; }
-    public LocalDateTime getEndTime()           { return endTime; }
-    public String getCurrentWinner()            { return currentWinner; }
-    public List<BidTransaction> getBidHistory() { return bidHistory; }
-    public AuctionStatus getStatus()            { return status; }           // ← trả về enum
-    public void setStatus(AuctionStatus status) { this.status = status; }   // ← nhận enum
-    public void setName(String name)            { item.setName(name); }
-    public void setStartPrice(double price)     { item.setStartPrice(price); }
-    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
+    public String getAuctionId()                   { return auctionId; }
+    public Item getItem()                          { return item; }
+    public double getCurrentPrice()                { return currentPrice; }
+    public double getStartPrice()                  { return startPrice; }
+    public double getMinIncrement()                { return minIncrement; }
+    public LocalDateTime getStartTime()            { return startTime; }
+    public LocalDateTime getEndTime()              { return endTime; }
+    public String getCurrentWinner()               { return currentWinner; }
+    public List<BidTransaction> getBidHistory()    { return bidHistory; }
+    public AuctionStatus getStatus()               { return status; }
+    public void setStatus(AuctionStatus status)    { this.status = status; }
+    public void setName(String name)               { item.setName(name); }
+    public void setStartPrice(double price)        { item.setStartPrice(price); }
+    public void setEndTime(LocalDateTime endTime)  { this.endTime = endTime; }
 }

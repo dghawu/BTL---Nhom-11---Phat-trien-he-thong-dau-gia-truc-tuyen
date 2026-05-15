@@ -6,6 +6,7 @@ public abstract class User extends Entity {
     String name;
     String password;
     String role;
+    private boolean banned = false; // hỗ trợ UserBannedException
 
     public User(String id, String name, String password, String role) {
         super(id);
@@ -16,7 +17,9 @@ public abstract class User extends Entity {
 
     public String getName()     { return name; }
     public String getRole()     { return role; }
-    public String getPassword() { return password; } // thêm cho UserDAO
+    public String getPassword() { return password; }
+    public boolean isBanned()   { return banned; }
+    public void setBanned(boolean banned) { this.banned = banned; }
 
     public void setPassword(String password) { this.password = password; }
 

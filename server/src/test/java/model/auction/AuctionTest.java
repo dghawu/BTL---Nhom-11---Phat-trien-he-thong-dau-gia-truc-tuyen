@@ -1,6 +1,7 @@
 package model.auction;
 import model.enums.AuctionStatus;
 import exception.AuctionClosedException;
+import exception.AuctionNotApprovedException;
 import exception.InvalidBidException;
 import model.auction.Auction;
 import model.auction.BidTransaction;
@@ -106,14 +107,15 @@ class AuctionTest {
     }
 
     @Test
-    @DisplayName("startAuction khi PENDING → AuctionClosedException")
+    @DisplayName("startAuction khi PENDING → AuctionNotApprovedException")
     void testStartAuctionWhenPending() {
         Auction newAuction = new Auction(
                 "AUC-004", laptop, 10_000_000.0, 500_000.0,
                 LocalDateTime.now(), LocalDateTime.now().plusMinutes(30)
         );
         // status = PENDING mặc định
-        assertThrows(AuctionClosedException.class, newAuction::startAuction);
+        assertThrows(AuctionNotApprovedException.class, newAuction::startAuction,
+                "PENDING auction phải ném AuctionNotApprovedException khi gọi startAuction()");
     }
 
     // ── closeAuction ───────────────────────────────────────────────

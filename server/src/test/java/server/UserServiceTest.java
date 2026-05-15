@@ -1,6 +1,8 @@
 package server;
 
+import exception.DuplicateUsernameException;
 import exception.UserNotFoundException;
+import exception.WrongPasswordException;
 import model.user.Admin;
 import model.user.Bidder;
 import model.user.Seller;
@@ -48,9 +50,9 @@ class UserServiceTest {
     void testDuplicateNameRegistration() {
         service.registerBidder("B01", "NguoiDung1", "123");
 
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(DuplicateUsernameException.class, () -> {
             service.registerSeller("S02", "NguoiDung1", "456");
-        }, "Phải ném exception khi đăng ký trùng tên người dùng");
+        }, "Phải ném DuplicateUsernameException khi đăng ký trùng tên người dùng");
     }
 
     // ── Test 2: Đăng nhập (Login) ────────────────────────────────
@@ -58,7 +60,7 @@ class UserServiceTest {
     @Test
     @Order(3)
     @DisplayName("Login: Đăng nhập thành công và thất bại")
-    void testLoginLogic() throws UserNotFoundException {
+    void testLoginLogic() {
         service.registerBidder("B02", "Dung", "secret");
 
         // Thành công
@@ -67,7 +69,7 @@ class UserServiceTest {
         assertEquals("B02", u.getId());
 
         // Sai mật khẩu/tên -> Ném Exception
-        assertThrows(UserNotFoundException.class, () -> service.login("Dung", "wrongpass"));
+        assertThrows(WrongPasswordException.class, () -> service.login("Dung", "wrongpass"));
         assertThrows(UserNotFoundException.class, () -> service.login("UnknowUser", "123"));
     }
 
