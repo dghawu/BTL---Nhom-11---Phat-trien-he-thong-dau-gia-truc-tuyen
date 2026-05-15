@@ -105,6 +105,23 @@ public class ItemDAO {
         }
     }
 
+    public void update(String itemId, String name, String description,
+                       double startPrice, String status) {
+        String sql = "UPDATE items SET name = ?, description = ?, " +
+                "starting_price = ?, status = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, description);
+            ps.setDouble(3, startPrice);
+            ps.setString(4, status);
+            ps.setString(5, itemId);
+            int rows = ps.executeUpdate();
+            System.out.println("[ItemDAO] Update item: " + itemId + ", rows=" + rows);
+        } catch (SQLException e) {
+            System.out.println("[ItemDAO] Lỗi update: " + e.getMessage());
+        }
+    }
+
     // ── DELETE ─────────────────────────────────────────────────────
 
     public void delete(String itemId) {

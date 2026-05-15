@@ -86,6 +86,7 @@ public class ClientHandler implements Runnable {
                 case "changePassword"    -> handleChangePassword(req);
                 case "getMyItems"        -> handleGetMyItems(req);
                 case "addItem"           -> handleAddItem(req);
+                case "updateItem"        -> handleUpdateItem(req);
                 case "getAllItems"        -> handleGetAllItems(req);
                 case "getAllSessions"     -> handleGetAllSessions(req);
                 case "createSession"     -> handleCreateSession(req);
@@ -230,6 +231,27 @@ public class ClientHandler implements Runnable {
         } catch (Exception e) {
             return fail("Không tạo được sản phẩm: " + e.getMessage());
         }
+    }
+
+    private String handleUpdateItem(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "SELLER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sellerId   = auth.getUserId();
+        String itemId     = req.getString("itemId");
+        String name       = req.getString("name");
+        String description = req.optString("description", "");
+        double startPrice = req.getDouble("startPrice");
+        String status     = req.optString("status", "PENDING");
+
+        // Kiểm tra item thuộc về seller này
+        Item item = itemDAO.findById(itemId);
+        if (item == null) return fail("Không tìm thấy sản phẩm.");
+        if (!sellerId.equals(item.getSellerId()))
+            return fail("Bạn không có quyền sửa sản phẩm này.");
+
+        itemDAO.update(itemId, name, description, startPrice, status.toUpperCase());
+        return success().toString();
     }
 
     private String handleGetAllItems(JSONObject req) {
