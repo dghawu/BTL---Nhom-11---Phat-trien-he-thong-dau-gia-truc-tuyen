@@ -7,6 +7,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -100,18 +101,88 @@ public class AdminCentreController extends BaseController {
     private void handleShowPhien() {
         currentTab = "PHIEN";
         setActiveTab(btnPhien);
-        //lblTabTitle.setText("Sessions");
+        // ... setup cột như trên ...
+        showButtons(false, false, false, false); // ẩn hết nút dưới
 
-        colId.setText("ID");
-        colTen.setText("Sản phẩm");
-        colThongTin.setText("Giá hiện tại  |  Bước giá");
-        colExtra.setText("Kết thúc");
-        colTrangThai.setVisible(true);
-        colTrangThai.setText("Trạng thái");
-
-        showButtons(false, false, true, true);
+        // Click vào row → mở detail
+        dataTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {          // double-click
+                JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
+                if (selected != null) showSessionDetail(selected);
+            }
+        });
 
         loadPhien();
+    }
+
+    private void showSessionDetail(JSONObject session) {
+        // Tạo dialog
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Chi tiết phiên đấu giá");
+        dialog.initOwner(getStage(dataTable));
+
+        // Nội dung
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(12);
+        grid.setPadding(new javafx.geometry.Insets(20));
+
+        String[][] rows = {
+                {"Sản phẩm",      session.optString("itemName")},
+                {"ID phiên",      session.optString("id")},
+                {"Trạng thái",    session.optString("status")},
+                {"Giá khởi điểm", String.format("%,.0f đ", session.optDouble("startPrice",0))},
+                {"Bước giá",      String.format("%,.0f đ", session.optDouble("stepPrice",0))},
+                {"Giá hiện tại",  String.format("%,.0f đ", session.optDouble("currentPrice",0))},
+                {"Thời gian mở",  session.optString("startTime","").replace("T"," ")},
+                {"Thời gian đóng",session.optString("endTime","").replace("T"," ")},
+                {"Người thắng",   session.optString("currentWinner","—")},
+        };
+
+        for (int i = 0; i < rows.length; i++) {
+            Label key = new Label(rows[i][0]);
+            key.setStyle("-fx-font-weight: bold;");
+            Label val = new Label(rows[i][1]);
+            grid.add(key, 0, i);
+            grid.add(val, 1, i);
+        }
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Nút APPROVE / REJECT (chỉ hiện khi PENDING)
+        boolean isPending = "PENDING".equals(session.optString("status"));
+        if (isPending) {
+            ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
+            ButtonType rejectBtn  = new ButtonType("✘ REJECT",  ButtonBar.ButtonData.CANCEL_CLOSE);
+            dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn);
+
+            dialog.showAndWait().ifPresent(result -> {
+                String id = session.optString("id");
+                if (result.getButtonData() == ButtonBar.ButtonData.OK_DONE) {
+                    new Thread(() -> {
+                        boolean ok = ServerService.approveSession(id);
+                        Platform.runLater(() -> {
+                            showNotification(getStage(dataTable),
+                                    ok ? "Đã duyệt phiên!" : "Duyệt thất bại!");
+                            if (ok) loadPhien();
+                        });
+                    }).start();
+                } else {
+                    new Thread(() -> {
+                        boolean ok = ServerService.rejectSession(id);
+                        Platform.runLater(() -> {
+                            showNotification(getStage(dataTable),
+                                    ok ? "Đã từ chối phiên!" : "Thao tác thất bại!");
+                            if (ok) loadPhien();
+                        });
+                    }).start();
+                }
+            });
+        } else {
+            // Không pending → chỉ xem
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+            dialog.showAndWait();
+        }
     }
 
     @FXML
@@ -263,15 +334,31 @@ public class AdminCentreController extends BaseController {
     }
 
     private void loadPhien() {
-        colId.setCellValueFactory(c -> str(truncate(c.getValue().optString("id"), 10)));
-        colTen.setCellValueFactory(c -> str(c.getValue().optString("itemName")));
+        colId.setText("ID");
+        colTen.setText("Sản phẩm");
+        colThongTin.setText("Thời gian mở → Đóng");
+        colExtra.setText("Giá khởi điểm  |  Bước giá");
+        colTrangThai.setVisible(true);
+        colTrangThai.setText("Trạng thái");
+
+        colId.setCellValueFactory(c ->
+                str(truncate(c.getValue().optString("id"), 10)));
+        colTen.setCellValueFactory(c ->
+                str(c.getValue().optString("itemName")));
         colThongTin.setCellValueFactory(c -> {
             JSONObject o = c.getValue();
-            return str(String.format("%,.0f đ", o.optDouble("currentPrice", 0))
-                    + "  |  " + String.format("%,.0f đ", o.optDouble("stepPrice", 0)));
+            return str(o.optString("startTime", "").replace("T", " ")
+                    + "  →  "
+                    + o.optString("endTime", "").replace("T", " "));
         });
-        colExtra.setCellValueFactory(c -> str(c.getValue().optString("endTime", "").replace("T", " ")));
-        colTrangThai.setCellValueFactory(c -> str(c.getValue().optString("status")));
+        colExtra.setCellValueFactory(c -> {
+            JSONObject o = c.getValue();
+            return str(String.format("%,.0f đ", o.optDouble("startPrice", 0))
+                    + "  |  "
+                    + String.format("%,.0f đ", o.optDouble("stepPrice", 0)));
+        });
+        colTrangThai.setCellValueFactory(c ->
+                str(c.getValue().optString("status")));
 
         new Thread(() -> populate(ServerService.getAllSessions("ALL"))).start();
     }
