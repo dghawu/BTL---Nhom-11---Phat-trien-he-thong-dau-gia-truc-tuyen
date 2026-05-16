@@ -9,6 +9,7 @@ import dao.ItemDAO;
 import dao.UserDAO;
 import model.auction.Auction;
 import model.auction.BidTransaction;
+import model.enums.AuctionStatus;
 import model.item.Item;
 import model.user.User;
 import observer.SocketBroadcaster;
@@ -93,11 +94,15 @@ public class ClientHandler implements Runnable {
                 case "addItem" -> handleAddItem(req);
                 case "updateItem" -> handleUpdateItem(req);
                 case "getAllItems" -> handleGetAllItems(req);
+                case "approveItem" -> handleApproveItem(req);
+                case "rejectItem" -> handleRejectItem(req);
 
                 // Sessions
                 case "createSession" -> handleCreateSession(req);
                 case "getAllSessions" -> handleGetAllSessions(req);
                 case "getMySessions" -> handleGetMySessions(req);
+                case "approveSession" -> handleApproveSession(req);
+                case "rejectSession" -> handleRejectSession(req);
 
                 // Bidding
                 case "placeBid" -> handlePlaceBid(req);
@@ -281,9 +286,38 @@ public class ClientHandler implements Runnable {
                     .put("startPrice", item.getStartPrice())
                     .put("status", item.getStatus().name())
                     .put("sellerId", item.getSellerId())
+                    .put("type", item.getClass().getSimpleName())
             );
         }
         return success().put("items", arr).toString();
+    }
+
+    private String handleApproveItem(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+        String itemId = req.optString("itemId", "");
+        if (itemId.isBlank()) return fail("Thiếu itemId.");
+        Item item = itemDAO.findById(itemId);
+        if (item == null) return fail("Không tìm thấy sản phẩm.");
+        if (item.getStatus() != Item.ItemStatus.PENDING)
+            return fail("Chỉ duyệt được sản phẩm PENDING.");
+        itemDAO.updateStatus(itemId, "APPROVED");
+        System.out.println("[Admin] Duyệt sản phẩm: " + itemId);
+        return success().put("message", "Đã duyệt sản phẩm.").toString();
+    }
+
+    private String handleRejectItem(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+        String itemId = req.optString("itemId", "");
+        if (itemId.isBlank()) return fail("Thiếu itemId.");
+        Item item = itemDAO.findById(itemId);
+        if (item == null) return fail("Không tìm thấy sản phẩm.");
+        if (item.getStatus() != Item.ItemStatus.PENDING)
+            return fail("Chỉ từ chối được sản phẩm PENDING.");
+        itemDAO.updateStatus(itemId, "REJECTED");
+        System.out.println("[Admin] Từ chối sản phẩm: " + itemId);
+        return success().put("message", "Đã từ chối sản phẩm.").toString();
     }
 
     // ================================================================== //
@@ -344,6 +378,34 @@ public class ClientHandler implements Runnable {
         );
         auctionDAO.save(auction);
         return success().toString();
+    }
+
+    private String handleApproveSession(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+        String sessionId = req.optString("sessionId", "");
+        if (sessionId.isBlank()) return fail("Thiếu sessionId.");
+        Auction auction = auctionDAO.findById(sessionId);
+        if (auction == null) return fail("Không tìm thấy phiên.");
+        if (auction.getStatus() != AuctionStatus.PENDING)
+            return fail("Chỉ duyệt được phiên PENDING.");
+        auctionDAO.updateStatus(sessionId, AuctionStatus.RUNNING);
+        System.out.println("[Admin] Duyệt phiên: " + sessionId);
+        return success().put("message", "Đã duyệt phiên đấu giá.").toString();
+    }
+
+    private String handleRejectSession(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+        String sessionId = req.optString("sessionId", "");
+        if (sessionId.isBlank()) return fail("Thiếu sessionId.");
+        Auction auction = auctionDAO.findById(sessionId);
+        if (auction == null) return fail("Không tìm thấy phiên.");
+        if (auction.getStatus() != AuctionStatus.PENDING)
+            return fail("Chỉ từ chối được phiên PENDING.");
+        auctionDAO.updateStatus(sessionId, AuctionStatus.CANCELED);
+        System.out.println("[Admin] Từ chối phiên: " + sessionId);
+        return success().put("message", "Đã từ chối phiên đấu giá.").toString();
     }
 
     // ================================================================== //
@@ -408,20 +470,26 @@ public class ClientHandler implements Runnable {
     private String handleGetMyTransactions(JSONObject req) {
         AuthResult auth = TokenGuard.check(req);
         if (!auth.isOk()) return fail(auth.getErrorMessage());
+        return success().put("transactions",
+                txToJson(bidDAO.findByBidderId(auth.getUserId()), false)).toString();
+    }
 
-        String bidderId = auth.getUserId(); // lấy từ token
-        List<BidTransaction> txList = bidDAO.findByBidderId(bidderId);
+    private String handleGetAllTransactions(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
         JSONArray arr = new JSONArray();
-        for (BidTransaction tx : txList) {
-            Auction auction = auctionDAO.findById(tx.getAuctionId());
-            arr.put(new JSONObject()
-                    .put("id", tx.getId())
-                    .put("auctionId", tx.getAuctionId())
-                    .put("itemName", auction != null ? auction.getItem().getName() : "")
-                    .put("amount", tx.getAmount())
-                    .put("timestamp", tx.getTimestamp().toString())
-                    .put("status", auction != null ? auction.getStatus().name() : "")
-            );
+        for (Auction a : auctionDAO.findAll()) {
+            for (BidTransaction tx : bidDAO.findByAuctionId(a.getAuctionId())) {
+                User bidder = userDAO.findById(tx.getBidderId());
+                arr.put(new JSONObject()
+                        .put("id",          tx.getId())
+                        .put("auctionId",   tx.getAuctionId())
+                        .put("itemName",    a.getItem().getName())
+                        .put("bidderName",  bidder != null ? bidder.getName() : tx.getBidderId())
+                        .put("amount",      tx.getAmount())
+                        .put("timestamp",   tx.getTimestamp().toString())
+                        .put("status",      a.getStatus().name()));
+            }
         }
         return success().put("transactions", arr).toString();
     }
@@ -429,9 +497,6 @@ public class ClientHandler implements Runnable {
     private String handlePay(JSONObject req) {
         AuthResult auth = TokenGuard.check(req);
         if (!auth.isOk()) return fail(auth.getErrorMessage());
-
-        String transactionId = req.getString("transactionId");
-        // TODO: bidDAO.markAsPaid(transactionId)
         return success().toString();
     }
 
@@ -442,34 +507,24 @@ public class ClientHandler implements Runnable {
     private String handleGetAllUsers(JSONObject req) {
         AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
-
-        List<User> users = userDAO.findAll();
         JSONArray arr = new JSONArray();
-        for (User u : users) {
-            arr.put(new JSONObject()
-                    .put("id", u.getId())
-                    .put("name", u.getName())
-                    .put("role", u.getRole())
-            );
-        }
+        for (User u : userDAO.findAll())
+            arr.put(new JSONObject().put("id", u.getId())
+                    .put("name", u.getName()).put("role", u.getRole()));
         return success().put("users", arr).toString();
     }
 
     private String handleBanUser(JSONObject req) {
         AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
-
-        String userId = req.getString("userId");
-        userDAO.delete(userId);
+        userDAO.delete(req.getString("userId"));
         return success().toString();
     }
 
     private String handleMakeAdmin(JSONObject req) {
         AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
-
-        String userId = req.getString("userId");
-        userDAO.updateRole(userId, "ADMIN");
+        userDAO.updateRole(req.getString("userId"), "ADMIN");
         return success().toString();
     }
 
@@ -493,15 +548,23 @@ public class ClientHandler implements Runnable {
                 .put("category", a.getItem().getClass().getSimpleName())
                 .put("currentWinner", a.getCurrentWinner() != null ? a.getCurrentWinner() : "");
     }
-
-    private JSONObject success() {
-        return new JSONObject().put("success", true);
+    private JSONArray txToJson(List<BidTransaction> list, boolean includeAuction) {
+        JSONArray arr = new JSONArray();
+        for (BidTransaction tx : list) {
+            Auction a = auctionDAO.findById(tx.getAuctionId());
+            arr.put(new JSONObject()
+                    .put("id",        tx.getId())
+                    .put("auctionId", tx.getAuctionId())
+                    .put("itemName",  a != null ? a.getItem().getName() : "")
+                    .put("amount",    tx.getAmount())
+                    .put("timestamp", tx.getTimestamp().toString())
+                    .put("status",    a != null ? a.getStatus().name() : ""));
+        }
+        return arr;
     }
 
-    private String fail(String message) {
-        return new JSONObject()
-                .put("success", false)
-                .put("message", message)
-                .toString();
+    private JSONObject success() { return new JSONObject().put("success", true); }
+    private String fail(String msg) {
+        return new JSONObject().put("success", false).put("message", msg).toString();
     }
 }

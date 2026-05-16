@@ -114,6 +114,10 @@ public class ServerService {
         if (!res.getBoolean("success")) return new JSONArray();
         return res.optJSONArray("items");
     }
+    public static JSONArray getAllItems() {
+        JSONObject res = send(req("getAllItems"));
+        return res.getBoolean("success") ? res.optJSONArray("items") : new JSONArray();
+    }
 
     public static boolean addItem(String name, String category,
                                   String description, double startPrice) {
@@ -139,6 +143,14 @@ public class ServerService {
         }
         req.put("status", status);
         return send(req).getBoolean("success");
+    }
+
+    public static boolean approveItem(String itemId) {
+        return send(req("approveItem").put("itemId", itemId)).getBoolean("success");
+    }
+
+    public static boolean rejectItem(String itemId) {
+        return send(req("rejectItem").put("itemId", itemId)).getBoolean("success");
     }
 
     // ================================================================== //
@@ -167,6 +179,14 @@ public class ServerService {
         req.put("endTime", endTime);
         req.put("stepPrice", stepPrice);
         return send(req).getBoolean("success");
+    }
+
+    public static boolean approveSession(String sessionId) {
+        return send(req("approveSession").put("sessionId", sessionId)).getBoolean("success");
+    }
+
+    public static boolean rejectSession(String sessionId) {
+        return send(req("rejectSession").put("sessionId", sessionId)).getBoolean("success");
     }
 
     // ================================================================== //
@@ -202,6 +222,11 @@ public class ServerService {
         JSONObject req = req("pay");
         req.put("transactionId", transactionId);
         return send(req).getBoolean("success");
+    }
+
+    public static JSONArray getAllTransactions() {
+        JSONObject res = send(req("getAllTransactions"));
+        return res.getBoolean("success") ? res.optJSONArray("transactions") : new JSONArray();
     }
 
     // ================================================================== //
