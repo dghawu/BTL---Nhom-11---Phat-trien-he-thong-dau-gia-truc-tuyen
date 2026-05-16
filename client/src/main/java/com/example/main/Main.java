@@ -9,20 +9,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/**
- * Main - entry point.
- * Kết nối socket khi khởi động, ngắt khi tắt app.
- */
 public class Main extends Application {
 
     @Override
+    public void init() throws Exception {
+        UserDAO userDAO = new UserDAO();
+        userDAO.initAdminIfNotExists();
+    }
+
+    @Override
     public void start(Stage primaryStage) throws Exception {
-        // Kết nối đến server ngay khi app mở
         boolean connected = SocketClient.getInstance().connect();
         if (!connected) {
             System.err.println("[App] Cảnh báo: Không kết nối được server. " +
                     "Một số tính năng sẽ không hoạt động.");
-            // Vẫn cho mở app, lỗi sẽ hiện ở màn Login
         }
 
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
@@ -33,7 +33,6 @@ public class Main extends Application {
         primaryStage.setMinWidth(1000);
         primaryStage.setMinHeight(600);
 
-        // Ngắt kết nối socket khi đóng app
         primaryStage.setOnCloseRequest(e -> {
             SocketClient.getInstance().disconnect();
             Platform.exit();
@@ -44,8 +43,5 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
-        UserDAO userDAO = new UserDAO();
-        userDAO.initAdminIfNotExists();
-        System.out.println("Server started");
     }
 }
