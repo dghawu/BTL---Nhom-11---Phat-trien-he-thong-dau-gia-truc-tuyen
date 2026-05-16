@@ -186,4 +186,18 @@ public class UserDAO {
             default -> throw new SQLException("Role không hợp lệ: " + role);
         };
     }
+    public void initAdminIfNotExists() {
+        User existing = findByName("admin");
+        if (existing != null) {
+            System.out.println("[UserDAO] Admin đã tồn tại");
+            return;
+        }
+        Admin admin = new Admin(
+                java.util.UUID.randomUUID().toString(),
+                "admin",
+                "admin123"
+        );
+        save(admin);
+        System.out.println("[UserDAO] Đã tạo admin mặc định");
+    }
 }

@@ -1,3 +1,4 @@
+import dao.UserDAO;
 import exception.UserNotFoundException;
 import model.auction.Auction;
 import model.item.Item;
@@ -12,8 +13,11 @@ import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
+        UserDAO userDAO = new UserDAO();
+        userDAO.initAdminIfNotExists();
+        System.out.println("Server started");
 
-        UserService userService = UserService.getInstance();
+    UserService userService = UserService.getInstance();
         AuctionManager auctionMgr = AuctionManager.getInstance();
 
         // 1. Đăng ký users qua UserService
