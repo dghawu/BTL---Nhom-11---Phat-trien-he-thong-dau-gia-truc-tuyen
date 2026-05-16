@@ -15,7 +15,7 @@ public class HomeBidderController extends com.example.controller.BaseController 
         currentUsername = username;
         currentRole = "BIDDER";
         currentUserId = userId;
-        welcomeLabel.setText("CHÀO MỪNG Bidder @" + username + "\nĐẾN VỚI ABCXYZ");
+        welcomeLabel.setText("WELCOME BIDDER @" + username + " TO ABCXYZ");
     }
 
     @FXML
