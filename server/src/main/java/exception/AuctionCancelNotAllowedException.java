@@ -13,12 +13,17 @@ public class AuctionCancelNotAllowedException extends AuctionSystemException {
 
     public AuctionCancelNotAllowedException(String auctionId, AuctionStatus currentStatus) {
         super("AUCTION_CANCEL_NOT_ALLOWED",
-              "Không thể hủy phiên '" + auctionId + "' — trạng thái hiện tại: "
-              + currentStatus.name() + ". Chỉ hủy được khi PENDING hoặc APPROVED.");
-        this.auctionId     = auctionId;
+                "Không thể hủy phiên '" + auctionId + "' — trạng thái hiện tại: "
+                        + currentStatus.name() + ". Chỉ hủy được khi PENDING hoặc APPROVED.");
+        this.auctionId = auctionId;
         this.currentStatus = currentStatus;
     }
 
-    public String getAuctionId()             { return auctionId; }
-    public AuctionStatus getCurrentStatus()  { return currentStatus; }
+    public String getAuctionId() {
+        return auctionId;
+    }
+
+    public AuctionStatus getCurrentStatus() {
+        return currentStatus;
+    }
 }

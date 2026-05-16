@@ -2,10 +2,10 @@ package com.example.controller;
 
 import com.example.socket.ServerService;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
-import model.item.Item;
 
 import java.io.File;
 
@@ -15,34 +15,69 @@ import java.io.File;
  */
 public class SellerCentreController extends com.example.controller.BaseController {
 
-    @FXML private TextField     tenField;
-    @FXML private ComboBox<String> phanLoaiBox;
-    @FXML private TextField     moTaField;
-    @FXML private TextField     giaField;
-    @FXML private Pane          imagePane;
+    @FXML
+    private TextField tenField;
+    @FXML
+    private ComboBox<String> phanLoaiBox;
+    @FXML
+    private TextField moTaField;
+    @FXML
+    private TextField giaField;
+    @FXML
+    private Pane imagePane;
 
     // ------------------------------------------------------------------ //
     //  Nav
     // ------------------------------------------------------------------ //
-    @FXML private void handleHome()         { goHome(getStage(tenField)); }
-    @FXML private void handleAuctions()     { goAuctions(getStage(tenField)); }
-    @FXML private void handleSellerCentre() { /* đã ở đây */ }
-    @FXML private void handleSettings()     { goSettings(getStage(tenField)); }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(tenField));
+    }
+
+    @FXML
+    private void handleAuctions() {
+        goAuctions(getStage(tenField));
+    }
+
+    @FXML
+    private void handleSellerCentre() { /* đã ở đây */ }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(tenField));
+    }
 
     // ------------------------------------------------------------------ //
     //  Sidebar
     // ------------------------------------------------------------------ //
-    @FXML private void handleThemSanPham() { /* đã ở đây */ }
-    @FXML private void handleXemSanPham()  { navigateTo("/fxml/SellerProductList.fxml", getStage(tenField)); }
-    @FXML private void handleTaoPhien()    { navigateTo("/fxml/SellerCreateSession.fxml", getStage(tenField)); }
-    @FXML private void handleXemPhien()    { navigateTo("/fxml/SellerSessionList.fxml", getStage(tenField)); }
-    @FXML private void handleThongKe()     { /* TODO: Thống kê */ }
+    @FXML
+    private void handleThemSanPham() { /* đã ở đây */ }
+
+    @FXML
+    private void handleXemSanPham() {
+        navigateTo("/fxml/SellerProductList.fxml", getStage(tenField));
+    }
+
+    @FXML
+    private void handleTaoPhien() {
+        navigateTo("/fxml/SellerCreateSession.fxml", getStage(tenField));
+    }
+
+    @FXML
+    private void handleXemPhien() {
+        navigateTo("/fxml/SellerSessionList.fxml", getStage(tenField));
+    }
+
+    @FXML
+    private void handleThongKe() { /* TODO: Thống kê */ }
 
     // ------------------------------------------------------------------ //
     //  Actions
     // ------------------------------------------------------------------ //
 
-    /** Mở FileChooser để chọn ảnh */
+    /**
+     * Mở FileChooser để chọn ảnh
+     */
     @FXML
     private void handleChooseImage() {
         FileChooser fc = new FileChooser();
@@ -68,10 +103,10 @@ public class SellerCentreController extends com.example.controller.BaseControlle
 
     @FXML
     private void handleSave() {
-        String ten      = tenField.getText().trim();
+        String ten = tenField.getText().trim();
         String phanLoai = phanLoaiBox.getValue();
-        String moTa     = moTaField.getText().trim();
-        String giaStr   = giaField.getText().trim();
+        String moTa = moTaField.getText().trim();
+        String giaStr = giaField.getText().trim();
 
         if (ten.isEmpty() || phanLoai == null || giaStr.isEmpty()) {
             showNotification(getStage(tenField), "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!");

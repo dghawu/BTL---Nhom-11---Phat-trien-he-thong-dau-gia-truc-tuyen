@@ -9,10 +9,12 @@ public class AuctionAlreadyExistsException extends AuctionSystemException {
 
     public AuctionAlreadyExistsException(String auctionId) {
         super("AUCTION_ALREADY_EXISTS",
-              "Phiên đấu giá với ID '" + auctionId + "' đã tồn tại. "
-              + "Mỗi ID phải là duy nhất.");
+                "Phiên đấu giá với ID '" + auctionId + "' đã tồn tại. "
+                        + "Mỗi ID phải là duy nhất.");
         this.auctionId = auctionId;
     }
 
-    public String getAuctionId() { return auctionId; }
+    public String getAuctionId() {
+        return auctionId;
+    }
 }

@@ -5,16 +5,12 @@ import model.auction.Auction;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * AuctionTimer quản lý việc tự động đóng phiên đấu giá khi hết thời gian.
  * Dùng ScheduledExecutorService để chạy ngầm, không block luồng chính.
- *
+ * <p>
  * Lưu ý: scheduler được tự động khởi động lại nếu đã bị shutdown,
  * đảm bảo hoạt động đúng cả trong môi trường production lẫn unit test.
  */
@@ -30,7 +26,7 @@ public class AuctionTimer {
     private final Map<String, ScheduledFuture<?>> scheduledTasks;
 
     private AuctionTimer() {
-        this.scheduler      = Executors.newScheduledThreadPool(4);
+        this.scheduler = Executors.newScheduledThreadPool(4);
         this.scheduledTasks = new ConcurrentHashMap<>();
     }
 

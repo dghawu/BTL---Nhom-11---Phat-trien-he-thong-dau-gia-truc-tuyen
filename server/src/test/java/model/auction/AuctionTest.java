@@ -1,12 +1,13 @@
 package model.auction;
-import model.enums.AuctionStatus;
+
 import exception.AuctionClosedException;
 import exception.AuctionNotApprovedException;
 import exception.InvalidBidException;
-import model.auction.Auction;
-import model.auction.BidTransaction;
+import model.enums.AuctionStatus;
 import model.item.Item;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
@@ -145,11 +146,11 @@ class AuctionTest {
                 "AUC-005", laptop, 10_000_000.0, 500_000.0,
                 LocalDateTime.now(), LocalDateTime.now().plusMinutes(30)
         );
-        assertEquals(AuctionStatus.PENDING,  a.getStatus());
+        assertEquals(AuctionStatus.PENDING, a.getStatus());
         a.setStatus(AuctionStatus.APPROVED);
         assertEquals(AuctionStatus.APPROVED, a.getStatus());
         a.startAuction();
-        assertEquals(AuctionStatus.RUNNING,  a.getStatus());
+        assertEquals(AuctionStatus.RUNNING, a.getStatus());
         a.closeAuction();
         assertEquals(AuctionStatus.FINISHED, a.getStatus());
     }

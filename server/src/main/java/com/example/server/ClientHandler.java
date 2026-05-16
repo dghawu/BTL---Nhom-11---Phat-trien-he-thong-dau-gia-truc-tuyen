@@ -9,7 +9,6 @@ import dao.ItemDAO;
 import dao.UserDAO;
 import model.auction.Auction;
 import model.auction.BidTransaction;
-import model.enums.AuctionStatus;
 import model.item.Item;
 import model.user.User;
 import observer.SocketBroadcaster;
@@ -25,19 +24,20 @@ import java.util.UUID;
 
 /**
  * ClientHandler — xử lý request/response trên port 8888.
+ * <p>
+ * Thay đổi so với phiên bản cũ:
+ * 1. Thêm case "updateItem"   → handleUpdateItem()
+ * 2. handlePlaceBid() sau khi bid thành công → BidRegistry.get(sessionId).broadcast(...)
+ * để push realtime đến tất cả client đang watch phiên qua port 8889.
  *
- *Thay đổi so với phiên bản cũ:
- *  1. Thêm case "updateItem"   → handleUpdateItem()
- *  2. handlePlaceBid() sau khi bid thành công → BidRegistry.get(sessionId).broadcast(...)
- *  để push realtime đến tất cả client đang watch phiên qua port 8889.
- *  */
+ */
 public class ClientHandler implements Runnable {
 
-    private final Socket            clientSocket;
-    private final UserDAO           userDAO    = new UserDAO();
-    private final ItemDAO           itemDAO    = new ItemDAO();
-    private final AuctionDAO        auctionDAO = new AuctionDAO();
-    private final BidTransactionDAO bidDAO     = new BidTransactionDAO();
+    private final Socket clientSocket;
+    private final UserDAO userDAO = new UserDAO();
+    private final ItemDAO itemDAO = new ItemDAO();
+    private final AuctionDAO auctionDAO = new AuctionDAO();
+    private final BidTransactionDAO bidDAO = new BidTransactionDAO();
 
     // Format thời gian client gửi lên: "2025-05-15T20:00"
     private static final DateTimeFormatter DT_FMT =
@@ -65,7 +65,10 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             System.err.println("[Server] Client ngắt kết nối: " + e.getMessage());
         } finally {
-            try { clientSocket.close(); } catch (IOException ignored) {}
+            try {
+                clientSocket.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 
@@ -75,39 +78,39 @@ public class ClientHandler implements Runnable {
     private String handleRequest(String jsonStr) {
         try {
             JSONObject req = new JSONObject(jsonStr);
-            String action  = req.getString("action");
+            String action = req.getString("action");
             return switch (action) {
                 // Không cần token
-                case "login"    -> handleLogin(req);
+                case "login" -> handleLogin(req);
                 case "register" -> handleRegister(req);
 
                 // Account
-                case "changeUsername"    -> handleChangeUsername(req);
-                case "changePassword"    -> handleChangePassword(req);
+                case "changeUsername" -> handleChangeUsername(req);
+                case "changePassword" -> handleChangePassword(req);
 
                 // Items
-                case "getMyItems"        -> handleGetMyItems(req);
-                case "addItem"           -> handleAddItem(req);
-                case "updateItem"        -> handleUpdateItem(req);
-                case "getAllItems"        -> handleGetAllItems(req);
+                case "getMyItems" -> handleGetMyItems(req);
+                case "addItem" -> handleAddItem(req);
+                case "updateItem" -> handleUpdateItem(req);
+                case "getAllItems" -> handleGetAllItems(req);
 
                 // Sessions
-                case "createSession"     -> handleCreateSession(req);
-                case "getAllSessions"     -> handleGetAllSessions(req);
-                case "getMySessions"     -> handleGetMySessions(req);
+                case "createSession" -> handleCreateSession(req);
+                case "getAllSessions" -> handleGetAllSessions(req);
+                case "getMySessions" -> handleGetMySessions(req);
 
                 // Bidding
-                case "placeBid"          -> handlePlaceBid(req);
-                case "setAutoBid"        -> handleSetAutoBid(req);
+                case "placeBid" -> handlePlaceBid(req);
+                case "setAutoBid" -> handleSetAutoBid(req);
 
                 //Transactions
                 case "getMyTransactions" -> handleGetMyTransactions(req);
-                case "pay"               -> handlePay(req);
+                case "pay" -> handlePay(req);
 
                 // Admin
-                case "getAllUsers"        -> handleGetAllUsers(req);
-                case "banUser"           -> handleBanUser(req);
-                case "makeAdmin"         -> handleMakeAdmin(req);
+                case "getAllUsers" -> handleGetAllUsers(req);
+                case "banUser" -> handleBanUser(req);
+                case "makeAdmin" -> handleMakeAdmin(req);
 
                 default -> fail("Action không hợp lệ: " + action);
             };
@@ -134,25 +137,25 @@ public class ClientHandler implements Runnable {
         String token = JwtUtil.generateToken(user.getId(), user.getName(), user.getRole());
 
         return success()
-                .put("token",    token)
-                .put("userId",   user.getId())
+                .put("token", token)
+                .put("userId", user.getId())
                 .put("username", user.getName())
-                .put("role",     user.getRole())
+                .put("role", user.getRole())
                 .toString();
     }
 
     private String handleRegister(JSONObject req) {
-        String name     = req.getString("name");
+        String name = req.getString("name");
         String password = req.getString("password");
-        String role     = req.getString("role").toUpperCase();
+        String role = req.getString("role").toUpperCase();
 
         if (userDAO.findByName(name) != null)
             return fail("Tên đăng nhập đã tồn tại.");
 
         User newUser = switch (role) {
             case "SELLER" -> new model.user.Seller(UUID.randomUUID().toString(), name, password);
-            case "ADMIN"  -> new model.user.Admin(UUID.randomUUID().toString(), name, password);
-            default       -> new model.user.Bidder(UUID.randomUUID().toString(), name, password);
+            case "ADMIN" -> new model.user.Admin(UUID.randomUUID().toString(), name, password);
+            default -> new model.user.Bidder(UUID.randomUUID().toString(), name, password);
         };
 
         userDAO.save(newUser);
@@ -163,9 +166,9 @@ public class ClientHandler implements Runnable {
         AuthResult auth = TokenGuard.check(req);
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
-        String userId      = auth.getUserId();
+        String userId = auth.getUserId();
         String newUsername = req.getString("newUsername");
-        String password    = req.getString("password");
+        String password = req.getString("password");
 
         User user = userDAO.findById(userId);
         if (user == null) return fail("Không tìm thấy user.");
@@ -180,7 +183,7 @@ public class ClientHandler implements Runnable {
         AuthResult auth = TokenGuard.check(req);
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
-        String userId      = auth.getUserId();
+        String userId = auth.getUserId();
         String oldPassword = req.getString("oldPassword");
         String newPassword = req.getString("newPassword");
 
@@ -205,13 +208,13 @@ public class ClientHandler implements Runnable {
         JSONArray arr = new JSONArray();
         for (Item item : items) {
             arr.put(new JSONObject()
-                    .put("id",          item.getId())
-                    .put("name",        item.getName())
+                    .put("id", item.getId())
+                    .put("name", item.getName())
                     .put("description", item.getDescription())
-                    .put("startPrice",  item.getStartPrice())
-                    .put("status",      item.getStatus().name())
-                    .put("type",        item.getClass().getSimpleName())
-                    .put("sellerId",    item.getSellerId())
+                    .put("startPrice", item.getStartPrice())
+                    .put("status", item.getStatus().name())
+                    .put("type", item.getClass().getSimpleName())
+                    .put("sellerId", item.getSellerId())
             );
         }
         return success().put("items", arr).toString();
@@ -221,11 +224,11 @@ public class ClientHandler implements Runnable {
         AuthResult auth = TokenGuard.checkRole(req, "SELLER");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
-        String sellerId    = auth.getUserId(); // lấy từ token
-        String name        = req.getString("name");
-        String category    = req.getString("category");
+        String sellerId = auth.getUserId(); // lấy từ token
+        String name = req.getString("name");
+        String category = req.getString("category");
         String description = req.getString("description");
-        double startPrice  = req.getDouble("startPrice");
+        double startPrice = req.getDouble("startPrice");
 
         try {
             Item.ItemType type = Item.ItemType.valueOf(
@@ -248,12 +251,12 @@ public class ClientHandler implements Runnable {
         AuthResult auth = TokenGuard.checkRole(req, "SELLER");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
-        String sellerId   = auth.getUserId();
-        String itemId     = req.getString("itemId");
-        String name       = req.getString("name");
+        String sellerId = auth.getUserId();
+        String itemId = req.getString("itemId");
+        String name = req.getString("name");
         String description = req.optString("description", "");
         double startPrice = req.getDouble("startPrice");
-        String status     = req.optString("status", "PENDING");
+        String status = req.optString("status", "PENDING");
 
         // Kiểm tra item thuộc về seller này
         Item item = itemDAO.findById(itemId);
@@ -273,11 +276,11 @@ public class ClientHandler implements Runnable {
         JSONArray arr = new JSONArray();
         for (Item item : items) {
             arr.put(new JSONObject()
-                    .put("id",         item.getId())
-                    .put("name",       item.getName())
+                    .put("id", item.getId())
+                    .put("name", item.getName())
                     .put("startPrice", item.getStartPrice())
-                    .put("status",     item.getStatus().name())
-                    .put("sellerId",   item.getSellerId())
+                    .put("status", item.getStatus().name())
+                    .put("sellerId", item.getSellerId())
             );
         }
         return success().put("items", arr).toString();
@@ -323,9 +326,9 @@ public class ClientHandler implements Runnable {
         AuthResult auth = TokenGuard.checkRole(req, "SELLER");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
-        String itemId    = req.getString("itemId");
+        String itemId = req.getString("itemId");
         String startTime = req.getString("startTime");
-        String endTime   = req.getString("endTime");
+        String endTime = req.getString("endTime");
         double stepPrice = req.getDouble("stepPrice");
 
         Item item = itemDAO.findById(itemId);
@@ -337,7 +340,7 @@ public class ClientHandler implements Runnable {
                 item.getStartPrice(),
                 stepPrice,
                 LocalDateTime.parse(startTime, DT_FMT),
-                LocalDateTime.parse(endTime,   DT_FMT)
+                LocalDateTime.parse(endTime, DT_FMT)
         );
         auctionDAO.save(auction);
         return success().toString();
@@ -352,7 +355,7 @@ public class ClientHandler implements Runnable {
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
         String sessionId = req.getString("sessionId");
-        String bidderId  = auth.getUserId();
+        String bidderId = auth.getUserId();
         double bidAmount = req.getDouble("bidAmount");
 
         Auction auction = auctionDAO.findById(sessionId);
@@ -386,7 +389,7 @@ public class ClientHandler implements Runnable {
         // ─────────────────────────────────────────────────────────────
 
         return success()
-                .put("currentPrice",  bidAmount)
+                .put("currentPrice", bidAmount)
                 .put("currentWinner", bidderName)
                 .toString();
     }
@@ -412,12 +415,12 @@ public class ClientHandler implements Runnable {
         for (BidTransaction tx : txList) {
             Auction auction = auctionDAO.findById(tx.getAuctionId());
             arr.put(new JSONObject()
-                    .put("id",        tx.getId())
+                    .put("id", tx.getId())
                     .put("auctionId", tx.getAuctionId())
-                    .put("itemName",  auction != null ? auction.getItem().getName() : "")
-                    .put("amount",    tx.getAmount())
+                    .put("itemName", auction != null ? auction.getItem().getName() : "")
+                    .put("amount", tx.getAmount())
                     .put("timestamp", tx.getTimestamp().toString())
-                    .put("status",    auction != null ? auction.getStatus().name() : "")
+                    .put("status", auction != null ? auction.getStatus().name() : "")
             );
         }
         return success().put("transactions", arr).toString();
@@ -444,7 +447,7 @@ public class ClientHandler implements Runnable {
         JSONArray arr = new JSONArray();
         for (User u : users) {
             arr.put(new JSONObject()
-                    .put("id",   u.getId())
+                    .put("id", u.getId())
                     .put("name", u.getName())
                     .put("role", u.getRole())
             );
@@ -476,18 +479,18 @@ public class ClientHandler implements Runnable {
 
     private JSONObject auctionToJson(Auction a) {
         return new JSONObject()
-                .put("id",            a.getAuctionId())
-                .put("itemId",        a.getItem().getId())
-                .put("itemName",      a.getItem().getName())
-                .put("description",   a.getItem().getDescription())
-                .put("sellerId",      a.getItem().getSellerId())
-                .put("startPrice",    a.getStartPrice())
-                .put("currentPrice",  a.getCurrentPrice())
-                .put("stepPrice",     a.getMinIncrement())
-                .put("startTime",     a.getStartTime().toString())
-                .put("endTime",       a.getEndTime().toString())
-                .put("status",        a.getStatus().name())
-                .put("category",      a.getItem().getClass().getSimpleName())
+                .put("id", a.getAuctionId())
+                .put("itemId", a.getItem().getId())
+                .put("itemName", a.getItem().getName())
+                .put("description", a.getItem().getDescription())
+                .put("sellerId", a.getItem().getSellerId())
+                .put("startPrice", a.getStartPrice())
+                .put("currentPrice", a.getCurrentPrice())
+                .put("stepPrice", a.getMinIncrement())
+                .put("startTime", a.getStartTime().toString())
+                .put("endTime", a.getEndTime().toString())
+                .put("status", a.getStatus().name())
+                .put("category", a.getItem().getClass().getSimpleName())
                 .put("currentWinner", a.getCurrentWinner() != null ? a.getCurrentWinner() : "");
     }
 

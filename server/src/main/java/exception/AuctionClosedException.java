@@ -14,10 +14,15 @@ public class AuctionClosedException extends AuctionSystemException {
         super("AUCTION_CLOSED",
                 "Phiên '" + auctionId + "' không thể thao tác — trạng thái hiện tại: "
                         + currentStatus.name());
-        this.auctionId     = auctionId;
+        this.auctionId = auctionId;
         this.currentStatus = currentStatus;
     }
 
-    public String getAuctionId()             { return auctionId; }
-    public AuctionStatus getCurrentStatus()  { return currentStatus; }
+    public String getAuctionId() {
+        return auctionId;
+    }
+
+    public AuctionStatus getCurrentStatus() {
+        return currentStatus;
+    }
 }

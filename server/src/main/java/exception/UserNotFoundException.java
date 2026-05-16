@@ -9,9 +9,11 @@ public class UserNotFoundException extends AuctionSystemException {
 
     public UserNotFoundException(String keyword) {
         super("USER_NOT_FOUND",
-              "Không tìm thấy người dùng với từ khóa: '" + keyword + "'");
+                "Không tìm thấy người dùng với từ khóa: '" + keyword + "'");
         this.keyword = keyword;
     }
 
-    public String getKeyword() { return keyword; }
+    public String getKeyword() {
+        return keyword;
+    }
 }

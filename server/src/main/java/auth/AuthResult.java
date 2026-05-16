@@ -2,7 +2,7 @@ package auth;
 
 /**
  * AuthResult - kết quả trả về sau khi xác thực token trong mỗi request.
- *
+ * <p>
  * Thay vì ném exception khắp nơi, ClientHandler gọi
  * AuthResult r = TokenGuard.check(req) rồi kiểm tra r.isOk().
  */
@@ -43,20 +43,26 @@ public class AuthResult {
     public boolean isOk() {
         return ok;
     }
+
     public String getUserId() {
         return userId;
     }
+
     public String getUsername() {
         return username;
     }
+
     public String getRole() {
         return role;
     }
-    public String getErrorMessage(){
+
+    public String getErrorMessage() {
         return errorMessage;
     }
 
-    /** Kiểm tra quyền — ném lỗi nếu không đúng role */
+    /**
+     * Kiểm tra quyền — ném lỗi nếu không đúng role
+     */
     public boolean hasRole(String requiredRole) {
         return ok && requiredRole.equalsIgnoreCase(role);
     }

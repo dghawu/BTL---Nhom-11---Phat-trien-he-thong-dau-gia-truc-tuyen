@@ -12,12 +12,12 @@ public class DatabaseConnection {
     private Connection connection;
 
     // ── Cấu hình kết nối MySQL ─────────────────────────────────────
-    private static final String DB_URL      = "jdbc:mysql://localhost:3306/auction_db" +
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/auction_db" +
             "?useSSL=false" +
             "&serverTimezone=Asia/Ho_Chi_Minh" +
             "&allowPublicKeyRetrieval=true" +
             "&characterEncoding=UTF-8";
-    private static final String DB_USER     = "root";
+    private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "6789";
 
     private DatabaseConnection() {

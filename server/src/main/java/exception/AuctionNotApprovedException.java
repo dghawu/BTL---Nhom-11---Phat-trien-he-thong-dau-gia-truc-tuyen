@@ -11,10 +11,12 @@ public class AuctionNotApprovedException extends AuctionSystemException {
 
     public AuctionNotApprovedException(String auctionId) {
         super("AUCTION_NOT_APPROVED",
-              "Phiên '" + auctionId + "' chưa được Admin duyệt. "
-              + "Không thể bắt đầu phiên ở trạng thái PENDING hoặc REJECTED.");
+                "Phiên '" + auctionId + "' chưa được Admin duyệt. "
+                        + "Không thể bắt đầu phiên ở trạng thái PENDING hoặc REJECTED.");
         this.auctionId = auctionId;
     }
 
-    public String getAuctionId() { return auctionId; }
+    public String getAuctionId() {
+        return auctionId;
+    }
 }

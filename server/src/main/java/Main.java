@@ -13,12 +13,12 @@ import java.time.LocalDateTime;
 public class Main {
     public static void main(String[] args) {
 
-        UserService  userService = UserService.getInstance();
-        AuctionManager auctionMgr  = AuctionManager.getInstance();
+        UserService userService = UserService.getInstance();
+        AuctionManager auctionMgr = AuctionManager.getInstance();
 
         // 1. Đăng ký users qua UserService
         userService.registerAdmin("A01", "AdminRoot", "admin123");
-        Seller seller  = userService.registerSeller("S01", "Nguyen Van A", "pass");
+        Seller seller = userService.registerSeller("S01", "Nguyen Van A", "pass");
         Bidder bidder1 = userService.registerBidder("B01", "Tran Thi B", "pass");
         Bidder bidder2 = userService.registerBidder("B02", "Le Van C", "pass");
 

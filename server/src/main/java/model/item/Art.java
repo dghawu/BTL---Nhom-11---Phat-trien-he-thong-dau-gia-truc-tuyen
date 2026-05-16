@@ -4,7 +4,8 @@ public class Art extends Item {
     private String artist;
     private String medium;  // sơn dầu, màu nước, điêu khắc...
 
-    public Art() {}
+    public Art() {
+    }
 
     private Art(String id, String sellerId, String name,
                 String description, double startingPrice,
@@ -29,11 +30,21 @@ public class Art extends Item {
     }
 
     // ── Getters & Setters ───────────────────────────────────────────
-    public String getArtist()           { return artist; }
-    public void   setArtist(String a)   { this.artist = a; }
+    public String getArtist() {
+        return artist;
+    }
 
-    public String getMedium()           { return medium; }
-    public void   setMedium(String m)   { this.medium = m; }
+    public void setArtist(String a) {
+        this.artist = a;
+    }
+
+    public String getMedium() {
+        return medium;
+    }
+
+    public void setMedium(String m) {
+        this.medium = m;
+    }
 
     @Override
     protected void printExtraInfo() {

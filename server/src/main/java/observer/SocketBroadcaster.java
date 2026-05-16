@@ -24,6 +24,7 @@ public class SocketBroadcaster implements AuctionObserver {
     }
 
     // Quản lý subscribers
+
     /**
      * Thêm client vào danh sách nhận thông báo.
      * Gọi khi client gửi lệnh "WATCH:AUC-001" đến server.
@@ -49,6 +50,7 @@ public class SocketBroadcaster implements AuctionObserver {
     }
 
     //Observer update
+
     /**
      * Khi có bid mới → broadcast đến tất cả client đang xem phiên này.
      * Message format: "BID_UPDATE:AUC-001:15500000.0:B01"
@@ -60,6 +62,7 @@ public class SocketBroadcaster implements AuctionObserver {
     }
 
     //Broadcast
+
     /**
      * Gửi message đến tất cả client.
      * Tự động xóa client bị ngắt kết nối.
@@ -107,6 +110,11 @@ public class SocketBroadcaster implements AuctionObserver {
                 + ":" + auction.getEndTime(); // gửi kèm endTime để client cập nhật countdown
     }
 
-    public int getSubscriberCount() { return subscribers.size(); }
-    public String getAuctionId()    { return auctionId; }
+    public int getSubscriberCount() {
+        return subscribers.size();
+    }
+
+    public String getAuctionId() {
+        return auctionId;
+    }
 }

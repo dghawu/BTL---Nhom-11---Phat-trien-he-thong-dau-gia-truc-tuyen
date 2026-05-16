@@ -11,12 +11,17 @@ public class SelfBidException extends AuctionSystemException {
 
     public SelfBidException(String bidderId, String auctionId) {
         super("SELF_BID",
-              "Người dùng '" + bidderId + "' đang là người dẫn đầu phiên '"
-              + auctionId + "'. Không thể tự đặt giá khi đang thắng.");
-        this.bidderId  = bidderId;
+                "Người dùng '" + bidderId + "' đang là người dẫn đầu phiên '"
+                        + auctionId + "'. Không thể tự đặt giá khi đang thắng.");
+        this.bidderId = bidderId;
         this.auctionId = auctionId;
     }
 
-    public String getBidderId()  { return bidderId; }
-    public String getAuctionId() { return auctionId; }
+    public String getBidderId() {
+        return bidderId;
+    }
+
+    public String getAuctionId() {
+        return auctionId;
+    }
 }

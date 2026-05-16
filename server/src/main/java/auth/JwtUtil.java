@@ -1,6 +1,8 @@
 package auth;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 import javax.crypto.SecretKey;
@@ -9,15 +11,15 @@ import java.util.Date;
 
 /**
  * JwtUtil - tạo, ký và xác thực JWT token.
- *
+ * <p>
  * Cấu trúc JWT gồm 3 phần: header.payload.signature
- *   - header:    thuật toán ký (HS256)
- *   - payload:   userId, username, role, thời hạn (claims)
- *   - signature: ký bằng SECRET_KEY → client không thể giả mạo
- *
+ * - header:    thuật toán ký (HS256)
+ * - payload:   userId, username, role, thời hạn (claims)
+ * - signature: ký bằng SECRET_KEY → client không thể giả mạo
+ * <p>
  * Luồng sử dụng:
- *   Login thành công → JwtUtil.generateToken(user) → trả token về client
- *   Request tiếp theo → client gửi token → JwtUtil.validate(token) → lấy thông tin user
+ * Login thành công → JwtUtil.generateToken(user) → trả token về client
+ * Request tiếp theo → client gửi token → JwtUtil.validate(token) → lấy thông tin user
  */
 public class JwtUtil {
 
@@ -30,14 +32,17 @@ public class JwtUtil {
     private static final String SECRET_STRING =
             "AuctionSystem_SuperSecretKey_2024_DoNotShare!";
 
-    /** Token hết hạn sau 8 tiếng (tính bằng millisecond) */
+    /**
+     * Token hết hạn sau 8 tiếng (tính bằng millisecond)
+     */
     private static final long EXPIRATION_MS = 8 * 60 * 60 * 1000L;
 
     // SecretKey được tạo một lần duy nhất từ SECRET_STRING
     private static final SecretKey SECRET_KEY =
             Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
 
-    private JwtUtil() {} // utility class
+    private JwtUtil() {
+    } // utility class
 
     // ── Public API ─────────────────────────────────────────────────
 
@@ -50,13 +55,13 @@ public class JwtUtil {
      * @return JWT string dạng "xxxxx.yyyyy.zzzzz"
      */
     public static String generateToken(String userId, String username, String role) {
-        Date now    = new Date();
+        Date now = new Date();
         Date expiry = new Date(now.getTime() + EXPIRATION_MS);
 
         return Jwts.builder()
                 .subject(userId)                    // subject = userId
                 .claim("username", username)         // thêm username vào payload
-                .claim("role",     role)             // thêm role vào payload
+                .claim("role", role)             // thêm role vào payload
                 .issuedAt(now)                       // thời điểm tạo
                 .expiration(expiry)                  // thời điểm hết hạn
                 .signWith(SECRET_KEY)                // ký bằng HS256
@@ -96,17 +101,23 @@ public class JwtUtil {
 
     // ── Getters tiện lợi ──────────────────────────────────────────
 
-    /** Lấy userId từ token (không cần validate lại nếu đã validate trước đó) */
+    /**
+     * Lấy userId từ token (không cần validate lại nếu đã validate trước đó)
+     */
     public static String getUserId(String token) {
         return validate(token).getSubject();
     }
 
-    /** Lấy username từ token */
+    /**
+     * Lấy username từ token
+     */
     public static String getUsername(String token) {
         return validate(token).get("username", String.class);
     }
 
-    /** Lấy role từ token */
+    /**
+     * Lấy role từ token
+     */
     public static String getRole(String token) {
         return validate(token).get("role", String.class);
     }

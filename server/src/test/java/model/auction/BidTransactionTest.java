@@ -1,7 +1,7 @@
 package model.auction;
 
-import model.auction.BidTransaction;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 

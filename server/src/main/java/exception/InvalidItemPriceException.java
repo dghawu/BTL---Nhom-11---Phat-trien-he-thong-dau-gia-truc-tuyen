@@ -11,12 +11,17 @@ public class InvalidItemPriceException extends AuctionSystemException {
 
     public InvalidItemPriceException(String field, double price) {
         super("INVALID_PRICE",
-              "Giá không hợp lệ cho trường '" + field + "': " + price + " VNĐ. "
-              + "Giá phải lớn hơn 0.");
+                "Giá không hợp lệ cho trường '" + field + "': " + price + " VNĐ. "
+                        + "Giá phải lớn hơn 0.");
         this.price = price;
         this.field = field;
     }
 
-    public double getPrice() { return price; }
-    public String getField() { return field; }
+    public double getPrice() {
+        return price;
+    }
+
+    public String getField() {
+        return field;
+    }
 }

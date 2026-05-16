@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit test cho AuctionService (business logic đấu giá).
  * Dùng in-memory store + stub Observer để tránh phụ thuộc vào DB và Socket thật.
- *
+ * <p>
  * QUAN TRỌNG: Không gọi AuctionTimer.shutdown() ở đây vì AuctionTimer là Singleton
  * dùng chung toàn bộ JVM test session — shutdown sẽ phá hủy scheduler cho các test khác.
  */
@@ -26,12 +26,16 @@ class AuctionServiceTest {
 
     // ── Fake SocketBroadcaster (không cần Socket thật) ─────────────
     static class FakeBroadcaster extends SocketBroadcaster {
-        FakeBroadcaster(String auctionId) { super(auctionId); }
+        FakeBroadcaster(String auctionId) {
+            super(auctionId);
+        }
     }
 
     // ── Fake Observer (không cần DB) ──────────────────────────────
     static class NoOpObserver implements AuctionObserver {
-        @Override public void update(Auction auction, double newPrice, String lastBidderId) {}
+        @Override
+        public void update(Auction auction, double newPrice, String lastBidderId) {
+        }
     }
 
     // ── In-memory AuctionService ───────────────────────────────────
@@ -39,7 +43,8 @@ class AuctionServiceTest {
         private static volatile InMemoryAuctionService instance;
         private final Map<String, SocketBroadcaster> broadcasters = new ConcurrentHashMap<>();
 
-        private InMemoryAuctionService() {}
+        private InMemoryAuctionService() {
+        }
 
         static InMemoryAuctionService getInstance() {
             if (instance == null) {
@@ -50,9 +55,13 @@ class AuctionServiceTest {
             return instance;
         }
 
-        void clear() { broadcasters.clear(); }
+        void clear() {
+            broadcasters.clear();
+        }
 
-        /** Tạo phiên mới ở trạng thái PENDING. Giá khởi điểm lấy từ Item. */
+        /**
+         * Tạo phiên mới ở trạng thái PENDING. Giá khởi điểm lấy từ Item.
+         */
         Auction createAuction(String id, Item item, double minIncrement,
                               LocalDateTime start, LocalDateTime end) {
             return new Auction(id, item, item.getStartPrice(), minIncrement, start, end);
@@ -75,7 +84,9 @@ class AuctionServiceTest {
             auction.startAuction(); // → RUNNING + lên lịch AuctionTimer
         }
 
-        /** Đóng phiên và giải phóng broadcaster. */
+        /**
+         * Đóng phiên và giải phóng broadcaster.
+         */
         void closeAuction(Auction auction) {
             auction.closeAuction();
             SocketBroadcaster b = broadcasters.remove(auction.getAuctionId());
@@ -107,7 +118,8 @@ class AuctionServiceTest {
     // KHÔNG có @AfterAll shutdown() — để AuctionTimer Singleton sống xuyên suốt test session
 
     // ── Test 1: Singleton ──────────────────────────────────────────
-    @Test @Order(1)
+    @Test
+    @Order(1)
     @DisplayName("Singleton: Kiểm tra tính duy nhất của instance")
     void testSingleton() {
         assertSame(InMemoryAuctionService.getInstance(), InMemoryAuctionService.getInstance(),
@@ -115,11 +127,12 @@ class AuctionServiceTest {
     }
 
     // ── Test 2: Tạo phiên ─────────────────────────────────────────
-    @Test @Order(2)
+    @Test
+    @Order(2)
     @DisplayName("Create: Tạo phiên mới và kiểm tra khởi tạo dữ liệu")
     void testCreateAuction() {
         LocalDateTime start = LocalDateTime.now().plusMinutes(5);
-        LocalDateTime end   = LocalDateTime.now().plusHours(2);
+        LocalDateTime end = LocalDateTime.now().plusHours(2);
 
         Auction auction = service.createAuction(auctionId, testItem, 500.0, start, end);
 
@@ -130,7 +143,8 @@ class AuctionServiceTest {
     }
 
     // ── Test 3: Bắt đầu phiên ─────────────────────────────────────
-    @Test @Order(3)
+    @Test
+    @Order(3)
     @DisplayName("Start: Đăng ký Observers và chuyển trạng thái RUNNING")
     void testStartAuction() {
         Auction auction = service.createAuction(auctionId, testItem, 100.0,
@@ -143,7 +157,8 @@ class AuctionServiceTest {
     }
 
     // ── Test 4: Đóng phiên ────────────────────────────────────────
-    @Test @Order(4)
+    @Test
+    @Order(4)
     @DisplayName("Close: Kết thúc phiên và giải phóng Broadcaster")
     void testCloseAuction() {
         Auction auction = service.createAuction(auctionId, testItem, 100.0,
@@ -157,7 +172,8 @@ class AuctionServiceTest {
     }
 
     // ── Test 5: Lấy đúng Broadcaster ─────────────────────────────
-    @Test @Order(5)
+    @Test
+    @Order(5)
     @DisplayName("Broadcaster: Kiểm tra lấy đúng socket cho đúng phiên")
     void testGetBroadcaster() {
         String id2 = "AUC-REALTIME-02";

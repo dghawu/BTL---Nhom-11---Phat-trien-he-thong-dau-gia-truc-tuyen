@@ -1,8 +1,8 @@
 package service;
 
 import dao.AuctionDAO;
-import model.enums.AuctionStatus;
 import model.auction.Auction;
+import model.enums.AuctionStatus;
 import model.item.Item;
 import observer.BidHistoryLogger;
 import observer.SocketBroadcaster;
@@ -52,9 +52,9 @@ public class AuctionService {
      * Bắt đầu phiên — đăng ký observers tự động.
      * Luồng:
      * auction.handleNewBid()
-     *   └── notifyObservers()
-     *         ├── BidHistoryLogger → lưu vào database
-     *         └── SocketBroadcaster → gửi đến tất cả client
+     * └── notifyObservers()
+     * ├── BidHistoryLogger → lưu vào database
+     * └── SocketBroadcaster → gửi đến tất cả client
      */
     public void startAuction(Auction auction) {
         // 1. Đăng ký BidHistoryLogger — tự động lưu mỗi bid vào database

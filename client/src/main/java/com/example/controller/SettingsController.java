@@ -2,22 +2,33 @@ package com.example.controller;
 
 import com.example.socket.ServerService;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 /**
  * SettingsController v3 - thêm nav handlers cho cả 3 role.
  */
 public class SettingsController extends BaseController {
 
-    @FXML private Label         accountTitleLabel;
-    @FXML private TextField     displayUsername;
-    @FXML private TextField     displayRole;
-    @FXML private TextField     displayTimeCreate;
-    @FXML private TextField     newUsernameField;
-    @FXML private PasswordField passwordForUsernameField;
-    @FXML private PasswordField oldPasswordField;
-    @FXML private PasswordField newPasswordField;
-    @FXML private Label         messageLabel;
+    @FXML
+    private Label accountTitleLabel;
+    @FXML
+    private TextField displayUsername;
+    @FXML
+    private TextField displayRole;
+    @FXML
+    private TextField displayTimeCreate;
+    @FXML
+    private TextField newUsernameField;
+    @FXML
+    private PasswordField passwordForUsernameField;
+    @FXML
+    private PasswordField oldPasswordField;
+    @FXML
+    private PasswordField newPasswordField;
+    @FXML
+    private Label messageLabel;
 
     @FXML
     public void initialize() {
@@ -32,12 +43,35 @@ public class SettingsController extends BaseController {
     // ------------------------------------------------------------------ //
     //  Nav handlers - dùng chung cho cả 3 role
     // ------------------------------------------------------------------ //
-    @FXML private void handleHome()         { goHome(getStage(displayUsername)); }
-    @FXML private void handleAdminCentre()  { navigateTo("/fxml/AdminCentre.fxml",      getStage(displayUsername)); }
-    @FXML private void handleUserReport()   { navigateTo("/fxml/AdminCentre.fxml",      getStage(displayUsername)); }
-    @FXML private void handleAuctions()     { goAuctions(getStage(displayUsername)); }
-    @FXML private void handleSellerCentre() { navigateTo("/fxml/SellerAddProduct.fxml", getStage(displayUsername)); }
-    @FXML private void handleBidderCentre() { navigateTo("/fxml/BidderCentre.fxml",     getStage(displayUsername)); }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(displayUsername));
+    }
+
+    @FXML
+    private void handleAdminCentre() {
+        navigateTo("/fxml/AdminCentre.fxml", getStage(displayUsername));
+    }
+
+    @FXML
+    private void handleUserReport() {
+        navigateTo("/fxml/AdminCentre.fxml", getStage(displayUsername));
+    }
+
+    @FXML
+    private void handleAuctions() {
+        goAuctions(getStage(displayUsername));
+    }
+
+    @FXML
+    private void handleSellerCentre() {
+        navigateTo("/fxml/SellerAddProduct.fxml", getStage(displayUsername));
+    }
+
+    @FXML
+    private void handleBidderCentre() {
+        navigateTo("/fxml/BidderCentre.fxml", getStage(displayUsername));
+    }
 
     // ------------------------------------------------------------------ //
     //  Đổi username
@@ -45,7 +79,7 @@ public class SettingsController extends BaseController {
     @FXML
     private void handleSaveUsername() {
         String newName = newUsernameField.getText().trim();
-        String pass    = passwordForUsernameField.getText();
+        String pass = passwordForUsernameField.getText();
 
         if (newName.isEmpty() || pass.isEmpty()) {
             showMsg("Vui lòng điền đầy đủ.", false);
@@ -104,8 +138,8 @@ public class SettingsController extends BaseController {
         ServerService.clearToken();  // ✅ Thêm dòng này
         com.example.socket.SocketClient.getInstance().disconnect();
         currentUsername = null;
-        currentRole     = null;
-        currentUserId   = null;
+        currentRole = null;
+        currentUserId = null;
         navigateTo("/fxml/Login.fxml", getStage(displayUsername));
     }
 

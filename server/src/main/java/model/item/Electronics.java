@@ -6,8 +6,11 @@ public class Electronics extends Item {
     private int warrantyMonths;
 
 
-    /** Prototype constructor — chỉ dùng nội bộ khi làm factory. */
-    public Electronics() {}
+    /**
+     * Prototype constructor — chỉ dùng nội bộ khi làm factory.
+     */
+    public Electronics() {
+    }
 
 
     private Electronics(String id, String sellerId, String name,
@@ -19,6 +22,7 @@ public class Electronics extends Item {
 
 
     // ── Factory Method ──────────────────────────────────────────────
+
     /**
      * Tạo model.item.Electronics với warrantyMonths mặc định = 12.
      * Dùng {@link #createItem(String, String, String, String, double, Item.ItemStatus, int)}
@@ -40,8 +44,13 @@ public class Electronics extends Item {
 
 
     // ── Getters & Setters ───────────────────────────────────────────
-    public int  getWarrantyMonths()              { return warrantyMonths; }
-    public void setWarrantyMonths(int months)    { this.warrantyMonths = months; }
+    public int getWarrantyMonths() {
+        return warrantyMonths;
+    }
+
+    public void setWarrantyMonths(int months) {
+        this.warrantyMonths = months;
+    }
 
 
     @Override

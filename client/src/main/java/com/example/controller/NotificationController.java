@@ -11,14 +11,15 @@ import javafx.stage.StageStyle;
 
 /**
  * NotificationController - NotificationPopup.fxml
- *
+ * <p>
  * Dùng chung cho tất cả thông báo trong app.
  * Cách dùng:
- *   NotificationController.show(ownerStage, "PHIÊN ĐẤU GIÁ ĐÃ KẾT THÚC!!!");
+ * NotificationController.show(ownerStage, "PHIÊN ĐẤU GIÁ ĐÃ KẾT THÚC!!!");
  */
 public class NotificationController {
 
-    @FXML private Label messageLabel;
+    @FXML
+    private Label messageLabel;
 
     private Stage popupStage;
 
@@ -28,6 +29,7 @@ public class NotificationController {
 
     /**
      * Hiển thị popup thông báo.
+     *
      * @param owner   Stage cha (để căn giữa popup)
      * @param message Nội dung thông báo (VIẾT HOA như wireframe)
      */

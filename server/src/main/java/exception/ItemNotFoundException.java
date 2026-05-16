@@ -9,9 +9,11 @@ public class ItemNotFoundException extends AuctionSystemException {
 
     public ItemNotFoundException(String itemId) {
         super("ITEM_NOT_FOUND",
-              "Không tìm thấy sản phẩm với ID: '" + itemId + "'");
+                "Không tìm thấy sản phẩm với ID: '" + itemId + "'");
         this.itemId = itemId;
     }
 
-    public String getItemId() { return itemId; }
+    public String getItemId() {
+        return itemId;
+    }
 }

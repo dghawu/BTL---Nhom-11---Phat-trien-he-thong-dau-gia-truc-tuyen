@@ -10,20 +10,20 @@ import java.net.Socket;
 
 /**
  * BidPushHandler — xử lý 1 client kết nối vào Push Server (port 8889).
- *
+ * <p>
  * Khác với ClientHandler (req/res), BidPushHandler giữ kết nối persistent:
- *   Client kết nối → gửi joinSession → server đăng ký client vào SocketBroadcaster
- *   → Server push BID_UPDATE / AUCTION_CLOSED trực tiếp qua kết nối này.
- *
+ * Client kết nối → gửi joinSession → server đăng ký client vào SocketBroadcaster
+ * → Server push BID_UPDATE / AUCTION_CLOSED trực tiếp qua kết nối này.
+ * <p>
  * Protocol (client → server):
- *   Bước 1 — joinSession:
- *     {"action": "joinSession", "sessionId": "AUC-001", "token": "eyJ..."}
- *   Bước 2 — server reply:
- *     {"success": true, "message": "Joined AUC-001"}  (hoặc fail)
- *   Bước 3 — server push (bất cứ lúc nào có bid mới):
- *     BID_UPDATE:AUC-001:16000000.0:userId:2025-05-20T21:00
- *     AUCTION_CLOSED:AUC-001:winnerId:16000000.0
- *
+ * Bước 1 — joinSession:
+ * {"action": "joinSession", "sessionId": "AUC-001", "token": "eyJ..."}
+ * Bước 2 — server reply:
+ * {"success": true, "message": "Joined AUC-001"}  (hoặc fail)
+ * Bước 3 — server push (bất cứ lúc nào có bid mới):
+ * BID_UPDATE:AUC-001:16000000.0:userId:2025-05-20T21:00
+ * AUCTION_CLOSED:AUC-001:winnerId:16000000.0
+ * <p>
  * Client chỉ cần giữ kết nối đọc (blocking readLine()).
  * Nếu client ngắt kết nối → SocketBroadcaster tự dọn dẹp lần broadcast tiếp theo.
  */
@@ -107,7 +107,10 @@ public class BidPushHandler implements Runnable {
         } catch (IOException e) {
             System.out.println("[BidPushHandler] Mất kết nối: " + e.getMessage());
         } finally {
-            try { clientSocket.close(); } catch (IOException ignored) {}
+            try {
+                clientSocket.close();
+            } catch (IOException ignored) {
+            }
         }
     }
 

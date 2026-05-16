@@ -1,7 +1,9 @@
 package com.example.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 
 /**
  * AdminCentreController - AdminCentre.fxml
@@ -10,24 +12,38 @@ import javafx.scene.control.*;
 public class AdminCentreController extends com.example.controller.BaseController {
 
     // Nav
-    @FXML private Button btnNguoiDung;
-    @FXML private Button btnSanPham;
-    @FXML private Button btnPhien;
-    @FXML private Button btnGiaoDich;
+    @FXML
+    private Button btnNguoiDung;
+    @FXML
+    private Button btnSanPham;
+    @FXML
+    private Button btnPhien;
+    @FXML
+    private Button btnGiaoDich;
 
     // Table
-    @FXML private TableView<Object>   dataTable;
-    @FXML private TableColumn<Object,String> colId;
-    @FXML private TableColumn<Object,String> colTen;
-    @FXML private TableColumn<Object,String> colThongTin;
-    @FXML private TableColumn<Object,String> colExtra;
-    @FXML private TableColumn<Object,String> colTrangThai;
+    @FXML
+    private TableView<Object> dataTable;
+    @FXML
+    private TableColumn<Object, String> colId;
+    @FXML
+    private TableColumn<Object, String> colTen;
+    @FXML
+    private TableColumn<Object, String> colThongTin;
+    @FXML
+    private TableColumn<Object, String> colExtra;
+    @FXML
+    private TableColumn<Object, String> colTrangThai;
 
     // Buttons
-    @FXML private Button btnBan;
-    @FXML private Button btnMakeAdmin;
-    @FXML private Button btnEdit;
-    @FXML private Button btnSave;
+    @FXML
+    private Button btnBan;
+    @FXML
+    private Button btnMakeAdmin;
+    @FXML
+    private Button btnEdit;
+    @FXML
+    private Button btnSave;
 
     private String currentTab = "NGUOIDUNG";
 
@@ -39,10 +55,21 @@ public class AdminCentreController extends com.example.controller.BaseController
     // ------------------------------------------------------------------ //
     //  Nav bar
     // ------------------------------------------------------------------ //
-    @FXML private void handleHome()         { goHome(getStage(dataTable)); }
-    @FXML private void handleAdminCentre()  { /* đã ở đây */ }
-    @FXML private void handleUserReport()   { /* chưa làm */}
-    @FXML private void handleSettings()     { goSettings(getStage(dataTable)); }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(dataTable));
+    }
+
+    @FXML
+    private void handleAdminCentre() { /* đã ở đây */ }
+
+    @FXML
+    private void handleUserReport() { /* chưa làm */}
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(dataTable));
+    }
 
     // ------------------------------------------------------------------ //
     //  Sidebar tabs

@@ -10,11 +10,12 @@ import service.AuctionTimer;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * Unit test cho AuctionTimer (scheduling & threading).
- *
+ * <p>
  * Lưu ý thiết kế:
  * - Auction.startAuction() yêu cầu status == APPROVED trước khi chuyển RUNNING.
  * - AuctionTimer.schedule() gọi auction.closeAuction() sau khi hết giờ.
@@ -27,7 +28,9 @@ class AuctionTimerTest {
 
     // ── Fake observer (không cần DB hay Socket) ────────────────────
     static class NoOpObserver implements AuctionObserver {
-        @Override public void update(Auction auction, double newPrice, String lastBidderId) {}
+        @Override
+        public void update(Auction auction, double newPrice, String lastBidderId) {
+        }
     }
 
     // ── Helper: tạo Auction đã sẵn sàng để lên lịch ───────────────
@@ -56,7 +59,8 @@ class AuctionTimerTest {
     }
 
     // ── Test 1: Tự động đóng phiên ────────────────────────────────
-    @Test @Order(1)
+    @Test
+    @Order(1)
     @DisplayName("Schedule: Tự động đóng phiên sau khi hết thời gian")
     void testAutoCloseAuction() throws InterruptedException {
         Auction auction = makeAuction("TIMER-AUC-T1", 2);
@@ -70,7 +74,8 @@ class AuctionTimerTest {
     }
 
     // ── Test 2: Hủy lịch ─────────────────────────────────────────
-    @Test @Order(2)
+    @Test
+    @Order(2)
     @DisplayName("Cancel: Hủy lịch đóng phiên thành công")
     void testCancelTask() throws InterruptedException {
         Auction auction = makeAuction("TIMER-AUC-T2", 2);
@@ -85,7 +90,8 @@ class AuctionTimerTest {
     }
 
     // ── Test 3: Lên lịch lại ──────────────────────────────────────
-    @Test @Order(3)
+    @Test
+    @Order(3)
     @DisplayName("Reschedule: Lên lịch lại khi thời gian được gia hạn")
     void testRescheduleAuction() throws InterruptedException {
         Auction auction = makeAuction("TIMER-AUC-T3", 2);
@@ -108,7 +114,8 @@ class AuctionTimerTest {
     }
 
     // ── Test 4: Đóng ngay nếu đã quá giờ ─────────────────────────
-    @Test @Order(4)
+    @Test
+    @Order(4)
     @DisplayName("Schedule: Đóng ngay lập tức nếu phiên đã quá giờ")
     void testSchedulePastAuction() {
         Item item = Item.ItemType.ETC.create(

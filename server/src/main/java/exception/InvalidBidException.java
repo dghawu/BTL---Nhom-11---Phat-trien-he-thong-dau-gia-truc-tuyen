@@ -16,10 +16,18 @@ public class InvalidBidException extends AuctionSystemException {
                         attemptedAmount, requiredAmount,
                         requiredAmount - attemptedAmount));
         this.attemptedAmount = attemptedAmount;
-        this.requiredAmount  = requiredAmount;
+        this.requiredAmount = requiredAmount;
     }
 
-    public double getAttemptedAmount() { return attemptedAmount; }
-    public double getRequiredAmount()  { return requiredAmount; }
-    public double getShortfall()       { return requiredAmount - attemptedAmount; }
+    public double getAttemptedAmount() {
+        return attemptedAmount;
+    }
+
+    public double getRequiredAmount() {
+        return requiredAmount;
+    }
+
+    public double getShortfall() {
+        return requiredAmount - attemptedAmount;
+    }
 }

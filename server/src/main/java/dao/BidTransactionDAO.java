@@ -2,7 +2,10 @@ package dao;
 
 import model.auction.BidTransaction;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +41,9 @@ public class BidTransactionDAO {
 
     // ── SELECT ─────────────────────────────────────────────────────
 
-    /** Lấy toàn bộ lịch sử bid của một phiên — dùng cho biểu đồ giá */
+    /**
+     * Lấy toàn bộ lịch sử bid của một phiên — dùng cho biểu đồ giá
+     */
     public List<BidTransaction> findByAuctionId(String auctionId) {
         List<BidTransaction> list = new ArrayList<>();
         String sql = "SELECT * FROM bid_transactions WHERE auction_id = ? ORDER BY timestamp ASC";
@@ -52,7 +57,9 @@ public class BidTransactionDAO {
         return list;
     }
 
-    /** Lấy toàn bộ lịch sử bid của một bidder */
+    /**
+     * Lấy toàn bộ lịch sử bid của một bidder
+     */
     public List<BidTransaction> findByBidderId(String bidderId) {
         List<BidTransaction> list = new ArrayList<>();
         String sql = "SELECT * FROM bid_transactions WHERE bidder_id = ? ORDER BY timestamp DESC";
@@ -66,7 +73,9 @@ public class BidTransactionDAO {
         return list;
     }
 
-    /** Lấy bid cao nhất của một phiên */
+    /**
+     * Lấy bid cao nhất của một phiên
+     */
     public BidTransaction findHighestBid(String auctionId) {
         String sql = "SELECT * FROM bid_transactions WHERE auction_id = ? ORDER BY amount DESC LIMIT 1";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

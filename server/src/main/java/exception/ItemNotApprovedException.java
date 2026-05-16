@@ -11,12 +11,17 @@ public class ItemNotApprovedException extends AuctionSystemException {
 
     public ItemNotApprovedException(String itemId, String itemStatus) {
         super("ITEM_NOT_APPROVED",
-              "Sản phẩm '" + itemId + "' chưa được duyệt (trạng thái: " + itemStatus + "). "
-              + "Chỉ sản phẩm APPROVED mới được đưa vào đấu giá.");
-        this.itemId     = itemId;
+                "Sản phẩm '" + itemId + "' chưa được duyệt (trạng thái: " + itemStatus + "). "
+                        + "Chỉ sản phẩm APPROVED mới được đưa vào đấu giá.");
+        this.itemId = itemId;
         this.itemStatus = itemStatus;
     }
 
-    public String getItemId()     { return itemId; }
-    public String getItemStatus() { return itemStatus; }
+    public String getItemId() {
+        return itemId;
+    }
+
+    public String getItemStatus() {
+        return itemStatus;
+    }
 }

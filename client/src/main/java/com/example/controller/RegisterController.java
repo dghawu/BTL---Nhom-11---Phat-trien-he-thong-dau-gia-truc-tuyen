@@ -5,7 +5,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 /**
@@ -15,13 +18,20 @@ import javafx.stage.Stage;
  */
 public class RegisterController {
 
-    @FXML private TextField     nameField;
-    @FXML private TextField     emailField;
-    @FXML private PasswordField passwordField;
-    @FXML private PasswordField confirmPasswordField;
-    @FXML private Label         roleLabelVisibility;
-    @FXML private ComboBox<String> roleComboBox;
-    @FXML private Label         errorLabel;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private TextField emailField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private PasswordField confirmPasswordField;
+    @FXML
+    private Label roleLabelVisibility;
+    @FXML
+    private ComboBox<String> roleComboBox;
+    @FXML
+    private Label errorLabel;
 
     private boolean waitingForRole = false;
     private String savedName;
@@ -41,10 +51,10 @@ public class RegisterController {
     private void handleSubmit() {
         if (!waitingForRole) {
             // --- Bước 1: validate form ---
-            String name    = nameField.getText().trim();
-            String email   = emailField.getText().trim();
+            String name = nameField.getText().trim();
+            String email = emailField.getText().trim();
             String password = passwordField.getText();
-            String confirm  = confirmPasswordField.getText();
+            String confirm = confirmPasswordField.getText();
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 showError("Vui lòng điền đầy đủ thông tin.");
@@ -56,8 +66,8 @@ public class RegisterController {
             }
 
             // Lưu lại để dùng ở bước 2
-            savedName     = name;
-            savedEmail    = email;
+            savedName = name;
+            savedEmail = email;
             savedPassword = password;
 
             // Hiện ComboBox chọn role

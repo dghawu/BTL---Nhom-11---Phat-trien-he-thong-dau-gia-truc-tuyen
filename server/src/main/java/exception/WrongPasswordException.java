@@ -8,6 +8,6 @@ public class WrongPasswordException extends AuctionSystemException {
 
     public WrongPasswordException() {
         super("WRONG_PASSWORD",
-              "Tên đăng nhập hoặc mật khẩu không đúng.");
+                "Tên đăng nhập hoặc mật khẩu không đúng.");
     }
 }

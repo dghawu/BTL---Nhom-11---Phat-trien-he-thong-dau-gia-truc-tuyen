@@ -4,8 +4,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -15,27 +19,39 @@ import javafx.stage.Stage;
  */
 public class AuctionsController extends com.example.controller.BaseController {
 
-    @FXML private Button   middleTabBtn;
-    @FXML private FlowPane auctionGrid;
+    @FXML
+    private Button middleTabBtn;
+    @FXML
+    private FlowPane auctionGrid;
 
     // Category filter buttons
-    @FXML private Button btnTatCa;
-    @FXML private Button btnDienTu;
-    @FXML private Button btnPhuongTien;
-    @FXML private Button btnThoiTrang;
-    @FXML private Button btnNgheThuat;
-    @FXML private Button btnMucKhac;
+    @FXML
+    private Button btnTatCa;
+    @FXML
+    private Button btnDienTu;
+    @FXML
+    private Button btnPhuongTien;
+    @FXML
+    private Button btnThoiTrang;
+    @FXML
+    private Button btnNgheThuat;
+    @FXML
+    private Button btnMucKhac;
 
     private String activeFilter = "ALL";
 
     @FXML
-    public void initialize() { }
+    public void initialize() {
+    }
+
     @Override
     public void onReady() {
         loadAuctions("ALL");
     }
 
-    /** Gọi sau navigateTo để cấu hình theo role */
+    /**
+     * Gọi sau navigateTo để cấu hình theo role
+     */
     public void setupForRole(String role, String username) {
         currentRole = role;
         currentUsername = username;
@@ -49,24 +65,56 @@ public class AuctionsController extends com.example.controller.BaseController {
     // ------------------------------------------------------------------ //
     //  Nav
     // ------------------------------------------------------------------ //
-    @FXML private void handleHome()       { goHome(getStage(auctionGrid)); }
-    @FXML private void handleMiddleTab()  {
+    @FXML
+    private void handleHome() {
+        goHome(getStage(auctionGrid));
+    }
+
+    @FXML
+    private void handleMiddleTab() {
         if ("SELLER".equalsIgnoreCase(currentRole))
             navigateTo("/fxml/SellerAddProduct.fxml", getStage(auctionGrid));
         else
             navigateTo("/fxml/BidderCentre.fxml", getStage(auctionGrid));
     }
-    @FXML private void handleSettings()   { goSettings(getStage(auctionGrid)); }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(auctionGrid));
+    }
 
     // ------------------------------------------------------------------ //
     //  Category filters
     // ------------------------------------------------------------------ //
-    @FXML private void handleFilterTatCa()      { setFilter("ALL",       btnTatCa); }
-    @FXML private void handleFilterDienTu()     { setFilter("DIEN_TU",   btnDienTu); }
-    @FXML private void handleFilterPhuongTien() { setFilter("PHUONG_TIEN", btnPhuongTien); }
-    @FXML private void handleFilterThoiTrang()  { setFilter("THOI_TRANG", btnThoiTrang); }
-    @FXML private void handleFilterNgheThuat()  { setFilter("NGHE_THUAT", btnNgheThuat); }
-    @FXML private void handleFilterMucKhac()    { setFilter("MUC_KHAC",   btnMucKhac); }
+    @FXML
+    private void handleFilterTatCa() {
+        setFilter("ALL", btnTatCa);
+    }
+
+    @FXML
+    private void handleFilterDienTu() {
+        setFilter("DIEN_TU", btnDienTu);
+    }
+
+    @FXML
+    private void handleFilterPhuongTien() {
+        setFilter("PHUONG_TIEN", btnPhuongTien);
+    }
+
+    @FXML
+    private void handleFilterThoiTrang() {
+        setFilter("THOI_TRANG", btnThoiTrang);
+    }
+
+    @FXML
+    private void handleFilterNgheThuat() {
+        setFilter("NGHE_THUAT", btnNgheThuat);
+    }
+
+    @FXML
+    private void handleFilterMucKhac() {
+        setFilter("MUC_KHAC", btnMucKhac);
+    }
 
     private void setFilter(String filter, Button activeBtn) {
         activeFilter = filter;
@@ -99,14 +147,14 @@ public class AuctionsController extends com.example.controller.BaseController {
     }
 
     private VBox buildCard(org.json.JSONObject s) {
-        String id        = s.getString("id");
-        String ten       = s.getString("itemName");
-        String gia       = String.format("%,.0fđ", s.getDouble("startPrice"));
-        String giaHT     = String.format("%,.0fđ", s.getDouble("currentPrice"));
-        String sellerId  = s.getString("sellerId");
-        String category  = s.getString("category");
-        String endTime   = s.getString("endTime");
-        String status    = s.getString("status");
+        String id = s.getString("id");
+        String ten = s.getString("itemName");
+        String gia = String.format("%,.0fđ", s.getDouble("startPrice"));
+        String giaHT = String.format("%,.0fđ", s.getDouble("currentPrice"));
+        String sellerId = s.getString("sellerId");
+        String category = s.getString("category");
+        String endTime = s.getString("endTime");
+        String status = s.getString("status");
 
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
@@ -164,7 +212,9 @@ public class AuctionsController extends com.example.controller.BaseController {
             dialog.initOwner(getStage(auctionGrid));
             dialog.setScene(new Scene(root));
             dialog.show();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void handleAddToWatchList(String ten) {
@@ -185,10 +235,12 @@ public class AuctionsController extends com.example.controller.BaseController {
             AuctionRoomController ctrl = loader.getController();
             // Truyền thông tin base
             ctrl.currentUsername = this.currentUsername;
-            ctrl.currentUserId   = this.currentUserId;
-            ctrl.currentRole     = this.currentRole;
+            ctrl.currentUserId = this.currentUserId;
+            ctrl.currentRole = this.currentRole;
             ctrl.initSession(sessionId, productName);
             getStage(auctionGrid).setScene(new Scene(root));
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

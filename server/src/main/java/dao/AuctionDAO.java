@@ -1,7 +1,7 @@
 package dao;
 
-import model.enums.AuctionStatus;
 import model.auction.Auction;
+import model.enums.AuctionStatus;
 import model.item.Item;
 
 import java.sql.*;
@@ -15,7 +15,7 @@ public class AuctionDAO {
     private final ItemDAO itemDAO;
 
     public AuctionDAO() {
-        this.conn    = DatabaseConnection.getInstance().getConnection();
+        this.conn = DatabaseConnection.getInstance().getConnection();
         this.itemDAO = new ItemDAO();
     }
 
@@ -65,7 +65,7 @@ public class AuctionDAO {
         List<Auction> list = new ArrayList<>();
         String sql = "SELECT * FROM auctions";
         try (Statement stmt = conn.createStatement();
-             ResultSet rs   = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) list.add(mapToAuction(rs));
         } catch (SQLException e) {
             System.out.println("[AuctionDAO] Lỗi findAll: " + e.getMessage());

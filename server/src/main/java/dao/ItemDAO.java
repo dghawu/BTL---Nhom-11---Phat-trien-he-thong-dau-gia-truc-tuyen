@@ -71,7 +71,7 @@ public class ItemDAO {
         List<Item> list = new ArrayList<>();
         String sql = "SELECT * FROM items";
         try (Statement stmt = conn.createStatement();
-             ResultSet rs   = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) list.add(mapToItem(rs));
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi findAll: " + e.getMessage());
@@ -137,16 +137,16 @@ public class ItemDAO {
     // ── Helper ─────────────────────────────────────────────────────
 
     private Item mapToItem(ResultSet rs) throws SQLException {
-        String id          = rs.getString("id");
-        String sellerId    = rs.getString("seller_id");
-        String name        = rs.getString("name");
+        String id = rs.getString("id");
+        String sellerId = rs.getString("seller_id");
+        String name = rs.getString("name");
         String description = rs.getString("description");
-        double startPrice  = rs.getDouble("starting_price");
-        String statusStr   = rs.getString("status");
-        String typeStr     = rs.getString("type");
+        double startPrice = rs.getDouble("starting_price");
+        String statusStr = rs.getString("status");
+        String typeStr = rs.getString("type");
 
         Item.ItemStatus status = Item.ItemStatus.valueOf(statusStr);
-        Item.ItemType   type   = Item.ItemType.valueOf(typeStr);
+        Item.ItemType type = Item.ItemType.valueOf(typeStr);
 
         return type.create(sellerId, name, id, description, startPrice, status);
     }

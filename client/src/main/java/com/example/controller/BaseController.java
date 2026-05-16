@@ -11,9 +11,13 @@ import javafx.stage.Stage;
  */
 public abstract class BaseController {
 
-    /** Username đang đăng nhập - set khi login thành công */
+    /**
+     * Username đang đăng nhập - set khi login thành công
+     */
     protected String currentUsername;
-    /** Role hiện tại: ADMIN / SELLER / BIDDER */
+    /**
+     * Role hiện tại: ADMIN / SELLER / BIDDER
+     */
     protected String currentRole;
     protected String currentUserId;
 
@@ -28,8 +32,8 @@ public abstract class BaseController {
             Object ctrl = loader.getController();
             if (ctrl instanceof BaseController bc) {
                 bc.currentUsername = this.currentUsername;
-                bc.currentRole     = this.currentRole;
-                bc.currentUserId   = this.currentUserId;
+                bc.currentRole = this.currentRole;
+                bc.currentUserId = this.currentUserId;
                 //Gọi onReady() sau khi set xong
                 bc.onReady();
             }
@@ -39,7 +43,9 @@ public abstract class BaseController {
             e.printStackTrace();
         }
     }
-    protected void onReady() {}
+
+    protected void onReady() {
+    }
 
     protected Stage getStage(javafx.scene.Node node) {
         return (Stage) node.getScene().getWindow();
@@ -54,18 +60,20 @@ public abstract class BaseController {
     // ------------------------------------------------------------------ //
     protected void goHome(Stage stage) {
         switch (currentRole == null ? "" : currentRole.toUpperCase()) {
-            case "ADMIN"  -> navigateTo("/fxml/HomeAdmin.fxml",  stage);
+            case "ADMIN" -> navigateTo("/fxml/HomeAdmin.fxml", stage);
             case "SELLER" -> navigateTo("/fxml/HomeSeller.fxml", stage);
-            default       -> navigateTo("/fxml/HomeBidder.fxml", stage);
+            default -> navigateTo("/fxml/HomeBidder.fxml", stage);
         }
     }
 
-    /** Settings theo đúng role */
+    /**
+     * Settings theo đúng role
+     */
     protected void goSettings(Stage stage) {
         switch (currentRole == null ? "" : currentRole.toUpperCase()) {
-            case "ADMIN"  -> navigateTo("/fxml/SettingsAdmin.fxml",  stage);
+            case "ADMIN" -> navigateTo("/fxml/SettingsAdmin.fxml", stage);
             case "SELLER" -> navigateTo("/fxml/SettingsSeller.fxml", stage);
-            default       -> navigateTo("/fxml/SettingsBidder.fxml", stage);
+            default -> navigateTo("/fxml/SettingsBidder.fxml", stage);
         }
     }
 

@@ -11,23 +11,35 @@ import javafx.stage.Stage;
  */
 public class AuctionDetailDialogController extends com.example.controller.BaseController {
 
-    @FXML private Label lblTenSP;
-    @FXML private Label lblIdSP;
-    @FXML private Label lblMoTa;
-    @FXML private Label lblIdPhien;
-    @FXML private Label lblThoiGianMo;
-    @FXML private Label lblThoiGianDong;
-    @FXML private Label lblGiaKhoiBan;
-    @FXML private Label lblBuocGia;
-    @FXML private Label lblIdNguoiBan;
-    @FXML private Label lblPhanLoai;
-    @FXML private Label lblMoTa2;
-    @FXML private Pane  imgPane;
+    @FXML
+    private Label lblTenSP;
+    @FXML
+    private Label lblIdSP;
+    @FXML
+    private Label lblMoTa;
+    @FXML
+    private Label lblIdPhien;
+    @FXML
+    private Label lblThoiGianMo;
+    @FXML
+    private Label lblThoiGianDong;
+    @FXML
+    private Label lblGiaKhoiBan;
+    @FXML
+    private Label lblBuocGia;
+    @FXML
+    private Label lblIdNguoiBan;
+    @FXML
+    private Label lblPhanLoai;
+    @FXML
+    private Label lblMoTa2;
+    @FXML
+    private Pane imgPane;
 
     private AuctionsController parentController;
     private String sessionId;
 
-    public void initData(String sessionId,String ten, String gia, String sellerId, String phanLoai) {
+    public void initData(String sessionId, String ten, String gia, String sellerId, String phanLoai) {
         this.sessionId = sessionId;
         lblTenSP.setText(ten);
         lblGiaKhoiBan.setText(gia);

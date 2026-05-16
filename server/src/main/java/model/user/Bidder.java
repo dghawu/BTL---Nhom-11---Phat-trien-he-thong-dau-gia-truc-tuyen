@@ -16,12 +16,14 @@ public class Bidder extends User implements AuctionObserver {
 
     public Bidder(String id, String name, String password) {
         super(id, name, password, "BIDDER");
-        this.watchlist        = new ArrayList<>();
+        this.watchlist = new ArrayList<>();
         this.isAutoBidEnabled = false;
         this.maxAutoBidAmount = 0.0;
     }
 
-    /** Đặt giá thủ công — bắt exception và thông báo lý do thất bại */
+    /**
+     * Đặt giá thủ công — bắt exception và thông báo lý do thất bại
+     */
     public void placeManualBid(Auction auction, double amount) {
         System.out.println("[BIDDER] " + getName() + " yêu cầu đặt giá: " + amount);
         try {

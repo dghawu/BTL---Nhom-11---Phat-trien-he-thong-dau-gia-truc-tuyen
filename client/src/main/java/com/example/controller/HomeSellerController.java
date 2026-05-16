@@ -8,7 +8,8 @@ import javafx.scene.control.Label;
  */
 public class HomeSellerController extends com.example.controller.BaseController {
 
-    @FXML private Label welcomeLabel;
+    @FXML
+    private Label welcomeLabel;
 
     public void initData(String username, String userId) {
         currentUsername = username;
@@ -17,12 +18,36 @@ public class HomeSellerController extends com.example.controller.BaseController 
         welcomeLabel.setText("CHÀO MỪNG Seller @" + username + "\nĐẾN VỚI ABCXYZ");
     }
 
-    @FXML private void handleHome()         { /* đã ở Home */ }
-    @FXML private void handleAuctions()     { goAuctions(getStage(welcomeLabel)); }
-    @FXML private void handleSellerCentre() { navigateTo("/fxml/SellerAddProduct.fxml", getStage(welcomeLabel)); }
-    @FXML private void handleSettings()     { goSettings(getStage(welcomeLabel)); }
+    @FXML
+    private void handleHome() { /* đã ở Home */ }
 
-    @FXML private void handleGoAuctions()      { handleAuctions(); }
-    @FXML private void handleGoSellerCentre()  { handleSellerCentre(); }
-    @FXML private void handleGoSettings()      { handleSettings(); }
+    @FXML
+    private void handleAuctions() {
+        goAuctions(getStage(welcomeLabel));
+    }
+
+    @FXML
+    private void handleSellerCentre() {
+        navigateTo("/fxml/SellerAddProduct.fxml", getStage(welcomeLabel));
+    }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(welcomeLabel));
+    }
+
+    @FXML
+    private void handleGoAuctions() {
+        handleAuctions();
+    }
+
+    @FXML
+    private void handleGoSellerCentre() {
+        handleSellerCentre();
+    }
+
+    @FXML
+    private void handleGoSettings() {
+        handleSettings();
+    }
 }

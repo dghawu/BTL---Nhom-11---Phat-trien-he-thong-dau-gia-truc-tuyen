@@ -5,14 +5,14 @@ import com.example.server.SocketServer;
 
 /**
  * ServerMain - khởi động cả 2 server:
- *   - SocketServer  (port 8888): API request/response (login, bid, ...)
- *   - BidPushServer (port 8889): Push realtime (BID_UPDATE, AUCTION_CLOSED)
- *
+ * - SocketServer  (port 8888): API request/response (login, bid, ...)
+ * - BidPushServer (port 8889): Push realtime (BID_UPDATE, AUCTION_CLOSED)
+ * <p>
  * Chạy file này TRƯỚC khi chạy client.
  */
 public class ServerMain {
 
-    private static final int API_PORT  = 8888;
+    private static final int API_PORT = 8888;
     private static final int PUSH_PORT = 8889;
 
     public static void main(String[] args) {
@@ -20,7 +20,7 @@ public class ServerMain {
         System.out.println("   AUCTION SYSTEM - SERVER");
         System.out.println("=================================");
 
-        SocketServer  apiServer  = new SocketServer(API_PORT);
+        SocketServer apiServer = new SocketServer(API_PORT);
         BidPushServer pushServer = new BidPushServer(PUSH_PORT);
 
         // BidPushServer chạy trong background thread riêng

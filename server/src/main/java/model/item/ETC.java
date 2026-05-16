@@ -6,7 +6,8 @@ public class ETC extends Item {
     private String note; // Ghi chú thêm cho các loại mặt hàng không phân loại cụ thể
 
 
-    public ETC() {}
+    public ETC() {
+    }
 
 
     private ETC(String id, String sellerId, String name,
@@ -34,8 +35,13 @@ public class ETC extends Item {
 
 
     // ── Getters & Setters ───────────────────────────────────────────
-    public String getNote()           { return note; }
-    public void   setNote(String n)   { this.note = n; }
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String n) {
+        this.note = n;
+    }
 
 
     @Override

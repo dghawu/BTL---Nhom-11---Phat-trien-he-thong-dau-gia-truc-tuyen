@@ -4,10 +4,12 @@ import model.auction.Auction;
 import model.auction.BidTransaction;
 
 import java.util.List;
+
 public class Admin extends User {
     public Admin(String id, String name, String password) {
         super(id, name, password, "ADMIN");
     }
+
     // Hiển thị menu
     @Override
     public void showMenu() {
@@ -19,6 +21,7 @@ public class Admin extends User {
         System.out.println("5. Xem tất cả giao dịch");
         System.out.println("0. Thoát");
     }
+
     // Override từ Entity
     @Override
     public void printInfo() {

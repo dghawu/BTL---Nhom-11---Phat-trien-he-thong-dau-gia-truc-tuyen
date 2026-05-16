@@ -6,7 +6,9 @@ import model.item.Item;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +27,8 @@ class AuctionManagerTest {
         private static volatile InMemoryAuctionManager instance;
         private final Map<String, Auction> store = new ConcurrentHashMap<>();
 
-        private InMemoryAuctionManager() {}
+        private InMemoryAuctionManager() {
+        }
 
         static InMemoryAuctionManager getInstance() {
             if (instance == null) {
@@ -36,11 +39,17 @@ class AuctionManagerTest {
             return instance;
         }
 
-        void clear() { store.clear(); }
+        void clear() {
+            store.clear();
+        }
 
-        void addAuction(Auction auction) { store.put(auction.getAuctionId(), auction); }
+        void addAuction(Auction auction) {
+            store.put(auction.getAuctionId(), auction);
+        }
 
-        void removeAuction(String id) { store.remove(id); }
+        void removeAuction(String id) {
+            store.remove(id);
+        }
 
         Auction findAuction(String id) {
             Auction a = store.get(id);
@@ -89,7 +98,8 @@ class AuctionManagerTest {
     }
 
     // ── Test 1: Singleton ──────────────────────────────────────────
-    @Test @Order(1)
+    @Test
+    @Order(1)
     @DisplayName("Singleton: Đảm bảo luôn trả về cùng một instance")
     void testSingletonInstance() {
         assertSame(InMemoryAuctionManager.getInstance(), InMemoryAuctionManager.getInstance(),
@@ -97,7 +107,8 @@ class AuctionManagerTest {
     }
 
     // ── Test 2: CRUD ──────────────────────────────────────────────
-    @Test @Order(2)
+    @Test
+    @Order(2)
     @DisplayName("Thêm và Tìm kiếm phiên → Thành công")
     void testAddAndFindAuction() {
         manager.addAuction(testAuction);
@@ -106,7 +117,8 @@ class AuctionManagerTest {
         assertEquals(auctionId, found.getAuctionId());
     }
 
-    @Test @Order(3)
+    @Test
+    @Order(3)
     @DisplayName("Tìm kiếm phiên không tồn tại → Ném IllegalArgumentException")
     void testFindNonExistentAuction() {
         assertThrows(IllegalArgumentException.class,
@@ -114,7 +126,8 @@ class AuctionManagerTest {
     }
 
     // ── Test 3: Approve / Reject ──────────────────────────────────
-    @Test @Order(4)
+    @Test
+    @Order(4)
     @DisplayName("Duyệt phiên PENDING → Chuyển sang APPROVED")
     void testApproveAuction() {
         manager.addAuction(testAuction);
@@ -122,7 +135,8 @@ class AuctionManagerTest {
         assertEquals(AuctionStatus.APPROVED, testAuction.getStatus());
     }
 
-    @Test @Order(5)
+    @Test
+    @Order(5)
     @DisplayName("Từ chối phiên → Chuyển sang REJECTED")
     void testRejectAuction() {
         manager.addAuction(testAuction);
@@ -131,7 +145,8 @@ class AuctionManagerTest {
     }
 
     // ── Test 4: Filtering ─────────────────────────────────────────
-    @Test @Order(6)
+    @Test
+    @Order(6)
     @DisplayName("Lọc danh sách PENDING và RUNNING")
     void testFilterAuctions() {
         manager.addAuction(testAuction); // PENDING
@@ -145,7 +160,8 @@ class AuctionManagerTest {
     }
 
     // ── Test 5: Remove ────────────────────────────────────────────
-    @Test @Order(7)
+    @Test
+    @Order(7)
     @DisplayName("Xóa phiên khỏi hệ thống")
     void testRemoveAuction() {
         manager.addAuction(testAuction);

@@ -6,22 +6,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * BidRegistry — Singleton giữ map auctionId → SocketBroadcaster.
- *
+ * <p>
  * Tại sao cần class này?
- *   - ClientHandler (port 8888) xử lý placeBid → cần biết Broadcaster của phiên để push.
- *   - BidPushHandler (port 8889) đăng ký client vào Broadcaster của phiên.
- *   → Hai handler chạy trên 2 cổng khác nhau, cần 1 nơi chung để chia sẻ Broadcaster.
- *
+ * - ClientHandler (port 8888) xử lý placeBid → cần biết Broadcaster của phiên để push.
+ * - BidPushHandler (port 8889) đăng ký client vào Broadcaster của phiên.
+ * → Hai handler chạy trên 2 cổng khác nhau, cần 1 nơi chung để chia sẻ Broadcaster.
+ * <p>
  * Luồng sử dụng:
- *   1. Client A kết nối port 8889, gửi: {"action":"joinSession","sessionId":"AUC-001","token":"..."}
- *      → BidPushHandler gọi BidRegistry.getOrCreate("AUC-001").addSubscriber(socket)
- *
- *   2. Client B gửi placeBid lên port 8888
- *      → ClientHandler gọi BidRegistry.get("AUC-001").broadcast("BID_UPDATE:...")
- *
- *   3. Phiên kết thúc
- *      → ClientHandler/AuctionTimer gọi BidRegistry.get("AUC-001").broadcastClose(...)
- *      → BidRegistry.remove("AUC-001")
+ * 1. Client A kết nối port 8889, gửi: {"action":"joinSession","sessionId":"AUC-001","token":"..."}
+ * → BidPushHandler gọi BidRegistry.getOrCreate("AUC-001").addSubscriber(socket)
+ * <p>
+ * 2. Client B gửi placeBid lên port 8888
+ * → ClientHandler gọi BidRegistry.get("AUC-001").broadcast("BID_UPDATE:...")
+ * <p>
+ * 3. Phiên kết thúc
+ * → ClientHandler/AuctionTimer gọi BidRegistry.get("AUC-001").broadcastClose(...)
+ * → BidRegistry.remove("AUC-001")
  */
 public class BidRegistry {
 
@@ -30,7 +30,8 @@ public class BidRegistry {
     // auctionId → broadcaster của phiên đó
     private final ConcurrentHashMap<String, SocketBroadcaster> map = new ConcurrentHashMap<>();
 
-    private BidRegistry() {}
+    private BidRegistry() {
+    }
 
     public static BidRegistry getInstance() {
         return INSTANCE;

@@ -92,7 +92,7 @@ public class UserDAO {
         List<User> list = new ArrayList<>();
         String sql = "SELECT * FROM users";
         try (Statement stmt = conn.createStatement();
-             ResultSet rs   = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) list.add(mapToUser(rs));
         } catch (SQLException e) {
             System.out.println("[UserDAO] Lỗi findAll: " + e.getMessage());
@@ -128,7 +128,9 @@ public class UserDAO {
         }
     }
 
-    /** Đổi tên user - dùng cho handleChangeUsername */
+    /**
+     * Đổi tên user - dùng cho handleChangeUsername
+     */
     public void updateName(String userId, String newName) {
         String sql = "UPDATE users SET name = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -141,7 +143,9 @@ public class UserDAO {
         }
     }
 
-    /** Đổi role user - dùng cho handleMakeAdmin */
+    /**
+     * Đổi role user - dùng cho handleMakeAdmin
+     */
     public void updateRole(String userId, String newRole) {
         String sql = "UPDATE users SET role = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -170,15 +174,15 @@ public class UserDAO {
     // ── Helper ─────────────────────────────────────────────────────
 
     private User mapToUser(ResultSet rs) throws SQLException {
-        String id       = rs.getString("id");
-        String name     = rs.getString("name");
+        String id = rs.getString("id");
+        String name = rs.getString("name");
         String password = rs.getString("password");
-        String role     = rs.getString("role");
+        String role = rs.getString("role");
 
         return switch (role) {
             case "BIDDER" -> new Bidder(id, name, password);
             case "SELLER" -> new Seller(id, name, password);
-            case "ADMIN"  -> new Admin(id, name, password);
+            case "ADMIN" -> new Admin(id, name, password);
             default -> throw new SQLException("Role không hợp lệ: " + role);
         };
     }

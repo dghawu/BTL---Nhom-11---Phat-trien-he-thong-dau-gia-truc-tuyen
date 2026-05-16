@@ -11,13 +11,18 @@ public class PaymentException extends AuctionSystemException {
 
     public PaymentException(String transactionId, double amount, String reason) {
         super("PAYMENT_FAILED",
-              "Thanh toán thất bại cho giao dịch '" + transactionId + "' "
-              + "(số tiền: " + String.format("%.0f", amount) + " VNĐ). "
-              + "Lý do: " + reason);
+                "Thanh toán thất bại cho giao dịch '" + transactionId + "' "
+                        + "(số tiền: " + String.format("%.0f", amount) + " VNĐ). "
+                        + "Lý do: " + reason);
         this.transactionId = transactionId;
-        this.amount        = amount;
+        this.amount = amount;
     }
 
-    public String getTransactionId() { return transactionId; }
-    public double getAmount()        { return amount; }
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
 }

@@ -8,9 +8,12 @@ import javafx.scene.control.Label;
  */
 public class HomeAdminController extends com.example.controller.BaseController {
 
-    @FXML private Label welcomeLabel;
+    @FXML
+    private Label welcomeLabel;
 
-    /** Gọi sau khi load để set tên user */
+    /**
+     * Gọi sau khi load để set tên user
+     */
     public void initData(String username, String userId) {
         currentUsername = username;
         currentRole = "ADMIN";
@@ -18,8 +21,21 @@ public class HomeAdminController extends com.example.controller.BaseController {
         welcomeLabel.setText("CHÀO MỪNG  Admin @" + username);
     }
 
-    @FXML private void handleHome()         { /* đã ở Home */ }
-    @FXML private void handleAdminCentre()  { navigateTo("/fxml/AdminCentre.fxml", getStage(welcomeLabel)); }
-    @FXML private void handleUserReport()   { navigateTo("/fxml/AdminCentre.fxml", getStage(welcomeLabel)); }
-    @FXML private void handleSettings()     { goSettings(getStage(welcomeLabel)); }
+    @FXML
+    private void handleHome() { /* đã ở Home */ }
+
+    @FXML
+    private void handleAdminCentre() {
+        navigateTo("/fxml/AdminCentre.fxml", getStage(welcomeLabel));
+    }
+
+    @FXML
+    private void handleUserReport() {
+        navigateTo("/fxml/AdminCentre.fxml", getStage(welcomeLabel));
+    }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(welcomeLabel));
+    }
 }

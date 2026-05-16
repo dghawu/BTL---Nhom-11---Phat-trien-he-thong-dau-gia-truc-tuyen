@@ -12,14 +12,21 @@ public class ServerService {
 
     private static String currentToken = null;
 
-    public static void setToken(String token) { currentToken = token; }
-    public static void clearToken()           { currentToken = null; }
+    public static void setToken(String token) {
+        currentToken = token;
+    }
+
+    public static void clearToken() {
+        currentToken = null;
+    }
 
     /**
      * Lấy token hiện tại — dùng cho BidSocketClient.joinSession().
      * Gọi sau khi login thành công.
      */
-    public static String getToken() { return currentToken; }
+    public static String getToken() {
+        return currentToken;
+    }
 
     private static JSONObject req(String action) {
         JSONObject r = new JSONObject();
@@ -41,10 +48,10 @@ public class ServerService {
 
     public static class UserResult {
         public boolean success;
-        public String  message;
-        public String  username;
-        public String  role;
-        public String  userId;
+        public String message;
+        public String username;
+        public String role;
+        public String userId;
 
         public UserResult(boolean success, String message) {
             this.success = success;
@@ -54,16 +61,16 @@ public class ServerService {
 
     public static UserResult login(String username, String password) {
         JSONObject req = new JSONObject();
-        req.put("action",   "login");
+        req.put("action", "login");
         req.put("username", username);
         req.put("password", password);
 
         JSONObject res = send(req);
         if (res.getBoolean("success")) {
             UserResult r = new UserResult(true, "OK");
-            r.userId   = res.getString("userId");
+            r.userId = res.getString("userId");
             r.username = res.getString("username");
-            r.role     = res.getString("role");
+            r.role = res.getString("role");
             setToken(res.getString("token"));
             return r;
         }
@@ -72,10 +79,10 @@ public class ServerService {
 
     public static UserResult register(String name, String password, String role) {
         JSONObject req = new JSONObject();
-        req.put("action",   "register");
-        req.put("name",     name);
+        req.put("action", "register");
+        req.put("name", name);
         req.put("password", password);
-        req.put("role",     role);
+        req.put("role", role);
 
         JSONObject res = send(req);
         if (res.getBoolean("success") && res.has("token")) setToken(res.getString("token"));
@@ -85,7 +92,7 @@ public class ServerService {
     public static UserResult changeUsername(String newUsername, String password) {
         JSONObject req = req("changeUsername");
         req.put("newUsername", newUsername);
-        req.put("password",    password);
+        req.put("password", password);
         JSONObject res = send(req);
         return new UserResult(res.getBoolean("success"), res.optString("message", ""));
     }
@@ -111,18 +118,18 @@ public class ServerService {
     public static boolean addItem(String name, String category,
                                   String description, double startPrice) {
         JSONObject req = req("addItem");
-        req.put("name",        name);
-        req.put("category",    category);
+        req.put("name", name);
+        req.put("category", category);
         req.put("description", description);
-        req.put("startPrice",  startPrice);
+        req.put("startPrice", startPrice);
         return send(req).getBoolean("success");
     }
 
     public static boolean updateItem(String itemId, String name, String description,
                                      String price, String status) {
         JSONObject req = req("updateItem");
-        req.put("itemId",      itemId);
-        req.put("name",        name);
+        req.put("itemId", itemId);
+        req.put("name", name);
         req.put("description", description);
         try {
             req.put("startPrice",
@@ -155,9 +162,9 @@ public class ServerService {
     public static boolean createSession(String itemId, String startTime,
                                         String endTime, double stepPrice) {
         JSONObject req = req("createSession");
-        req.put("itemId",    itemId);
+        req.put("itemId", itemId);
         req.put("startTime", startTime);
-        req.put("endTime",   endTime);
+        req.put("endTime", endTime);
         req.put("stepPrice", stepPrice);
         return send(req).getBoolean("success");
     }
@@ -177,7 +184,7 @@ public class ServerService {
         JSONObject req = req("setAutoBid");
         req.put("sessionId", sessionId);
         req.put("stepPrice", stepPrice);
-        req.put("maxPrice",  maxPrice);
+        req.put("maxPrice", maxPrice);
         return send(req).getBoolean("success");
     }
 

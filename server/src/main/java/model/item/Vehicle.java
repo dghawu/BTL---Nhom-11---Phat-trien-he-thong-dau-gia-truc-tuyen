@@ -6,7 +6,8 @@ public class Vehicle extends Item {
     private long mileage;  // km đã đi
 
 
-    public Vehicle() {}
+    public Vehicle() {
+    }
 
 
     private Vehicle(String id, String sellerId, String name,
@@ -34,8 +35,13 @@ public class Vehicle extends Item {
 
 
     // ── Getters & Setters ───────────────────────────────────────────
-    public long getMileage()          { return mileage; }
-    public void setMileage(long km)   { this.mileage = km; }
+    public long getMileage() {
+        return mileage;
+    }
+
+    public void setMileage(long km) {
+        this.mileage = km;
+    }
 
 
     @Override

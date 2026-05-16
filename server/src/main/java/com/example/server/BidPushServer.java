@@ -8,18 +8,18 @@ import java.util.concurrent.Executors;
 
 /**
  * BidPushServer — lắng nghe kết nối persistent từ client trên port 8889.
- *
+ * <p>
  * Mỗi client join vào một phiên đấu giá sẽ:
- *   1. Kết nối vào port 8889 (kết nối này tồn tại suốt phiên)
- *   2. Gửi joinSession request
- *   3. Nhận BID_UPDATE / AUCTION_CLOSED realtime từ SocketBroadcaster
- *
+ * 1. Kết nối vào port 8889 (kết nối này tồn tại suốt phiên)
+ * 2. Gửi joinSession request
+ * 3. Nhận BID_UPDATE / AUCTION_CLOSED realtime từ SocketBroadcaster
+ * <p>
  * Phân biệt với SocketServer (port 8888):
- *   - Port 8888: request/response — gửi → nhận → đóng logic (nhưng giữ TCP)
- *   - Port 8889: persistent push — server chủ động gửi khi có sự kiện
- *
+ * - Port 8888: request/response — gửi → nhận → đóng logic (nhưng giữ TCP)
+ * - Port 8889: persistent push — server chủ động gửi khi có sự kiện
+ * <p>
  * Khởi động trong ServerMain:
- *   new BidPushServer(8889).startInBackground();
+ * new BidPushServer(8889).startInBackground();
  */
 public class BidPushServer {
 
@@ -44,7 +44,9 @@ public class BidPushServer {
         t.start();
     }
 
-    /** Chạy blocking — thường gọi gián tiếp qua startInBackground(). */
+    /**
+     * Chạy blocking — thường gọi gián tiếp qua startInBackground().
+     */
     public void start() {
         try {
             serverSocket = new ServerSocket(port);

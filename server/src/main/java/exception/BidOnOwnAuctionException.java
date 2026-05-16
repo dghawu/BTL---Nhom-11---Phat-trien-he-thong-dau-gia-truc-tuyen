@@ -11,12 +11,17 @@ public class BidOnOwnAuctionException extends AuctionSystemException {
 
     public BidOnOwnAuctionException(String sellerId, String auctionId) {
         super("BID_ON_OWN_AUCTION",
-              "Seller '" + sellerId + "' không được phép đặt giá trên phiên '"
-              + auctionId + "' do chính mình tạo ra.");
-        this.sellerId  = sellerId;
+                "Seller '" + sellerId + "' không được phép đặt giá trên phiên '"
+                        + auctionId + "' do chính mình tạo ra.");
+        this.sellerId = sellerId;
         this.auctionId = auctionId;
     }
 
-    public String getSellerId()  { return sellerId; }
-    public String getAuctionId() { return auctionId; }
+    public String getSellerId() {
+        return sellerId;
+    }
+
+    public String getAuctionId() {
+        return auctionId;
+    }
 }

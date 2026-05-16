@@ -7,14 +7,15 @@ public class Fashion extends Item {
     private String brand;
 
 
-    public Fashion() {}
+    public Fashion() {
+    }
 
 
     private Fashion(String id, String sellerId, String name,
                     String description, double startingPrice,
                     Item.ItemStatus status, String size, String brand) {
         super(id, sellerId, name, description, startingPrice, status);
-        this.size  = size;
+        this.size = size;
         this.brand = brand;
     }
 
@@ -36,12 +37,22 @@ public class Fashion extends Item {
 
 
     // ── Getters & Setters ───────────────────────────────────────────
-    public String getSize()           { return size; }
-    public void   setSize(String s)   { this.size = s; }
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String s) {
+        this.size = s;
+    }
 
 
-    public String getBrand()          { return brand; }
-    public void   setBrand(String b)  { this.brand = b; }
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String b) {
+        this.brand = b;
+    }
 
 
     @Override

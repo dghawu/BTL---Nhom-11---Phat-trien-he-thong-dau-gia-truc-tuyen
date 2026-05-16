@@ -1,8 +1,8 @@
 package model.user;
 
 import exception.*;
-import model.enums.AuctionStatus;
 import model.auction.Auction;
+import model.enums.AuctionStatus;
 import model.item.Item;
 import service.AuctionTimer;
 
@@ -16,11 +16,12 @@ public class Seller extends User {
 
     public Seller(String id, String name, String password) {
         super(id, name, password, "SELLER");
-        this.myItems    = new ArrayList<>();
+        this.myItems = new ArrayList<>();
         this.myAuctions = new ArrayList<>();
     }
 
-    @Override public void showMenu() {
+    @Override
+    public void showMenu() {
         System.out.println("\n===== SELLER MENU =====");
         System.out.println("1. Tạo phiên đấu giá");
         System.out.println("2. Sửa phiên đấu giá (trước khi duyệt)");
@@ -29,7 +30,8 @@ public class Seller extends User {
         System.out.println("0. Thoát");
     }
 
-    @Override public void printInfo() {
+    @Override
+    public void printInfo() {
         System.out.println("ID      : " + getId());
         System.out.println("Tên     : " + name);
         System.out.println("Role    : " + role);
@@ -38,7 +40,8 @@ public class Seller extends User {
 
     /**
      * Tạo phiên đấu giá mới.
-     * @throws ItemNotApprovedException nếu sản phẩm chưa được duyệt
+     *
+     * @throws ItemNotApprovedException  nếu sản phẩm chưa được duyệt
      * @throws InvalidItemPriceException nếu giá không hợp lệ
      */
     public Auction createAuction(String auctionId, Item item, double minIncrement,
@@ -56,7 +59,8 @@ public class Seller extends User {
 
     /**
      * Sửa thông tin phiên — chỉ được khi PENDING.
-     * @throws AuctionNotFoundException      nếu không tìm thấy
+     *
+     * @throws AuctionNotFoundException       nếu không tìm thấy
      * @throws AuctionEditNotAllowedException nếu phiên không ở trạng thái PENDING
      */
     public void editAuction(String auctionId, String newName, double newPrice) {
@@ -71,7 +75,8 @@ public class Seller extends User {
 
     /**
      * Hủy phiên — chỉ được khi PENDING hoặc APPROVED.
-     * @throws AuctionNotFoundException        nếu không tìm thấy
+     *
+     * @throws AuctionNotFoundException         nếu không tìm thấy
      * @throws AuctionCancelNotAllowedException nếu phiên đang RUNNING hoặc FINISHED
      */
     public void cancelAuction(String auctionId) {
@@ -90,7 +95,7 @@ public class Seller extends User {
         for (Auction a : myAuctions) {
             System.out.println("ID: " + a.getAuctionId()
                     + " | Item: " + a.getItem().getName()
-                    + " | Giá: "  + a.getCurrentPrice()
+                    + " | Giá: " + a.getCurrentPrice()
                     + " | Trạng thái: " + a.getStatus());
         }
     }
@@ -99,7 +104,9 @@ public class Seller extends User {
         findMyAuction(auctionId).printInfo();
     }
 
-    /** @throws AuctionNotFoundException nếu không tìm thấy trong danh sách của Seller này */
+    /**
+     * @throws AuctionNotFoundException nếu không tìm thấy trong danh sách của Seller này
+     */
     private Auction findMyAuction(String auctionId) {
         return myAuctions.stream()
                 .filter(a -> a.getAuctionId().equals(auctionId))

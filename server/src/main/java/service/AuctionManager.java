@@ -1,9 +1,11 @@
 package service;
 
 import dao.AuctionDAO;
-import exception.*;
-import model.enums.AuctionStatus;
+import exception.AuctionAlreadyExistsException;
+import exception.AuctionClosedException;
+import exception.AuctionNotFoundException;
 import model.auction.Auction;
+import model.enums.AuctionStatus;
 
 import java.util.List;
 
@@ -12,7 +14,9 @@ public class AuctionManager {
     private static volatile AuctionManager instance;
     private final AuctionDAO auctionDAO;
 
-    private AuctionManager() { this.auctionDAO = new AuctionDAO(); }
+    private AuctionManager() {
+        this.auctionDAO = new AuctionDAO();
+    }
 
     public static AuctionManager getInstance() {
         if (instance == null) {
@@ -32,21 +36,34 @@ public class AuctionManager {
         System.out.println("[AuctionManager] Thêm phiên: " + auction.getAuctionId());
     }
 
-    public void removeAuction(String auctionId) { auctionDAO.delete(auctionId); }
+    public void removeAuction(String auctionId) {
+        auctionDAO.delete(auctionId);
+    }
 
-    /** @throws AuctionNotFoundException nếu không tìm thấy */
+    /**
+     * @throws AuctionNotFoundException nếu không tìm thấy
+     */
     public Auction findAuction(String auctionId) {
         Auction auction = auctionDAO.findById(auctionId);
         if (auction == null) throw new AuctionNotFoundException(auctionId);
         return auction;
     }
 
-    public List<Auction> getAllAuctions()     { return auctionDAO.findAll(); }
-    public List<Auction> getRunningAuctions(){ return auctionDAO.findByStatus(AuctionStatus.RUNNING); }
-    public List<Auction> getPendingAuctions(){ return auctionDAO.findByStatus(AuctionStatus.PENDING); }
+    public List<Auction> getAllAuctions() {
+        return auctionDAO.findAll();
+    }
+
+    public List<Auction> getRunningAuctions() {
+        return auctionDAO.findByStatus(AuctionStatus.RUNNING);
+    }
+
+    public List<Auction> getPendingAuctions() {
+        return auctionDAO.findByStatus(AuctionStatus.PENDING);
+    }
 
     /**
      * Duyệt phiên — chỉ được khi PENDING.
+     *
      * @throws AuctionNotFoundException nếu không tìm thấy
      * @throws AuctionClosedException   nếu phiên không ở trạng thái PENDING
      */
@@ -62,6 +79,7 @@ public class AuctionManager {
 
     /**
      * Từ chối phiên.
+     *
      * @throws AuctionNotFoundException nếu không tìm thấy
      */
     public void rejectAuction(String auctionId) {

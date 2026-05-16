@@ -9,10 +9,12 @@ public class UserBannedException extends AuctionSystemException {
 
     public UserBannedException(String userId) {
         super("USER_BANNED",
-              "Tài khoản '" + userId + "' đã bị khóa và không thể thực hiện thao tác này. "
-              + "Liên hệ Admin để biết thêm chi tiết.");
+                "Tài khoản '" + userId + "' đã bị khóa và không thể thực hiện thao tác này. "
+                        + "Liên hệ Admin để biết thêm chi tiết.");
         this.userId = userId;
     }
 
-    public String getUserId() { return userId; }
+    public String getUserId() {
+        return userId;
+    }
 }

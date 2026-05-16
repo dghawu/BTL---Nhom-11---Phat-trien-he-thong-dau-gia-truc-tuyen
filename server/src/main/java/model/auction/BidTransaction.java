@@ -17,9 +17,9 @@ public class BidTransaction extends Entity {
     // FIX: constructor đầy đủ 3 tham số — Bidder.java cần truyền auctionId
     public BidTransaction(String bidderId, String auctionId, double amount) {
         super(generateId());
-        this.bidderId  = bidderId;
+        this.bidderId = bidderId;
         this.auctionId = auctionId;
-        this.amount    = amount;
+        this.amount = amount;
         this.timestamp = LocalDateTime.now();
     }
 
@@ -27,10 +27,21 @@ public class BidTransaction extends Entity {
         return "TXN-" + System.currentTimeMillis();
     }
 
-    public String getBidderId()         { return bidderId; }
-    public String getAuctionId()        { return auctionId; }
-    public double getAmount()           { return amount; }
-    public LocalDateTime getTimestamp() { return timestamp; }
+    public String getBidderId() {
+        return bidderId;
+    }
+
+    public String getAuctionId() {
+        return auctionId;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public void printInfo() {

@@ -9,9 +9,11 @@ public class AuctionNotFoundException extends AuctionSystemException {
 
     public AuctionNotFoundException(String auctionId) {
         super("AUCTION_NOT_FOUND",
-              "Không tìm thấy phiên đấu giá với ID: '" + auctionId + "'");
+                "Không tìm thấy phiên đấu giá với ID: '" + auctionId + "'");
         this.auctionId = auctionId;
     }
 
-    public String getAuctionId() { return auctionId; }
+    public String getAuctionId() {
+        return auctionId;
+    }
 }

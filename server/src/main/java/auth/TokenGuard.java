@@ -6,21 +6,24 @@ import org.json.JSONObject;
 
 /**
  * TokenGuard - middleware xác thực JWT cho mọi request (trừ login/register).
- *
+ * <p>
  * Mỗi request cần auth phải có field "token" trong JSON:
- *   {"action":"placeBid", "token":"eyJhbGc...", "auctionId":"AUC-01", "amount":1500}
- *
+ * {"action":"placeBid", "token":"eyJhbGc...", "auctionId":"AUC-01", "amount":1500}
+ * <p>
  * Cách dùng trong ClientHandler:
- *   AuthResult auth = TokenGuard.check(req);
- *   if (!auth.isOk()) return fail(auth.getErrorMessage());
- *   String userId = auth.getUserId();
+ * AuthResult auth = TokenGuard.check(req);
+ * if (!auth.isOk()) return fail(auth.getErrorMessage());
+ * String userId = auth.getUserId();
  */
 public class TokenGuard {
 
-    /** Tên field chứa token trong JSON request */
+    /**
+     * Tên field chứa token trong JSON request
+     */
     public static final String TOKEN_FIELD = "token";
 
-    private TokenGuard() {}
+    private TokenGuard() {
+    }
 
     /**
      * Kiểm tra token trong request JSON.
@@ -39,9 +42,9 @@ public class TokenGuard {
         // Xác thực và giải mã token
         try {
             Claims claims = JwtUtil.validate(token);
-            String userId   = claims.getSubject();
+            String userId = claims.getSubject();
             String username = claims.get("username", String.class);
-            String role     = claims.get("role",     String.class);
+            String role = claims.get("role", String.class);
             return AuthResult.success(userId, username, role);
 
         } catch (JwtException e) {

@@ -12,14 +12,22 @@ public class UnauthorizedActionException extends AuctionSystemException {
 
     public UnauthorizedActionException(String userId, String action, String requiredRole) {
         super("UNAUTHORIZED",
-              "Người dùng '" + userId + "' không có quyền thực hiện '"
-              + action + "'. Yêu cầu role: " + requiredRole + ".");
-        this.userId       = userId;
-        this.action       = action;
+                "Người dùng '" + userId + "' không có quyền thực hiện '"
+                        + action + "'. Yêu cầu role: " + requiredRole + ".");
+        this.userId = userId;
+        this.action = action;
         this.requiredRole = requiredRole;
     }
 
-    public String getUserId()      { return userId; }
-    public String getAction()      { return action; }
-    public String getRequiredRole(){ return requiredRole; }
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public String getRequiredRole() {
+        return requiredRole;
+    }
 }

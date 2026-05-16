@@ -8,12 +8,12 @@ import java.util.concurrent.Executors;
 
 /**
  * SocketServer - lắng nghe kết nối TCP từ client.
- *
+ * <p>
  * Mỗi client kết nối vào sẽ được xử lý bởi 1 thread riêng (ClientHandler).
  * Dùng thread pool để giới hạn số lượng kết nối đồng thời.
- *
+ * <p>
  * Khởi động trong Main.java:
- *   new SocketServer(8888).start();
+ * new SocketServer(8888).start();
  */
 public class SocketServer {
 
@@ -28,7 +28,9 @@ public class SocketServer {
         this.port = port;
     }
 
-    /** Bắt đầu lắng nghe. Chạy vô hạn cho đến khi gọi stop(). */
+    /**
+     * Bắt đầu lắng nghe. Chạy vô hạn cho đến khi gọi stop().
+     */
     public void start() {
         try {
             serverSocket = new ServerSocket(port);

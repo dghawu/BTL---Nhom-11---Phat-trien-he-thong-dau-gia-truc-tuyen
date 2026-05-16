@@ -13,12 +13,17 @@ public class AuctionEditNotAllowedException extends AuctionSystemException {
 
     public AuctionEditNotAllowedException(String auctionId, AuctionStatus currentStatus) {
         super("AUCTION_EDIT_NOT_ALLOWED",
-              "Không thể sửa phiên '" + auctionId + "' — chỉ được sửa khi PENDING. "
-              + "Trạng thái hiện tại: " + currentStatus.name());
-        this.auctionId     = auctionId;
+                "Không thể sửa phiên '" + auctionId + "' — chỉ được sửa khi PENDING. "
+                        + "Trạng thái hiện tại: " + currentStatus.name());
+        this.auctionId = auctionId;
         this.currentStatus = currentStatus;
     }
 
-    public String getAuctionId()             { return auctionId; }
-    public AuctionStatus getCurrentStatus()  { return currentStatus; }
+    public String getAuctionId() {
+        return auctionId;
+    }
+
+    public AuctionStatus getCurrentStatus() {
+        return currentStatus;
+    }
 }

@@ -4,18 +4,19 @@ import org.mindrot.jbcrypt.BCrypt;
 
 /**
  * PasswordUtil - tiện ích mã hoá và xác thực mật khẩu bằng BCrypt.
- *
+ * <p>
  * KHÔNG bao giờ lưu mật khẩu plain-text vào DB.
  * Luồng:
- *   Đăng ký → hash(rawPassword) → lưu hash vào DB
- *   Đăng nhập → verify(rawPassword, hashFromDB) → true/false
+ * Đăng ký → hash(rawPassword) → lưu hash vào DB
+ * Đăng nhập → verify(rawPassword, hashFromDB) → true/false
  */
 public class PasswordUtil {
 
     // Cost factor: 12 là mức khuyến nghị (cân bằng giữa bảo mật và tốc độ)
     private static final int BCRYPT_COST = 12;
 
-    private PasswordUtil() {} // utility class, không khởi tạo
+    private PasswordUtil() {
+    } // utility class, không khởi tạo
 
     /**
      * Hash mật khẩu trước khi lưu vào DB.
@@ -34,7 +35,7 @@ public class PasswordUtil {
     /**
      * Kiểm tra mật khẩu người dùng nhập có khớp với hash trong DB không.
      *
-     * @param rawPassword mật khẩu người dùng vừa nhập
+     * @param rawPassword    mật khẩu người dùng vừa nhập
      * @param hashedPassword hash đã lưu trong DB
      * @return true nếu khớp
      */

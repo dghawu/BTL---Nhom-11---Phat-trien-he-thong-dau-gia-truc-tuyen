@@ -10,10 +10,12 @@ public class DuplicateUsernameException extends AuctionSystemException {
 
     public DuplicateUsernameException(String username) {
         super("DUPLICATE_USERNAME",
-              "Tên đăng nhập '" + username + "' đã được sử dụng. "
-              + "Vui lòng chọn tên khác.");
+                "Tên đăng nhập '" + username + "' đã được sử dụng. "
+                        + "Vui lòng chọn tên khác.");
         this.username = username;
     }
 
-    public String getUsername() { return username; }
+    public String getUsername() {
+        return username;
+    }
 }

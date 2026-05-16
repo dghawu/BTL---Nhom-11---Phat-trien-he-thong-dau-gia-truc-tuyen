@@ -1,7 +1,13 @@
 package service;
 
-import exception.*;
-import model.user.*;
+import exception.DuplicateUsernameException;
+import exception.UserBannedException;
+import exception.UserNotFoundException;
+import exception.WrongPasswordException;
+import model.user.Admin;
+import model.user.Bidder;
+import model.user.Seller;
+import model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +18,9 @@ public class UserService {
     private static volatile UserService instance;
     private final List<User> users;
 
-    private UserService() { users = new ArrayList<>(); }
+    private UserService() {
+        users = new ArrayList<>();
+    }
 
     public static UserService getInstance() {
         if (instance == null) {
@@ -25,7 +33,9 @@ public class UserService {
 
     // ── Đăng ký ───────────────────────────────────────────────────
 
-    /** @throws DuplicateUsernameException nếu tên đã tồn tại */
+    /**
+     * @throws DuplicateUsernameException nếu tên đã tồn tại
+     */
     public Bidder registerBidder(String id, String name, String password) {
         checkDuplicateName(name);
         Bidder bidder = new Bidder(id, name, password);
@@ -34,7 +44,9 @@ public class UserService {
         return bidder;
     }
 
-    /** @throws DuplicateUsernameException nếu tên đã tồn tại */
+    /**
+     * @throws DuplicateUsernameException nếu tên đã tồn tại
+     */
     public Seller registerSeller(String id, String name, String password) {
         checkDuplicateName(name);
         Seller seller = new Seller(id, name, password);
@@ -71,7 +83,9 @@ public class UserService {
 
     // ── Tìm kiếm ──────────────────────────────────────────────────
 
-    /** @throws UserNotFoundException nếu không tìm thấy */
+    /**
+     * @throws UserNotFoundException nếu không tìm thấy
+     */
     public User findById(String id) {
         return users.stream()
                 .filter(u -> u.getId().equals(id))
@@ -79,7 +93,9 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(id));
     }
 
-    /** @throws UserNotFoundException nếu không tìm thấy */
+    /**
+     * @throws UserNotFoundException nếu không tìm thấy
+     */
     public User findByName(String name) {
         return users.stream()
                 .filter(u -> u.getName().equals(name))
@@ -87,11 +103,15 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(name));
     }
 
-    public List<User>   getAllUsers()    { return users; }
-    public List<Bidder> getAllBidders()  {
+    public List<User> getAllUsers() {
+        return users;
+    }
+
+    public List<Bidder> getAllBidders() {
         return users.stream().filter(u -> u instanceof Bidder)
                 .map(u -> (Bidder) u).collect(Collectors.toList());
     }
+
     public List<Seller> getAllSellers() {
         return users.stream().filter(u -> u instanceof Seller)
                 .map(u -> (Seller) u).collect(Collectors.toList());
@@ -99,7 +119,9 @@ public class UserService {
 
     // ── Quản lý ───────────────────────────────────────────────────
 
-    /** @throws UserNotFoundException nếu không tìm thấy */
+    /**
+     * @throws UserNotFoundException nếu không tìm thấy
+     */
     public void banUser(String userId) {
         findById(userId);
         users.removeIf(u -> u.getId().equals(userId));

@@ -6,7 +6,10 @@ import exception.AuctionNotFoundException;
 import model.auction.Auction;
 import model.enums.AuctionStatus;
 import model.item.Item;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import service.AuctionTimer;
 
 import java.time.LocalDateTime;
@@ -38,7 +41,7 @@ class SellerTest {
     @DisplayName("Tạo phiên đấu giá mới → Thông tin khởi tạo chính xác")
     void testCreateAuction() {
         LocalDateTime start = LocalDateTime.now().plusDays(1);
-        LocalDateTime end   = LocalDateTime.now().plusDays(2);
+        LocalDateTime end = LocalDateTime.now().plusDays(2);
 
         Auction a = seller.createAuction("AUC-101", laptop, 1_000_000.0, start, end);
 

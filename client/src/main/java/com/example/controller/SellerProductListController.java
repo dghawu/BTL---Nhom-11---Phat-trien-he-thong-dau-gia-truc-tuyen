@@ -1,13 +1,15 @@
 package com.example.controller;
 
 import com.example.socket.ServerService;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
@@ -17,10 +19,12 @@ import javafx.stage.Stage;
  */
 public class SellerProductListController extends com.example.controller.BaseController {
 
-    @FXML private FlowPane productGrid;
+    @FXML
+    private FlowPane productGrid;
 
     @FXML
-    public void initialize() { }
+    public void initialize() {
+    }
 
     @Override
     public void onReady() {
@@ -36,19 +40,19 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
         for (int i = 0; i < items.length(); i++) {
             org.json.JSONObject item = items.getJSONObject(i);
-            String id       = item.getString("id");
-            String name     = item.getString("name");
-            String category     = item.optString("type", "N/A");
-            String description  = item.optString("description", "");
-            String status   = item.getString("status");
-            double price    = item.getDouble("startPrice");
+            String id = item.getString("id");
+            String name = item.getString("name");
+            String category = item.optString("type", "N/A");
+            String description = item.optString("description", "");
+            String status = item.getString("status");
+            double price = item.getDouble("startPrice");
             String priceStr = String.format("%,.0fđ", price);
 
             productGrid.getChildren().add(buildMockCard(name, id, priceStr, status, category, description));
         }
     }
 
-    private VBox buildMockCard(String ten, String id, String gia, String tinhTrang, String category, String description ) {
+    private VBox buildMockCard(String ten, String id, String gia, String tinhTrang, String category, String description) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
@@ -97,13 +101,42 @@ public class SellerProductListController extends com.example.controller.BaseCont
     }
 
     // Nav & Sidebar
-    @FXML private void handleHome()         { goHome(getStage(productGrid)); }
-    @FXML private void handleAuctions()     { goAuctions(getStage(productGrid)); }
-    @FXML private void handleSettings()     { goSettings(getStage(productGrid)); }
-    @FXML private void handleThemSanPham()  { navigateTo("/fxml/SellerAddProduct.fxml", getStage(productGrid)); }
-    @FXML private void handleXemSanPham()   { /* đã ở đây */ }
-    @FXML private void handleTaoPhien()     { navigateTo("/fxml/SellerCreateSession.fxml", getStage(productGrid)); }
-    @FXML private void handleXemPhien()     { navigateTo("/fxml/SellerSessionList.fxml", getStage(productGrid)); }
-    @FXML private void handleEdit()         { /* TODO */ }
-    @FXML private void handleSave()         { /* TODO */ }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(productGrid));
+    }
+
+    @FXML
+    private void handleAuctions() {
+        goAuctions(getStage(productGrid));
+    }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(productGrid));
+    }
+
+    @FXML
+    private void handleThemSanPham() {
+        navigateTo("/fxml/SellerAddProduct.fxml", getStage(productGrid));
+    }
+
+    @FXML
+    private void handleXemSanPham() { /* đã ở đây */ }
+
+    @FXML
+    private void handleTaoPhien() {
+        navigateTo("/fxml/SellerCreateSession.fxml", getStage(productGrid));
+    }
+
+    @FXML
+    private void handleXemPhien() {
+        navigateTo("/fxml/SellerSessionList.fxml", getStage(productGrid));
+    }
+
+    @FXML
+    private void handleEdit() { /* TODO */ }
+
+    @FXML
+    private void handleSave() { /* TODO */ }
 }

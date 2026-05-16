@@ -1,10 +1,10 @@
 package com.example.controller;
 
+import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import com.example.socket.ServerService;
 
 /**
  * SellerProductDetailController - SellerProductDetail.fxml
@@ -12,14 +12,22 @@ import com.example.socket.ServerService;
  */
 public class SellerProductDetailController extends com.example.controller.BaseController {
 
-    @FXML private Label lblTen;
-    @FXML private Label lblId;
-    @FXML private Label lblPhanLoai;
-    @FXML private Label lblNgayMoBan;
-    @FXML private Label lblGia;
-    @FXML private Label lblMoTa;
-    @FXML private Label lblTinhTrang;
-    @FXML private Pane  imgPane;
+    @FXML
+    private Label lblTen;
+    @FXML
+    private Label lblId;
+    @FXML
+    private Label lblPhanLoai;
+    @FXML
+    private Label lblNgayMoBan;
+    @FXML
+    private Label lblGia;
+    @FXML
+    private Label lblMoTa;
+    @FXML
+    private Label lblTinhTrang;
+    @FXML
+    private Pane imgPane;
 
     // TextFields cho edit mode
     private TextField txtTen;
@@ -39,13 +47,40 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         lblTinhTrang.setText(tinhTrang);
     }
 
-    @FXML private void handleHome()        { goHome(getStage(lblTen)); }
-    @FXML private void handleAuctions()    { goAuctions(getStage(lblTen)); }
-    @FXML private void handleSettings()    { goSettings(getStage(lblTen)); }
-    @FXML private void handleThemSanPham() { navigateTo("/fxml/SellerAddProduct.fxml", getStage(lblTen)); }
-    @FXML private void handleXemSanPham()  { navigateTo("/fxml/SellerProductList.fxml", getStage(lblTen)); }
-    @FXML private void handleTaoPhien()    { navigateTo("/fxml/SellerCreateSession.fxml", getStage(lblTen)); }
-    @FXML private void handleXemPhien()    { navigateTo("/fxml/SellerSessionList.fxml", getStage(lblTen)); }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(lblTen));
+    }
+
+    @FXML
+    private void handleAuctions() {
+        goAuctions(getStage(lblTen));
+    }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(lblTen));
+    }
+
+    @FXML
+    private void handleThemSanPham() {
+        navigateTo("/fxml/SellerAddProduct.fxml", getStage(lblTen));
+    }
+
+    @FXML
+    private void handleXemSanPham() {
+        navigateTo("/fxml/SellerProductList.fxml", getStage(lblTen));
+    }
+
+    @FXML
+    private void handleTaoPhien() {
+        navigateTo("/fxml/SellerCreateSession.fxml", getStage(lblTen));
+    }
+
+    @FXML
+    private void handleXemPhien() {
+        navigateTo("/fxml/SellerSessionList.fxml", getStage(lblTen));
+    }
 
     @FXML
     private void handleEdit() {

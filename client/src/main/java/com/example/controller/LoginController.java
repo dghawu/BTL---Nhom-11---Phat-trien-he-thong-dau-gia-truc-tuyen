@@ -17,9 +17,12 @@ import javafx.stage.Stage;
  */
 public class LoginController {
 
-    @FXML private TextField     usernameField;
-    @FXML private PasswordField passwordField;
-    @FXML private Label         errorLabel;
+    @FXML
+    private TextField usernameField;
+    @FXML
+    private PasswordField passwordField;
+    @FXML
+    private Label errorLabel;
 
     // ------------------------------------------------------------------ //
     //  Actions
@@ -64,9 +67,9 @@ public class LoginController {
     private void navigateToHome(String role, String username, String userId) {
         try {
             String fxml = switch (role.toUpperCase()) {
-                case "ADMIN"  -> "/fxml/HomeAdmin.fxml";
+                case "ADMIN" -> "/fxml/HomeAdmin.fxml";
                 case "SELLER" -> "/fxml/HomeSeller.fxml";
-                default       -> "/fxml/HomeBidder.fxml";
+                default -> "/fxml/HomeBidder.fxml";
             };
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));

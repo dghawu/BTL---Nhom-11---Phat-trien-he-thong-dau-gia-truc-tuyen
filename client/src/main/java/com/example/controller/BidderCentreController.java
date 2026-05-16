@@ -2,7 +2,10 @@ package com.example.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 /**
  * BidderCentreController - BidderCentre.fxml
@@ -10,19 +13,32 @@ import javafx.scene.layout.*;
  */
 public class BidderCentreController extends com.example.controller.BaseController {
 
-    @FXML private Button      btnGiaoDich;
-    @FXML private Button      btnSanPhamDauGia;
-    @FXML private StackPane   contentStack;
-    @FXML private VBox        viewGiaoDich;
-    @FXML private VBox        viewSanPham;
-    @FXML private TableView<Object>   giaoDichTable;
-    @FXML private TableColumn<Object,String> colMa;
-    @FXML private TableColumn<Object,String> colPhien;
-    @FXML private TableColumn<Object,String> colSanPham;
-    @FXML private TableColumn<Object,String> colTinhTrang;
-    @FXML private TableColumn<Object,String> colThoiGian;
-    @FXML private TableColumn<Object,String> colBaoCao;
-    @FXML private FlowPane    wonProductGrid;
+    @FXML
+    private Button btnGiaoDich;
+    @FXML
+    private Button btnSanPhamDauGia;
+    @FXML
+    private StackPane contentStack;
+    @FXML
+    private VBox viewGiaoDich;
+    @FXML
+    private VBox viewSanPham;
+    @FXML
+    private TableView<Object> giaoDichTable;
+    @FXML
+    private TableColumn<Object, String> colMa;
+    @FXML
+    private TableColumn<Object, String> colPhien;
+    @FXML
+    private TableColumn<Object, String> colSanPham;
+    @FXML
+    private TableColumn<Object, String> colTinhTrang;
+    @FXML
+    private TableColumn<Object, String> colThoiGian;
+    @FXML
+    private TableColumn<Object, String> colBaoCao;
+    @FXML
+    private FlowPane wonProductGrid;
 
     @FXML
     public void initialize() {
@@ -32,9 +48,20 @@ public class BidderCentreController extends com.example.controller.BaseControlle
     // ------------------------------------------------------------------ //
     //  Nav
     // ------------------------------------------------------------------ //
-    @FXML private void handleHome()         { goHome(getStage(contentStack)); }
-    @FXML private void handleAuctions()     { goAuctions(getStage(contentStack)); }
-    @FXML private void handleSettings()     { goSettings(getStage(contentStack)); }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(contentStack));
+    }
+
+    @FXML
+    private void handleAuctions() {
+        goAuctions(getStage(contentStack));
+    }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(contentStack));
+    }
 
     // ------------------------------------------------------------------ //
     //  Sidebar
@@ -70,6 +97,7 @@ public class BidderCentreController extends com.example.controller.BaseControlle
         // Cấu hình cột Tình trạng: hiển thị button nếu chưa thanh toán
         colTinhTrang.setCellFactory(col -> new TableCell<>() {
             private final Button btnThanhToan = new Button("THANH TOÁN");
+
             {
                 btnThanhToan.getStyleClass().add("btn-primary");
                 btnThanhToan.setOnAction(e -> {
@@ -77,10 +105,15 @@ public class BidderCentreController extends com.example.controller.BaseControlle
                     handleThanhToan(item);
                 });
             }
+
             @Override
             protected void updateItem(String status, boolean empty) {
                 super.updateItem(status, empty);
-                if (empty || status == null) { setGraphic(null); setText(null); return; }
+                if (empty || status == null) {
+                    setGraphic(null);
+                    setText(null);
+                    return;
+                }
                 if (status.contains("Chưa thanh toán")) {
                     VBox box = new VBox(4);
                     box.getChildren().addAll(new Label(status), btnThanhToan);
@@ -98,7 +131,10 @@ public class BidderCentreController extends com.example.controller.BaseControlle
             @Override
             protected void updateItem(String val, boolean empty) {
                 super.updateItem(val, empty);
-                if (empty || val == null) { setGraphic(null); return; }
+                if (empty || val == null) {
+                    setGraphic(null);
+                    return;
+                }
                 Label lbl = new Label(val);
                 lbl.setStyle("-fx-text-fill: #888888; -fx-font-size: 12px; -fx-cursor: hand;");
                 lbl.setOnMouseClicked(e -> handleBaoCao(getIndex()));
