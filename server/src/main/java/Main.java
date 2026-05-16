@@ -13,9 +13,6 @@ import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
-        UserDAO userDAO = new UserDAO();
-        userDAO.initAdminIfNotExists();
-        System.out.println("Server started");
 
     UserService userService = UserService.getInstance();
         AuctionManager auctionMgr = AuctionManager.getInstance();
