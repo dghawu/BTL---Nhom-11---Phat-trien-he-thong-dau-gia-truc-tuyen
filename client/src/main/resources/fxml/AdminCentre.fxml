@@ -33,7 +33,7 @@
                     <TableColumn fx:id="colTen" prefWidth="180" text="Name"/>
                     <TableColumn fx:id="colThongTin" prefWidth="300" text="Other informations"/>
                     <TableColumn fx:id="colExtra" prefWidth="200" text="....."/>
-                    <TableColumn fx:id="colTrangThai" prefWidth="160" text="Trạng thái" visible="false"/>
+                    <TableColumn fx:id="colTrangThai" prefWidth="160" text="Status" visible="false"/>
                 </columns>
             </TableView>
 

@@ -15,7 +15,7 @@ public class HomeSellerController extends com.example.controller.BaseController 
         currentUsername = username;
         currentRole = "SELLER";
         currentUserId = userId;
-        welcomeLabel.setText("CHÀO MỪNG Seller @" + username + "\nĐẾN VỚI ABCXYZ");
+        welcomeLabel.setText("WELCOME SELLER @" + username + " TO ABCXYZ");
     }
 
     @FXML
