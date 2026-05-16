@@ -24,7 +24,7 @@ public class AuctionDetailDialogController extends com.example.controller.BaseCo
     @FXML private Label lblMoTa2;
     @FXML private Pane  imgPane;
 
-    private com.example.controller.AuctionsController parentController;
+    private AuctionsController parentController;
     private String sessionId;
 
     public void initData(String sessionId,String ten, String gia, String sellerId, String phanLoai) {
@@ -36,7 +36,7 @@ public class AuctionDetailDialogController extends com.example.controller.BaseCo
         // TODO: điền đầy đủ từ AuctionSession object
     }
 
-    public void setParentController(com.example.controller.AuctionsController parent) {
+    public void setParentController(AuctionsController parent) {
         this.parentController = parent;
         this.currentRole = parent.currentRole;
         this.currentUsername = parent.currentUsername;

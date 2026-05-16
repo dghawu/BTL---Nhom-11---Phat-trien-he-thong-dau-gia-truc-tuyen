@@ -12,6 +12,7 @@ import model.auction.BidTransaction;
 import model.enums.AuctionStatus;
 import model.item.Item;
 import model.user.User;
+import observer.SocketBroadcaster;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -23,14 +24,13 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * ClientHandler - merge JWT (bạn kia) + logic thật (bạn).
+ * ClientHandler — xử lý request/response trên port 8888.
  *
- * Các action KHÔNG cần token : login, register
- * Tất cả action còn lại      : cần token hợp lệ trong field "token"
- *
- * Client phải lưu token nhận được sau login/register và gửi kèm mọi request tiếp theo:
- *   {"action":"getMyItems", "token":"eyJ...", ...}
- */
+ *Thay đổi so với phiên bản cũ:
+ *  1. Thêm case "updateItem"   → handleUpdateItem()
+ *  2. handlePlaceBid() sau khi bid thành công → BidRegistry.get(sessionId).broadcast(...)
+ *  để push realtime đến tất cả client đang watch phiên qua port 8889.
+ *  */
 public class ClientHandler implements Runnable {
 
     private final Socket            clientSocket;
@@ -81,23 +81,34 @@ public class ClientHandler implements Runnable {
                 case "login"    -> handleLogin(req);
                 case "register" -> handleRegister(req);
 
-                // Cần token
+                // Account
                 case "changeUsername"    -> handleChangeUsername(req);
                 case "changePassword"    -> handleChangePassword(req);
+
+                // Items
                 case "getMyItems"        -> handleGetMyItems(req);
                 case "addItem"           -> handleAddItem(req);
                 case "updateItem"        -> handleUpdateItem(req);
                 case "getAllItems"        -> handleGetAllItems(req);
-                case "getAllSessions"     -> handleGetAllSessions(req);
+
+                // Sessions
                 case "createSession"     -> handleCreateSession(req);
+                case "getAllSessions"     -> handleGetAllSessions(req);
                 case "getMySessions"     -> handleGetMySessions(req);
+
+                // Bidding
                 case "placeBid"          -> handlePlaceBid(req);
                 case "setAutoBid"        -> handleSetAutoBid(req);
+
+                //Transactions
                 case "getMyTransactions" -> handleGetMyTransactions(req);
                 case "pay"               -> handlePay(req);
+
+                // Admin
                 case "getAllUsers"        -> handleGetAllUsers(req);
                 case "banUser"           -> handleBanUser(req);
                 case "makeAdmin"         -> handleMakeAdmin(req);
+
                 default -> fail("Action không hợp lệ: " + action);
             };
         } catch (Exception e) {
@@ -320,7 +331,6 @@ public class ClientHandler implements Runnable {
         Item item = itemDAO.findById(itemId);
         if (item == null) return fail("Không tìm thấy sản phẩm.");
 
-        // ✅ Fix: dùng DT_FMT để parse "2025-05-15T20:00" từ client
         Auction auction = new Auction(
                 UUID.randomUUID().toString(),
                 item,
@@ -342,7 +352,7 @@ public class ClientHandler implements Runnable {
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
         String sessionId = req.getString("sessionId");
-        String bidderId  = auth.getUserId(); // lấy từ token
+        String bidderId  = auth.getUserId();
         double bidAmount = req.getDouble("bidAmount");
 
         Auction auction = auctionDAO.findById(sessionId);
@@ -350,16 +360,34 @@ public class ClientHandler implements Runnable {
         if (bidAmount <= auction.getCurrentPrice())
             return fail("Giá đặt phải cao hơn giá hiện tại.");
 
+        // Lưu bid vào DB
         BidTransaction bid = new BidTransaction(bidderId, sessionId, bidAmount);
         bidDAO.save(bid);
 
+        // Lấy tên người đặt
         User bidder = userDAO.findById(bidderId);
-        String winnerName = bidder != null ? bidder.getName() : bidderId;
-        auctionDAO.updateBid(sessionId, bidAmount, winnerName);
+        String bidderName = bidder != null ? bidder.getName() : bidderId;
+        auctionDAO.updateBid(sessionId, bidAmount, bidderName);
+
+        // ── Broadcast realtime qua port 8889 ──────────────────────────
+        SocketBroadcaster broadcaster = BidRegistry.getInstance().get(sessionId);
+        if (broadcaster != null) {
+            // Format: BID_UPDATE:sessionId:price:bidderName:endTime
+            String msg = "BID_UPDATE"
+                    + ":" + sessionId
+                    + ":" + bidAmount
+                    + ":" + bidderName
+                    + ":" + auction.getEndTime();
+            broadcaster.broadcast(msg);
+            System.out.println("[ClientHandler] Broadcast bid: " + msg);
+        } else {
+            System.out.println("[ClientHandler] Không có client nào đang watch phiên " + sessionId);
+        }
+        // ─────────────────────────────────────────────────────────────
 
         return success()
                 .put("currentPrice",  bidAmount)
-                .put("currentWinner", winnerName)
+                .put("currentWinner", bidderName)
                 .toString();
     }
 

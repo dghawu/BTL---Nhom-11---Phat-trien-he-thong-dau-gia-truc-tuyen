@@ -4,45 +4,34 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * ServerService - giao tiếp với server qua Socket.
- *
- * Sau khi login thành công, token được lưu trong currentToken.
- * Mọi request tiếp theo tự động gửi kèm token (không cần làm thủ công).
+ * ServerService — giao tiếp với API Server qua Socket (port 8888).
  */
 public class ServerService {
 
     private static final SocketClient client = SocketClient.getInstance();
 
-    // Token lưu sau khi login/register thành công
     private static String currentToken = null;
 
-    /** Lưu token sau khi login */
-    public static void setToken(String token) {
-        currentToken = token;
-    }
-
-    /** Xóa token khi logout */
-    public static void clearToken() {
-        currentToken = null;
-    }
+    public static void setToken(String token) { currentToken = token; }
+    public static void clearToken()           { currentToken = null; }
 
     /**
-     * Tạo request JSON với token tự động đính kèm.
-     * Dùng cho mọi request cần xác thực.
+     * Lấy token hiện tại — dùng cho BidSocketClient.joinSession().
+     * Gọi sau khi login thành công.
      */
+    public static String getToken() { return currentToken; }
+
     private static JSONObject req(String action) {
         JSONObject r = new JSONObject();
         r.put("action", action);
-        if (currentToken != null) {
-            r.put("token", currentToken);
-        }
+        if (currentToken != null) r.put("token", currentToken);
         return r;
     }
 
-    /** Gửi request và nhận response dạng JSONObject */
     private static JSONObject send(JSONObject req) {
         String raw = client.sendRequest(req.toString());
-        if (raw == null) return new JSONObject().put("success", false).put("message", "Không thể kết nối server.");
+        if (raw == null)
+            return new JSONObject().put("success", false).put("message", "Không thể kết nối server.");
         return new JSONObject(raw);
     }
 
@@ -75,7 +64,6 @@ public class ServerService {
             r.userId   = res.getString("userId");
             r.username = res.getString("username");
             r.role     = res.getString("role");
-            // ✅ Lưu token ngay sau khi login
             setToken(res.getString("token"));
             return r;
         }
@@ -90,10 +78,7 @@ public class ServerService {
         req.put("role",     role);
 
         JSONObject res = send(req);
-        if (res.getBoolean("success")) {
-            // Token cũng được trả về khi register (nếu server có)
-            if (res.has("token")) setToken(res.getString("token"));
-        }
+        if (res.getBoolean("success") && res.has("token")) setToken(res.getString("token"));
         return new UserResult(res.getBoolean("success"), res.optString("message", ""));
     }
 
@@ -101,7 +86,6 @@ public class ServerService {
         JSONObject req = req("changeUsername");
         req.put("newUsername", newUsername);
         req.put("password",    password);
-
         JSONObject res = send(req);
         return new UserResult(res.getBoolean("success"), res.optString("message", ""));
     }
@@ -110,7 +94,6 @@ public class ServerService {
         JSONObject req = req("changePassword");
         req.put("oldPassword", oldPassword);
         req.put("newPassword", newPassword);
-
         JSONObject res = send(req);
         return new UserResult(res.getBoolean("success"), res.optString("message", ""));
     }
@@ -119,7 +102,6 @@ public class ServerService {
     //  ITEMS
     // ================================================================== //
 
-    /** Server tự lấy sellerId từ token, không cần truyền */
     public static JSONArray getMyItems() {
         JSONObject res = send(req("getMyItems"));
         if (!res.getBoolean("success")) return new JSONArray();
@@ -133,9 +115,9 @@ public class ServerService {
         req.put("category",    category);
         req.put("description", description);
         req.put("startPrice",  startPrice);
-
         return send(req).getBoolean("success");
     }
+
     public static boolean updateItem(String itemId, String name, String description,
                                      String price, String status) {
         JSONObject req = req("updateItem");
@@ -143,12 +125,12 @@ public class ServerService {
         req.put("name",        name);
         req.put("description", description);
         try {
-            req.put("startPrice", Double.parseDouble(price.replace(",", "").replace("đ", "").trim()));
+            req.put("startPrice",
+                    Double.parseDouble(price.replace(",", "").replace("đ", "").trim()));
         } catch (NumberFormatException e) {
             return false;
         }
-        req.put("status",      status);
-
+        req.put("status", status);
         return send(req).getBoolean("success");
     }
 
@@ -159,13 +141,11 @@ public class ServerService {
     public static JSONArray getAllSessions(String category) {
         JSONObject req = req("getAllSessions");
         req.put("category", category);
-
         JSONObject res = send(req);
         if (!res.getBoolean("success")) return new JSONArray();
         return res.optJSONArray("sessions");
     }
 
-    /** Server tự lấy sellerId từ token, không cần truyền */
     public static JSONArray getMySessions() {
         JSONObject res = send(req("getMySessions"));
         if (!res.getBoolean("success")) return new JSONArray();
@@ -179,7 +159,6 @@ public class ServerService {
         req.put("startTime", startTime);
         req.put("endTime",   endTime);
         req.put("stepPrice", stepPrice);
-
         return send(req).getBoolean("success");
     }
 
@@ -187,12 +166,10 @@ public class ServerService {
     //  BIDDING
     // ================================================================== //
 
-    /** Server tự lấy bidderId từ token, không cần truyền */
     public static boolean placeBid(String sessionId, double bidAmount) {
         JSONObject req = req("placeBid");
         req.put("sessionId", sessionId);
         req.put("bidAmount", bidAmount);
-
         return send(req).getBoolean("success");
     }
 
@@ -201,7 +178,6 @@ public class ServerService {
         req.put("sessionId", sessionId);
         req.put("stepPrice", stepPrice);
         req.put("maxPrice",  maxPrice);
-
         return send(req).getBoolean("success");
     }
 
@@ -209,7 +185,6 @@ public class ServerService {
     //  TRANSACTIONS
     // ================================================================== //
 
-    /** Server tự lấy bidderId từ token */
     public static JSONArray getMyTransactions() {
         JSONObject res = send(req("getMyTransactions"));
         if (!res.getBoolean("success")) return new JSONArray();
@@ -219,7 +194,6 @@ public class ServerService {
     public static boolean pay(String transactionId) {
         JSONObject req = req("pay");
         req.put("transactionId", transactionId);
-
         return send(req).getBoolean("success");
     }
 
@@ -245,4 +219,3 @@ public class ServerService {
         return send(req).getBoolean("success");
     }
 }
-

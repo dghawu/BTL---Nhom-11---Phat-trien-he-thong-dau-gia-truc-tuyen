@@ -1,17 +1,27 @@
 package com.example.controller;
 
+import com.example.socket.BidSocketClient;
+import com.example.socket.BidSocketClient.BidEvent;
+import com.example.socket.ServerService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * AuctionRoomController - AuctionRoom.fxml
  * Quản lý phòng đấu giá realtime.
  * - Nhận cập nhật từ server qua listener/thread
  * - Cho phép đấu giá thủ công và tự động
+ * Thay đổi so với phiên bản cũ:
+ *   - initialize(): gọi BidSocketClient.joinSession() để nhận push realtime
+ *   - handleBidEvent(): xử lý BID_UPDATE và AUCTION_CLOSED từ Push Server
+ *   - handleBack() và các nav: gọi BidSocketClient.leave() trước khi thoát
  */
-public class AuctionRoomController extends com.example.controller.BaseController {
+public class AuctionRoomController extends BaseController {
 
     // Left: product info
     @FXML private Label lblProductName;
@@ -46,69 +56,141 @@ public class AuctionRoomController extends com.example.controller.BaseController
     private boolean manualEnabled = true;
     private boolean autoEnabled   = false;
 
-    // Session info - set từ AuctionsController
     private String sessionId;
     private double currentPrice = 0;
 
+    private static final DateTimeFormatter DT_DISPLAY =
+            DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy");
+
+    // ------------------------------------------------------------------ //
+    //  Khởi tạo
+    // ------------------------------------------------------------------ //
+
     @FXML
     public void initialize() {
-        // TODO: kết nối đến server socket và lắng nghe events
-        // ServerService.joinSession(sessionId, this::onBidEvent);
+        // Không làm gì ở đây — chờ initSession() được gọi sau navigateTo()
+        // để có sessionId trước khi joinSession
     }
 
-    /** Gọi sau navigateTo để set session */
+    /**
+     * Gọi ngay sau navigateTo() để truyền session vào controller.
+     * Thứ tự:
+     *   1. Load thông tin phiên từ API server (port 8888)
+     *   2. Kết nối Push Server (port 8889) để nhận BID_UPDATE realtime
+     */
     public void initSession(String sessionId, String productName) {
         this.sessionId = sessionId;
         lblProductName.setText(productName.toUpperCase());
 
-        // Load thông tin phiên từ server
+        // 1. Load thông tin phiên ban đầu
+        loadSessionInfo();
+
+        // 2. Join Push Server để nhận realtime
+        BidSocketClient.getInstance().joinSession(
+                sessionId,
+                ServerService.getToken(),
+                event -> handleBidEvent(event)   // callback — chạy trên background thread
+        );
+    }
+
+    // ------------------------------------------------------------------ //
+    //  Load thông tin phiên từ API
+    // ------------------------------------------------------------------ //
+
+    private void loadSessionInfo() {
         Platform.runLater(() -> {
-            org.json.JSONArray sessions = com.example.socket.ServerService.getAllSessions("ALL");
+            org.json.JSONArray sessions = ServerService.getAllSessions("ALL");
             if (sessions == null) return;
+
             for (int i = 0; i < sessions.length(); i++) {
                 org.json.JSONObject s = sessions.getJSONObject(i);
-                if (s.getString("id").equals(sessionId)) {
-                    currentPrice = s.getDouble("currentPrice");
-                    lblGiaKhoiDiem.setText(String.format("%,.0f", s.getDouble("startPrice")));
-                    lblBuocGia.setText(String.format("%,.0f", s.getDouble("stepPrice")));
-                    lblGiaHienTai.setText(String.format("%,.0f", currentPrice));
-                    lblThoiGianBatDau.setText(s.getString("startTime"));
-                    lblThoiGianKetThuc.setText(s.getString("endTime"));
-                    String winner = s.getString("currentWinner");
-                    lblNguoiGiuGia.setText(winner.isEmpty() ? "Chưa có" : winner);
-                    break;
-                }
+                if (!s.getString("id").equals(sessionId)) continue;
+
+                currentPrice = s.getDouble("currentPrice");
+
+                lblGiaKhoiDiem.setText(String.format("%,.0f đ", s.getDouble("startPrice")));
+                lblBuocGia.setText(String.format("%,.0f đ", s.getDouble("stepPrice")));
+                lblGiaHienTai.setText(String.format("%,.0f đ", currentPrice));
+
+                // Format thời gian hiển thị
+                String startTime = s.getString("startTime");
+                String endTime   = s.getString("endTime");
+                lblThoiGianBatDau.setText(formatTime(startTime));
+                lblThoiGianKetThuc.setText(formatTime(endTime));
+
+                String winner = s.optString("currentWinner", "");
+                lblNguoiGiuGia.setText(winner.isEmpty() ? "Chưa có" : winner);
+                break;
             }
         });
     }
 
     // ------------------------------------------------------------------ //
-    //  Realtime update - gọi từ background thread khi nhận event từ server
+    //  Xử lý event realtime từ Push Server
     // ------------------------------------------------------------------ //
 
-    /** Thêm một dòng vào feed lịch sử đấu giá */
-    public void addBidEvent(String message) {
-        Platform.runLater(() -> {
-            Label entry = new Label("▶ " + message);
-            entry.setStyle("-fx-font-size: 13px; -fx-text-fill: #333;");
-            bidHistoryBox.getChildren().add(entry);
-        });
+    /**
+     * Callback nhận BidEvent từ BidSocketClient.
+     * Chạy trên background thread → phải dùng Platform.runLater() để update UI.
+     */
+    private void handleBidEvent(BidEvent event) {
+        switch (event.type) {
+            case BID_UPDATE -> Platform.runLater(() -> {
+                // Cập nhật giá và người giữ giá
+                currentPrice = event.price;
+                lblGiaHienTai.setText(String.format("%,.0f đ", event.price));
+                lblNguoiGiuGia.setText(event.bidderName);
+
+                // Cập nhật endTime nếu bị anti-snipe kéo dài
+                if (!event.endTime.isBlank()) {
+                    lblThoiGianKetThuc.setText(formatTime(event.endTime));
+                }
+
+                // Thêm vào feed lịch sử
+                addBidEntry(event.bidderName + " đặt giá "
+                        + String.format("%,.0f đ", event.price));
+            });
+
+            case AUCTION_CLOSED -> Platform.runLater(() -> {
+                addBidEntry("🏁 Phiên kết thúc!");
+                if (!event.bidderName.isEmpty() && !"NO_WINNER".equals(event.bidderName)) {
+                    showNotification(getStage(bidHistoryBox),
+                            "PHIÊN ĐẤU GIÁ KẾT THÚC!\nNgười thắng: " + event.bidderName
+                                    + "\nGiá cuối: " + String.format("%,.0f đ", event.price));
+                } else {
+                    showNotification(getStage(bidHistoryBox),
+                            "PHIÊN ĐẤU GIÁ KẾT THÚC!\nKhông có người thắng.");
+                }
+                // Vô hiệu hoá nút đặt giá
+                manualBidField.setDisable(true);
+                autoBuocGiaField.setDisable(true);
+                autoMaxGiaField.setDisable(true);
+            });
+
+            default -> System.out.println("[AuctionRoom] Event không xác định: " + event);
+        }
     }
 
-    /** Cập nhật giá hiện tại */
-    public void updateCurrentPrice(double price, String holderName) {
-        Platform.runLater(() -> {
-            currentPrice = price;
-            lblGiaHienTai.setText(String.format("%.0f", price));
-            lblNguoiGiuGia.setText("Người giữ giá cao nhất: " + holderName);
-        });
+    // ------------------------------------------------------------------ //
+    //  Thêm dòng vào feed lịch sử (dùng nội bộ)
+    // ------------------------------------------------------------------ //
+
+    private void addBidEntry(String message) {
+        Label entry = new Label("▶ " + message);
+        entry.setStyle("-fx-font-size: 13px; -fx-text-fill: #333;");
+        entry.setWrapText(true);
+        bidHistoryBox.getChildren().add(0, entry); // mới nhất lên trên
     }
 
-    /** Thông báo phiên kết thúc */
+    // ── Public — giữ lại để tương thích nếu có chỗ khác gọi ────────────
+    public void addBidEvent(String message)                              { addBidEntry(message); }
+    public void updateCurrentPrice(double price, String holderName)     {
+        currentPrice = price;
+        lblGiaHienTai.setText(String.format("%,.0f đ", price));
+        lblNguoiGiuGia.setText(holderName);
+    }
     public void onSessionEnd() {
-        Platform.runLater(() ->
-                showNotification(getStage(bidHistoryBox), "PHIÊN ĐẤU GIÁ ĐÃ KẾT THÚC!!!")
-        );
+        showNotification(getStage(bidHistoryBox), "PHIÊN ĐẤU GIÁ ĐÃ KẾT THÚC!!!");
     }
 
     // ------------------------------------------------------------------ //
@@ -120,39 +202,43 @@ public class AuctionRoomController extends com.example.controller.BaseController
         manualEnabled = !manualEnabled;
         lblManualToggle.setText(manualEnabled ? "ON" : "OFF");
         lblManualToggle.setStyle(
-                "-fx-background-color: " + (manualEnabled ? "#22C55E" : "#9CA3AF") + ";" +
-                        "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;" +
-                        "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;"
+                "-fx-background-color: " + (manualEnabled ? "#22C55E" : "#9CA3AF") + ";"
+                        + "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;"
+                        + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;"
         );
         manualBidField.setDisable(!manualEnabled);
     }
 
-
     @FXML
     private void handleManualBid() {
         if (!manualEnabled) return;
+
         String input = manualBidField.getText().trim();
         if (input.isEmpty()) return;
 
         double bid;
         try {
-            bid = Double.parseDouble(input);
+            bid = Double.parseDouble(input.replace(",", "").replace("đ", "").trim());
         } catch (NumberFormatException e) {
             showNotification(getStage(bidHistoryBox), "GIÁ KHÔNG HỢP LỆ!");
             return;
         }
+
         if (bid <= currentPrice) {
-            showNotification(getStage(bidHistoryBox), "GIÁ ĐẶT PHẢI CAO HƠN GIÁ HIỆN TẠI!");
+            showNotification(getStage(bidHistoryBox),
+                    "GIÁ ĐẶT PHẢI CAO HƠN GIÁ HIỆN TẠI (" + String.format("%,.0f đ", currentPrice) + ")!");
             return;
         }
 
-        boolean ok = com.example.socket.ServerService.placeBid(sessionId, bid);
+        // Gửi lên API server (port 8888) — response/request như cũ
+        // Push realtime sẽ đến qua BidSocketClient (port 8889)
+        boolean ok = ServerService.placeBid(sessionId, bid);
         if (ok) {
-            updateCurrentPrice(bid, currentUsername);
-            addBidEvent(currentUsername + " đặt giá " + String.format("%,.0f", bid) + "đ");
             manualBidField.clear();
+            // Không cần update UI ở đây — BID_UPDATE sẽ đến qua push
+            // và handleBidEvent() sẽ cập nhật
         } else {
-            showNotification(getStage(bidHistoryBox), "ĐẶT GIÁ THẤT BẠI!");
+            showNotification(getStage(bidHistoryBox), "ĐẶT GIÁ THẤT BẠI! Vui lòng thử lại.");
         }
     }
 
@@ -165,9 +251,9 @@ public class AuctionRoomController extends com.example.controller.BaseController
         autoEnabled = !autoEnabled;
         lblAutoToggle.setText(autoEnabled ? "ON" : "OFF");
         lblAutoToggle.setStyle(
-                "-fx-background-color: " + (autoEnabled ? "#22C55E" : "#EF4444") + ";" +
-                        "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;" +
-                        "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;"
+                "-fx-background-color: " + (autoEnabled ? "#22C55E" : "#EF4444") + ";"
+                        + "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;"
+                        + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;"
         );
         autoBuocGiaField.setDisable(!autoEnabled);
         autoMaxGiaField.setDisable(!autoEnabled);
@@ -182,32 +268,67 @@ public class AuctionRoomController extends com.example.controller.BaseController
             showNotification(getStage(bidHistoryBox), "VUI LÒNG NHẬP ĐẦY ĐỦ!");
             return;
         }
-
-        boolean ok = com.example.socket.ServerService.setAutoBid(
+        boolean ok = ServerService.setAutoBid(
                 sessionId,
                 Double.parseDouble(buocGia),
                 Double.parseDouble(maxGia)
         );
-        if (ok) showNotification(getStage(bidHistoryBox), "ĐÃ BẬT ĐẤU GIÁ TỰ ĐỘNG!");
-        else    showNotification(getStage(bidHistoryBox), "CÀI ĐẶT TỰ ĐỘNG THẤT BẠI!");
+        showNotification(getStage(bidHistoryBox),
+                ok ? "ĐÃ BẬT ĐẤU GIÁ TỰ ĐỘNG!" : "CÀI ĐẶT TỰ ĐỘNG THẤT BẠI!");
     }
 
     // ------------------------------------------------------------------ //
     //  Report
     // ------------------------------------------------------------------ //
+
     @FXML
     private void handleReport() {
-        // TODO: mở dialog báo cáo sự cố
-        // ServerService.reportIssue(sessionId, currentUsername, ...);
         showNotification(getStage(bidHistoryBox), "ĐÃ GỬI BÁO CÁO SỰ CỐ!");
     }
 
     // ------------------------------------------------------------------ //
-    //  Nav
+    //  Navigation — leave() trước khi rời phòng
     // ------------------------------------------------------------------ //
-    @FXML private void handleBack()         { navigateTo("/fxml/Auctions.fxml", getStage(bidHistoryBox)); }
-    @FXML private void handleHome()         { goHome(getStage(bidHistoryBox)); }
-    @FXML private void handleAuctions()     { navigateTo("/fxml/Auctions.fxml", getStage(bidHistoryBox)); }
-    @FXML private void handleBidderCentre() { navigateTo("/fxml/BidderCentre.fxml", getStage(bidHistoryBox)); }
-    @FXML private void handleSettings()     { goSettings(getStage(bidHistoryBox)); }
+
+    @FXML private void handleBack() {
+        BidSocketClient.getInstance().leave();
+        navigateTo("/fxml/Auctions.fxml", getStage(bidHistoryBox));
+    }
+
+    @FXML private void handleHome() {
+        BidSocketClient.getInstance().leave();
+        goHome(getStage(bidHistoryBox));
+    }
+
+    @FXML private void handleAuctions() {
+        BidSocketClient.getInstance().leave();
+        navigateTo("/fxml/Auctions.fxml", getStage(bidHistoryBox));
+    }
+
+    @FXML private void handleBidderCentre() {
+        BidSocketClient.getInstance().leave();
+        navigateTo("/fxml/BidderCentre.fxml", getStage(bidHistoryBox));
+    }
+
+    @FXML private void handleSettings() {
+        BidSocketClient.getInstance().leave();
+        goSettings(getStage(bidHistoryBox));
+    }
+
+    // ------------------------------------------------------------------ //
+    //  Helper
+    // ------------------------------------------------------------------ //
+
+    /** Format chuỗi ISO datetime từ server sang dạng hiển thị dễ đọc. */
+    private String formatTime(String raw) {
+        if (raw == null || raw.isBlank()) return "-";
+        try {
+            // Server trả về dạng "2025-05-20T21:00" hoặc "2025-05-20T21:00:00"
+            String normalized = raw.length() == 16 ? raw + ":00" : raw;
+            LocalDateTime dt = LocalDateTime.parse(normalized);
+            return dt.format(DT_DISPLAY);
+        } catch (Exception e) {
+            return raw; // fallback hiển thị raw nếu parse lỗi
+        }
+    }
 }
