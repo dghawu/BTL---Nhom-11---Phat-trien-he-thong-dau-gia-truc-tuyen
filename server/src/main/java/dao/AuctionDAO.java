@@ -124,6 +124,18 @@ public class AuctionDAO {
             System.out.println("[AuctionDAO] Lỗi updateEndTime: " + e.getMessage());
         }
     }
+    public void update(Auction auction) {
+        String sql = "UPDATE auctions SET end_time = ?, min_increment = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, auction.getEndTime().toString());
+            ps.setDouble(2, auction.getMinIncrement());
+            ps.setString(3, auction.getAuctionId());
+            ps.executeUpdate();
+            System.out.println("[AuctionDAO] Cập nhật phiên: " + auction.getAuctionId());
+        } catch (SQLException e) {
+            System.out.println("[AuctionDAO] Lỗi update: " + e.getMessage());
+        }
+    }
 
     // ── DELETE ─────────────────────────────────────────────────────
 

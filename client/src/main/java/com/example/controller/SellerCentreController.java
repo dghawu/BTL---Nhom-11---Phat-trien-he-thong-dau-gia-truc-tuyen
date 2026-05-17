@@ -4,6 +4,8 @@ import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 
@@ -11,7 +13,7 @@ import java.io.File;
 
 /**
  * SellerCentreController - SellerAddProduct.fxml
- * Màn hình thêm sản phẩm mới.
+ * Màn hình thêm sản phẩm mới + Upload ảnh.
  */
 public class SellerCentreController extends com.example.controller.BaseController {
 
@@ -25,6 +27,10 @@ public class SellerCentreController extends com.example.controller.BaseControlle
     private TextField giaField;
     @FXML
     private Pane imagePane;
+
+    // Lưu dữ liệu ảnh hiện tại
+    private String currentImagePath = null;
+    private byte[] imageData = null;
 
     // ------------------------------------------------------------------ //
     //  Nav
@@ -76,7 +82,7 @@ public class SellerCentreController extends com.example.controller.BaseControlle
     // ------------------------------------------------------------------ //
 
     /**
-     * Mở FileChooser để chọn ảnh
+     * Mở FileChooser để chọn ảnh + hiển thị preview
      */
     @FXML
     private void handleChooseImage() {
@@ -86,10 +92,27 @@ public class SellerCentreController extends com.example.controller.BaseControlle
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
         File file = fc.showOpenDialog(getStage(imagePane));
+
         if (file != null) {
-            // TODO: hiển thị ảnh lên imagePane
-            // ImageView iv = new ImageView(new Image(file.toURI().toString()));
-            // imagePane.getChildren().setAll(iv);
+            try {
+                // Đọc file thành byte array
+                imageData = java.nio.file.Files.readAllBytes(file.toPath());
+                currentImagePath = file.getAbsolutePath();
+
+                // Hiển thị preview ảnh
+                Image img = new Image(file.toURI().toString());
+                ImageView iv = new ImageView(img);
+                iv.setFitWidth(200);
+                iv.setFitHeight(200);
+                iv.setPreserveRatio(true);
+                imagePane.getChildren().setAll(iv);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                showNotification(getStage(imagePane), "Lỗi: Không thể đọc file ảnh!");
+                imageData = null;
+                currentImagePath = null;
+            }
         }
     }
 
@@ -108,8 +131,14 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         String moTa = moTaField.getText().trim();
         String giaStr = giaField.getText().trim();
 
+        // Kiểm tra dữ liệu bắt buộc
         if (ten.isEmpty() || phanLoai == null || giaStr.isEmpty()) {
             showNotification(getStage(tenField), "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!");
+            return;
+        }
+
+        if (imageData == null) {
+            showNotification(getStage(tenField), "VUI LÒNG CHỌN ẢNH SẢN PHẨM!");
             return;
         }
 
@@ -121,8 +150,8 @@ public class SellerCentreController extends com.example.controller.BaseControlle
             return;
         }
 
-        // Gọi vào ServerService
-        boolean ok = ServerService.addItem(ten, phanLoai, moTa, gia);
+        // Gọi ServerService với image data
+        boolean ok = ServerService.addItemWithImage(ten, phanLoai, moTa, gia, imageData);
 
         if (ok) {
             showNotification(getStage(tenField), "THÊM SẢN PHẨM THÀNH CÔNG!");
@@ -137,5 +166,8 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         moTaField.clear();
         giaField.clear();
         phanLoaiBox.setValue(null);
+        imageData = null;
+        currentImagePath = null;
+        imagePane.getChildren().clear();
     }
 }

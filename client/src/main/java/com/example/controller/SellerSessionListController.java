@@ -46,6 +46,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         String status = s.getString("status");
         String gia = String.format("%,.0fđ", s.getDouble("startPrice"));
         String category = s.getString("category");
+        String imageBase64 = s.optString("itemImage", "");
 
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
@@ -74,6 +75,21 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         link.setOnAction(e -> openDetail(s));
         info.getChildren().add(link);
 
+        if (imageBase64 != null && !imageBase64.isEmpty()) {
+            try {
+                byte[] decodedBytes = java.util.Base64.getDecoder().decode(imageBase64);
+                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(decodedBytes);
+                javafx.scene.image.Image imageObj = new javafx.scene.image.Image(bais);
+                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(imageObj);
+                imageView.setFitWidth(280);
+                imageView.setFitHeight(160);
+                imageView.setPreserveRatio(true);
+                img.getChildren().setAll(imageView);
+            } catch (Exception e) {
+                System.err.println("[SellerSessionListController] Lỗi decode image: " + e.getMessage());
+            }
+        }
+
         card.getChildren().addAll(title, img, info);
         return card;
     }
@@ -87,10 +103,14 @@ public class SellerSessionListController extends com.example.controller.BaseCont
             ctrl.currentUserId = currentUserId;
             ctrl.currentRole = currentRole;
             ctrl.initData(
+                    s.optString("id", "---"),
                     s.getString("itemName"),
                     s.getString("startTime"),
+                    s.optString("endTime", "---"),
+                    String.format("%,.0fđ", s.getDouble("startPrice")),
+                    String.format("%,.0f", s.optDouble("stepPrice", 0)),
                     s.getString("status"),
-                    String.format("%,.0fđ", s.getDouble("startPrice"))
+                    s.optString("itemImage", "")
             );
             getStage(sessionGrid).setScene(new Scene(root));
         } catch (Exception e) {

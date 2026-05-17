@@ -153,6 +153,37 @@ public class ServerService {
         return send(req("rejectItem").put("itemId", itemId)).getBoolean("success");
     }
 
+    public static boolean addItemWithImage(String name, String category,
+                                           String description, double startPrice,
+                                           byte[] imageData) {
+        JSONObject req = req("addItemWithImage");
+        req.put("name", name);
+        req.put("category", category);
+        req.put("description", description);
+        req.put("startPrice", startPrice);
+        // Encode image to base64
+        req.put("imageData", java.util.Base64.getEncoder().encodeToString(imageData));
+        return send(req).getBoolean("success");
+    }
+
+    public static boolean updateItemWithImage(String itemId, String name, String description,
+                                              String price, byte[] imageData) {
+        JSONObject req = req("updateItemWithImage");
+        req.put("itemId", itemId);
+        req.put("name", name);
+        req.put("description", description);
+        try {
+            req.put("startPrice",
+                    Double.parseDouble(price.replace(",", "").replace("đ", "").trim()));
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        // Encode image to base64
+        req.put("imageData", java.util.Base64.getEncoder().encodeToString(imageData));
+        return send(req).getBoolean("success");
+    }
+
+
     // ================================================================== //
     //  SESSIONS
     // ================================================================== //
@@ -187,6 +218,22 @@ public class ServerService {
 
     public static boolean rejectSession(String sessionId) {
         return send(req("rejectSession").put("sessionId", sessionId)).getBoolean("success");
+    }
+
+    public static boolean updateSession(String sessionId, String endTime, double stepPrice) {
+        JSONObject req = req("updateSession");
+        req.put("sessionId", sessionId);
+        req.put("endTime", endTime);
+        req.put("stepPrice", stepPrice);
+        return send(req).getBoolean("success");
+    }
+
+    public static JSONObject getSessionDetail(String sessionId) {
+        JSONObject req = req("getSessionDetail");
+        req.put("sessionId", sessionId);
+        JSONObject res = send(req);
+        if (!res.getBoolean("success")) return new JSONObject();
+        return res.optJSONObject("session");
     }
 
     // ================================================================== //

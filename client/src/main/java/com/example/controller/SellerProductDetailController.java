@@ -4,11 +4,17 @@ import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.stage.FileChooser;
+
+import java.io.File;
 
 /**
  * SellerProductDetailController - SellerProductDetail.fxml
  * Nhận data từ SellerProductListController.openDetail()
+ * Có thể edit thông tin sản phẩm + upload ảnh mới
  */
 public class SellerProductDetailController extends com.example.controller.BaseController {
 
@@ -34,8 +40,10 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
     private TextField txtGia;
     private TextField txtMoTa;
     private TextField txtTinhTrang;
+
     private boolean isEditMode = false;
     private String currentId;
+    private byte[] newImageData = null;
 
     public void initData(String id, String ten, String phanLoai, String gia, String moTa, String tinhTrang) {
         this.currentId = id;
@@ -92,6 +100,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
             // Quay lại view mode (cancel)
             disableEditMode();
             isEditMode = false;
+            newImageData = null;
         }
     }
 
@@ -102,7 +111,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         txtMoTa = new TextField(lblMoTa.getText());
         txtTinhTrang = new TextField(lblTinhTrang.getText());
 
-        // Set style cho TextFields (nếu cần)
+        // Set style cho TextFields
         txtTen.setStyle("-fx-font-size: 14px; -fx-padding: 5px;");
         txtGia.setStyle("-fx-font-size: 14px; -fx-padding: 5px;");
         txtMoTa.setStyle("-fx-font-size: 14px; -fx-padding: 5px;");
@@ -137,6 +146,38 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         lblTinhTrang.setText(txtTinhTrang != null ? txtTinhTrang.getText() : "");
     }
 
+    /**
+     * Cho phép chọn ảnh sản phẩm mới trong edit mode
+     */
+    @FXML
+    private void handleChooseNewImage() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Chọn ảnh sản phẩm mới");
+        fc.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+        File file = fc.showOpenDialog(getStage(imgPane));
+
+        if (file != null) {
+            try {
+                newImageData = java.nio.file.Files.readAllBytes(file.toPath());
+
+                // Hiển thị preview
+                Image img = new Image(file.toURI().toString());
+                ImageView iv = new ImageView(img);
+                iv.setFitWidth(150);
+                iv.setFitHeight(150);
+                iv.setPreserveRatio(true);
+                imgPane.getChildren().setAll(iv);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                showNotification(getStage(lblTen), "Lỗi: Không thể đọc file ảnh!");
+                newImageData = null;
+            }
+        }
+    }
+
     @FXML
     private void handleSave() {
         if (isEditMode) {
@@ -145,7 +186,6 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
             String giaMoi = txtGia.getText().trim();
             String moTaMoi = txtMoTa.getText().trim();
             String tinhTrangMoi = txtTinhTrang.getText().trim();
-            String productId = lblId.getText();
 
             // Kiểm tra dữ liệu không để trống
             if (tenMoi.isEmpty() || giaMoi.isEmpty() || tinhTrangMoi.isEmpty()) {
@@ -155,7 +195,14 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
 
             // Gửi update lên server
             try {
-                boolean ok = ServerService.updateItem(currentId, tenMoi, moTaMoi, giaMoi, tinhTrangMoi);
+                boolean ok;
+
+                // Nếu có ảnh mới → gửi cả ảnh
+                if (newImageData != null) {
+                    ok = ServerService.updateItemWithImage(currentId, tenMoi, moTaMoi, giaMoi, newImageData);
+                } else {
+                    ok = ServerService.updateItem(currentId, tenMoi, moTaMoi, giaMoi, tinhTrangMoi);
+                }
 
                 if (ok) {
                     // Cập nhật UI
@@ -166,6 +213,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
 
                     disableEditMode();
                     isEditMode = false;
+                    newImageData = null;
                     showNotification(getStage(lblTen), "Cập nhật sản phẩm thành công!");
                 } else {
                     showNotification(getStage(lblTen), "Cập nhật thất bại!");

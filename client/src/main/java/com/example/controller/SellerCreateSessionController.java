@@ -4,11 +4,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * SellerCreateSessionController - SellerCreateSession.fxml
- * Tạo phiên đấu giá mới. Khi chọn sản phẩm, tự điền ảnh và mô tả.
+ * Tạo phiên đấu giá mới. Khi chọn sản phẩm, tự điền:
+ * - Descriptions (mô tả sản phẩm)
+ * - Ảnh sản phẩm
  */
 public class SellerCreateSessionController extends com.example.controller.BaseController {
 
@@ -26,6 +32,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     private Pane imgPreviewPane;
 
     private final java.util.Map<String, String> itemNameToId = new java.util.HashMap<>();
+    private final java.util.Map<String, JSONObject> itemCache = new java.util.HashMap<>();
 
     @FXML
     public void initialize() {
@@ -33,26 +40,57 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
     @Override
     protected void onReady() {
-        org.json.JSONArray items = com.example.socket.ServerService.getMyItems();
+        JSONArray items = com.example.socket.ServerService.getMyItems();
         if (items == null) return;
         for (int i = 0; i < items.length(); i++) {
-            org.json.JSONObject item = items.getJSONObject(i);
+            JSONObject item = items.getJSONObject(i);
             String name = item.getString("name");
             String id = item.getString("id");
             itemNameToId.put(name, id);
+            itemCache.put(id, item);  // Cache toàn bộ item data
             sanPhamBox.getItems().add(name);
         }
     }
 
     /**
-     * Khi chọn sản phẩm → tự điền mô tả + ảnh
+     * Khi chọn sản phẩm → tự điền descriptions + ảnh từ data sản phẩm
      */
     @FXML
     private void handleSelectSanPham() {
         String sp = sanPhamBox.getValue();
         if (sp == null) return;
-        // Điền mô tả nếu muốn — có thể để trống
-        moTaArea.setText("Sản phẩm: " + sp);
+
+        String itemId = itemNameToId.get(sp);
+        JSONObject item = itemCache.get(itemId);
+
+        if (item != null) {
+            // Auto fill descriptions từ product description
+            String desc = item.optString("description", "");
+            moTaArea.setText(desc != null && !desc.isEmpty() ? desc : "");
+
+            // Auto hiển thị ảnh sản phẩm
+            String imageData = item.optString("image", "");
+            if (imageData != null && !imageData.isEmpty()) {
+                try {
+                    // Decode base64 → hiển thị
+                    byte[] decodedBytes = java.util.Base64.getDecoder().decode(imageData);
+                    java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(decodedBytes);
+                    Image img = new Image(bais);
+
+                    ImageView iv = new ImageView(img);
+                    iv.setFitWidth(250);
+                    iv.setFitHeight(250);
+                    iv.setPreserveRatio(true);
+                    imgPreviewPane.getChildren().setAll(iv);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Nếu decode fail → để trống
+                    imgPreviewPane.getChildren().clear();
+                }
+            } else {
+                imgPreviewPane.getChildren().clear();
+            }
+        }
     }
 
     @FXML

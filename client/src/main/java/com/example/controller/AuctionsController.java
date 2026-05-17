@@ -155,6 +155,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         String category = s.getString("category");
         String endTime = s.getString("endTime");
         String status = s.getString("status");
+        String imageBase64 = s.optString("itemImage", "");
 
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
@@ -189,6 +190,21 @@ public class AuctionsController extends com.example.controller.BaseController {
         btnJoin.setMaxWidth(Double.MAX_VALUE);
         btnJoin.setOnAction(e -> handleJoinAuction(id, ten));
         VBox.setMargin(btnJoin, new javafx.geometry.Insets(8, 10, 10, 10));
+
+        if (imageBase64 != null && !imageBase64.isEmpty()) {
+            try {
+                byte[] decodedBytes = java.util.Base64.getDecoder().decode(imageBase64);
+                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(decodedBytes);
+                javafx.scene.image.Image imageObj = new javafx.scene.image.Image(bais);
+                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(imageObj);
+                imageView.setFitWidth(280);
+                imageView.setFitHeight(160);
+                imageView.setPreserveRatio(true);
+                img.getChildren().setAll(imageView);
+            } catch (Exception e) {
+                System.err.println("[AuctionsController] Lỗi decode image: " + e.getMessage());
+            }
+        }
 
         card.getChildren().addAll(title, img, info, btnJoin);
         return card;

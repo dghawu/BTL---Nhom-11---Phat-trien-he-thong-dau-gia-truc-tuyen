@@ -35,6 +35,7 @@ public abstract class Item extends Entity implements ItemFactory {
     private String description;
     private double startPrice;
     private ItemStatus status;
+    private String image;
 
     /**
      * Constructor rỗng — cần thiết để các subclass dùng làm prototype.
@@ -95,6 +96,13 @@ public abstract class Item extends Entity implements ItemFactory {
 
     public void setStatus(ItemStatus status) {
         this.status = status;
+    }
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     // ── Template methods ────────────────────────────────────────────

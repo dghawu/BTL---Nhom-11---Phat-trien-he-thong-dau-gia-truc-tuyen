@@ -179,4 +179,8 @@ public class Auction extends Entity implements Subject {
     public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
+
+    public void setMinIncrement(double minIncrement) {
+        this.minIncrement = minIncrement;
+    }
 }

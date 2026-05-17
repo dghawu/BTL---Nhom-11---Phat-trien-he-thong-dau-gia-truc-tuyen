@@ -96,6 +96,9 @@ public class ClientHandler implements Runnable {
                 case "getAllItems" -> handleGetAllItems(req);
                 case "approveItem" -> handleApproveItem(req);
                 case "rejectItem" -> handleRejectItem(req);
+                case "addItemWithImage" -> handleAddItemWithImage(req);
+                case "updateItemWithImage" -> handleUpdateItemWithImage(req);
+                case "updateSession" -> handleUpdateSession(req);
 
                 // Sessions
                 case "createSession" -> handleCreateSession(req);
@@ -220,6 +223,7 @@ public class ClientHandler implements Runnable {
                     .put("status", item.getStatus().name())
                     .put("type", item.getClass().getSimpleName())
                     .put("sellerId", item.getSellerId())
+                    .put("image", item.getImage() != null ? item.getImage() : "")
             );
         }
         return success().put("items", arr).toString();
@@ -272,6 +276,54 @@ public class ClientHandler implements Runnable {
         itemDAO.update(itemId, name, description, startPrice, status.toUpperCase());
         return success().toString();
     }
+    private String handleAddItemWithImage(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "SELLER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sellerId = auth.getUserId();
+        String name = req.getString("name");
+        String category = req.getString("category");
+        String description = req.getString("description");
+        double startPrice = req.getDouble("startPrice");
+        String imageData = req.optString("imageData", "");
+
+        try {
+            Item.ItemType type = Item.ItemType.valueOf(
+                    category.toUpperCase().replace(" ", "_").replace("Đ", "D")
+            );
+            Item newItem = type.create(
+                    sellerId, name,
+                    UUID.randomUUID().toString(),
+                    description, startPrice,
+                    Item.ItemStatus.PENDING
+            );
+            itemDAO.saveWithImage(newItem, imageData);
+            return success().toString();
+        } catch (Exception e) {
+            return fail("Không tạo được sản phẩm: " + e.getMessage());
+        }
+    }
+
+    private String handleUpdateItemWithImage(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "SELLER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sellerId = auth.getUserId();
+        String itemId = req.getString("itemId");
+        String name = req.getString("name");
+        String description = req.optString("description", "");
+        double startPrice = req.getDouble("startPrice");
+        String imageData = req.optString("imageData", "");
+        String status = req.optString("status", "PENDING");
+
+        Item item = itemDAO.findById(itemId);
+        if (item == null) return fail("Không tìm thấy sản phẩm.");
+        if (!sellerId.equals(item.getSellerId()))
+            return fail("Bạn không có quyền sửa sản phẩm này.");
+
+        itemDAO.updateWithImage(itemId, name, description, startPrice, status.toUpperCase(), imageData);
+        return success().toString();
+    }
 
     private String handleGetAllItems(JSONObject req) {
         AuthResult auth = TokenGuard.check(req);
@@ -287,6 +339,7 @@ public class ClientHandler implements Runnable {
                     .put("status", item.getStatus().name())
                     .put("sellerId", item.getSellerId())
                     .put("type", item.getClass().getSimpleName())
+                    .put("image", item.getImage() != null ? item.getImage() : "")
             );
         }
         return success().put("items", arr).toString();
@@ -340,6 +393,30 @@ public class ClientHandler implements Runnable {
         }
         return success().put("sessions", arr).toString();
     }
+    private String handleUpdateSession(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "SELLER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sellerId = auth.getUserId();
+        String sessionId = req.getString("sessionId");
+        String endTime = req.getString("endTime");
+        double stepPrice = req.getDouble("stepPrice");
+
+        Auction auction = auctionDAO.findById(sessionId);
+        if (auction == null) return fail("Không tìm thấy phiên đấu giá.");
+        if (!sellerId.equals(auction.getItem().getSellerId()))
+            return fail("Bạn không có quyền sửa phiên này.");
+
+        try {
+            LocalDateTime newEndTime = LocalDateTime.parse(endTime, DT_FMT);
+            auction.setEndTime(newEndTime);
+            auction.setMinIncrement(stepPrice);
+            auctionDAO.update(auction);
+            return success().toString();
+        } catch (Exception e) {
+            return fail("Lỗi update phiên: " + e.getMessage());
+        }
+    }
 
     private String handleGetMySessions(JSONObject req) {
         AuthResult auth = TokenGuard.checkRole(req, "SELLER");
@@ -379,6 +456,7 @@ public class ClientHandler implements Runnable {
         auctionDAO.save(auction);
         return success().toString();
     }
+
 
     private String handleApproveSession(JSONObject req) {
         AuthResult auth = TokenGuard.checkRole(req, "ADMIN");
@@ -537,6 +615,7 @@ public class ClientHandler implements Runnable {
                 .put("id", a.getAuctionId())
                 .put("itemId", a.getItem().getId())
                 .put("itemName", a.getItem().getName())
+                .put("itemImage", a.getItem().getImage() != null ? a.getItem().getImage() : "")
                 .put("description", a.getItem().getDescription())
                 .put("sellerId", a.getItem().getSellerId())
                 .put("startPrice", a.getStartPrice())
@@ -546,7 +625,10 @@ public class ClientHandler implements Runnable {
                 .put("endTime", a.getEndTime().toString())
                 .put("status", a.getStatus().name())
                 .put("category", a.getItem().getClass().getSimpleName())
+                .put("id", a.getId())
+                .put("itemImage", a.getItem().getImage() != null ? a.getItem().getImage() : "")
                 .put("currentWinner", a.getCurrentWinner() != null ? a.getCurrentWinner() : "");
+
     }
     private JSONArray txToJson(List<BidTransaction> list, boolean includeAuction) {
         JSONArray arr = new JSONArray();

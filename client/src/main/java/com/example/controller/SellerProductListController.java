@@ -47,12 +47,13 @@ public class SellerProductListController extends com.example.controller.BaseCont
             String status = item.getString("status");
             double price = item.getDouble("startPrice");
             String priceStr = String.format("%,.0fđ", price);
+            String imageBase64 = item.optString("image", "");
 
-            productGrid.getChildren().add(buildMockCard(name, id, priceStr, status, category, description));
+            productGrid.getChildren().add(buildMockCard(name, id, priceStr, status, category, description, imageBase64));
         }
     }
 
-    private VBox buildMockCard(String ten, String id, String gia, String tinhTrang, String category, String description) {
+    private VBox buildMockCard(String ten, String id, String gia, String tinhTrang, String category, String description, String imageBase64) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
@@ -79,6 +80,21 @@ public class SellerProductListController extends com.example.controller.BaseCont
         link.setStyle("-fx-text-fill: #0044CC;");
         link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang));
         info.getChildren().add(link);
+
+        if (imageBase64 != null && !imageBase64.isEmpty()) {
+            try {
+                byte[] decodedBytes = java.util.Base64.getDecoder().decode(imageBase64);
+                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(decodedBytes);
+                javafx.scene.image.Image imageObj = new javafx.scene.image.Image(bais);
+                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(imageObj);
+                imageView.setFitWidth(280);
+                imageView.setFitHeight(160);
+                imageView.setPreserveRatio(true);
+                img.getChildren().setAll(imageView);
+            } catch (Exception e) {
+                System.err.println("[SellerProductListController] Lỗi decode image: " + e.getMessage());
+            }
+        }
 
         card.getChildren().addAll(title, img, info);
         return card;

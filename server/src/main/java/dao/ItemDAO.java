@@ -39,6 +39,26 @@ public class ItemDAO {
             System.out.println("[ItemDAO] Lỗi save: " + e.getMessage());
         }
     }
+    public void saveWithImage(Item item, String imageBase64) {
+        String sql = "INSERT IGNORE INTO items " +
+                "(id, seller_id, name, description, starting_price, status, type, image, created_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, item.getId());
+            ps.setString(2, item.getSellerId());
+            ps.setString(3, item.getName());
+            ps.setString(4, item.getDescription());
+            ps.setDouble(5, item.getStartPrice());
+            ps.setString(6, item.getStatus().name());
+            ps.setString(7, item.getClass().getSimpleName().toUpperCase());
+            ps.setString(8, imageBase64);
+            ps.setString(9, item.getCreatedAt().toString());
+            ps.executeUpdate();
+            System.out.println("[ItemDAO] Lưu item with image: " + item.getName());
+        } catch (SQLException e) {
+            System.out.println("[ItemDAO] Lỗi saveWithImage: " + e.getMessage());
+        }
+    }
 
     // ── SELECT ─────────────────────────────────────────────────────
 
@@ -121,6 +141,23 @@ public class ItemDAO {
             System.out.println("[ItemDAO] Lỗi update: " + e.getMessage());
         }
     }
+    public void updateWithImage(String itemId, String name, String description,
+                                double startPrice, String status, String imageBase64) {
+        String sql = "UPDATE items SET name = ?, description = ?, " +
+                "starting_price = ?, status = ?, image = ? WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, description);
+            ps.setDouble(3, startPrice);
+            ps.setString(4, status);
+            ps.setString(5, imageBase64);
+            ps.setString(6, itemId);
+            ps.executeUpdate();
+            System.out.println("[ItemDAO] UpdateWithImage item: " + itemId);
+        } catch (SQLException e) {
+            System.out.println("[ItemDAO] Lỗi updateWithImage: " + e.getMessage());
+        }
+    }
 
     // ── DELETE ─────────────────────────────────────────────────────
 
@@ -144,10 +181,13 @@ public class ItemDAO {
         double startPrice = rs.getDouble("starting_price");
         String statusStr = rs.getString("status");
         String typeStr = rs.getString("type");
+        String image = rs.getString("image");
 
         Item.ItemStatus status = Item.ItemStatus.valueOf(statusStr);
         Item.ItemType type = Item.ItemType.valueOf(typeStr);
 
-        return type.create(sellerId, name, id, description, startPrice, status);
+        Item item = type.create(sellerId, name, id, description, startPrice, status);
+        item.setImage(image);
+        return item;
     }
 }
