@@ -19,7 +19,9 @@ import observer.SocketBroadcaster;
  * đảm bảo hoạt động đúng cả trong môi trường production lẫn unit test.
  */
 public class AuctionTimer {
-    private final AuctionDAO auctionDAO = new AuctionDAO();
+    private AuctionDAO getAuctionDAO() {
+        return new AuctionDAO();
+    }
 
     // Singleton
     private static volatile AuctionTimer instance;
@@ -74,11 +76,11 @@ public class AuctionTimer {
         if (delaySeconds <= 0) {
             System.out.println("[AuctionTimer] Phiên " + auctionId
                     + " đã hết giờ, đóng ngay.");
-            auction.closeAuction();
             scheduledTasks.remove(auctionId);
-            auctionDAO.updateStatus(auctionId, AuctionStatus.FINISHED);
-
-            Auction fresh = auctionDAO.findById(auctionId);
+            auction.closeAuction();
+            AuctionDAO dao = getAuctionDAO();
+            dao.updateStatus(auctionId, AuctionStatus.FINISHED);
+            Auction fresh = dao.findById(auctionId);
             String winner = fresh != null ? fresh.getCurrentWinner() : auction.getCurrentWinner();
             double finalPrice = fresh != null ? fresh.getCurrentPrice() : auction.getCurrentPrice();
 
@@ -97,11 +99,11 @@ public class AuctionTimer {
             if (LocalDateTime.now().isBefore(auction.getEndTime())) {
                 reschedule(auction);
             } else {
-                auction.closeAuction();
                 scheduledTasks.remove(auctionId);
-                auctionDAO.updateStatus(auctionId, AuctionStatus.FINISHED);
-
-                Auction fresh = auctionDAO.findById(auctionId);
+                auction.closeAuction();
+                AuctionDAO dao = getAuctionDAO();
+                dao.updateStatus(auctionId, AuctionStatus.FINISHED);
+                Auction fresh = dao.findById(auctionId);
                 String winner = fresh != null ? fresh.getCurrentWinner() : auction.getCurrentWinner();
                 double finalPrice = fresh != null ? fresh.getCurrentPrice() : auction.getCurrentPrice();
 
