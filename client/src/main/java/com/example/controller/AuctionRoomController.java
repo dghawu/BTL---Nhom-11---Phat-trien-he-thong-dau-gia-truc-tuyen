@@ -80,6 +80,7 @@ public class AuctionRoomController extends BaseController {
 
     private String sessionId;
     private double currentPrice = 0;
+    private double stepPrice = 0;
 
     private static final DateTimeFormatter DT_DISPLAY =
             DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy");
@@ -129,10 +130,32 @@ public class AuctionRoomController extends BaseController {
                 if (!s.getString("id").equals(sessionId)) continue;
 
                 currentPrice = s.getDouble("currentPrice");
+                stepPrice = s.getDouble("stepPrice");
 
                 lblGiaKhoiDiem.setText(String.format("%,.0f đ", s.getDouble("startPrice")));
                 lblBuocGia.setText(String.format("%,.0f đ", s.getDouble("stepPrice")));
                 lblGiaHienTai.setText(String.format("%,.0f đ", currentPrice));
+                lblTenSP.setText("Product's name: " + s.getString("itemName"));
+                lblIdSP.setText("Product id: " + s.getString("itemId"));
+                lblGiaMoBan.setText("Starting price: " + String.format("%,.0f đ", s.getDouble("startPrice")));
+                lblTinhTrang.setText("Status: " + s.getString("status"));
+                lblMoTa.setText("Description: " + s.optString("description", ""));
+
+                String imageBase64 = s.optString("itemImage", "");
+                if (!imageBase64.isEmpty()) {
+                    try {
+                        byte[] bytes = java.util.Base64.getDecoder().decode(imageBase64);
+                        javafx.scene.image.Image img = new javafx.scene.image.Image(
+                                new java.io.ByteArrayInputStream(bytes));
+                        javafx.scene.image.ImageView iv = new javafx.scene.image.ImageView(img);
+                        iv.setFitWidth(260);
+                        iv.setFitHeight(200);
+                        iv.setPreserveRatio(true);
+                        imgPane.getChildren().setAll(iv);
+                    } catch (Exception ex) {
+                        System.err.println("[AuctionRoom] Lỗi load ảnh: " + ex.getMessage());
+                    }
+                }
 
                 // Format thời gian hiển thị
                 String startTime = s.getString("startTime");
@@ -250,9 +273,12 @@ public class AuctionRoomController extends BaseController {
             return;
         }
 
-        if (bid <= currentPrice) {
+        double minValidBid = currentPrice + stepPrice;
+        if (bid < minValidBid) {
             showNotification(getStage(bidHistoryBox),
-                    "GIÁ ĐẶT PHẢI CAO HƠN GIÁ HIỆN TẠI (" + String.format("%,.0f đ", currentPrice) + ")!");
+                    "GIÁ ĐẶT PHẢI ÍT NHẤT " + String.format("%,.0f đ", minValidBid)
+                            + "\n(Giá hiện tại: " + String.format("%,.0f đ", currentPrice)
+                            + " + Bước giá: " + String.format("%,.0f đ", stepPrice) + ")");
             return;
         }
 

@@ -135,7 +135,7 @@ public class SettingsController extends BaseController {
     // ------------------------------------------------------------------ //
     @FXML
     private void handleLogout() {
-        ServerService.clearToken();  // ✅ Thêm dòng này
+        ServerService.clearToken();
         com.example.socket.SocketClient.getInstance().disconnect();
         currentUsername = null;
         currentRole = null;

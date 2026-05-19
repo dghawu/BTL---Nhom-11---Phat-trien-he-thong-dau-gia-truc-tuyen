@@ -2,6 +2,10 @@ package com.example.main;
 
 import com.example.server.BidPushServer;
 import com.example.server.SocketServer;
+import dao.AuctionDAO;
+import model.auction.Auction;
+import model.enums.AuctionStatus;
+import service.AuctionTimer;
 
 /**
  * ServerMain - khởi động cả 2 server:
@@ -23,6 +27,8 @@ public class ServerMain {
         SocketServer apiServer = new SocketServer(API_PORT);
         BidPushServer pushServer = new BidPushServer(PUSH_PORT);
 
+        recoverRunningAuctions();
+
         // BidPushServer chạy trong background thread riêng
         pushServer.startInBackground();
 
@@ -35,5 +41,14 @@ public class ServerMain {
 
         // SocketServer chạy blocking ở main thread
         apiServer.start();
+    }
+    private static void recoverRunningAuctions() {
+        AuctionDAO auctionDAO = new AuctionDAO();
+        for (Auction a : auctionDAO.findAll()) {
+            if (a.getStatus() != AuctionStatus.RUNNING) continue;
+            // Nếu đã hết giờ → schedule() sẽ đóng ngay + update DB
+            // Nếu chưa hết giờ → schedule() lên lịch timer bình thường
+            AuctionTimer.getInstance().schedule(a);
+        }
     }
 }

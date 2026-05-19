@@ -151,6 +151,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         String ten = s.getString("itemName");
         String gia = String.format("%,.0fđ", s.getDouble("startPrice"));
         String giaHT = String.format("%,.0fđ", s.getDouble("currentPrice"));
+        String startTime = s.optString("startTime", "");
         String sellerId = s.getString("sellerId");
         String category = s.getString("category");
         String endTime = s.getString("endTime");
@@ -175,6 +176,7 @@ public class AuctionsController extends com.example.controller.BaseController {
                 new Label("Tên: " + ten),
                 new Label("Giá khởi điểm: " + gia),
                 new Label("Giá hiện tại: " + giaHT),
+                new Label("Bắt đầu: " + startTime),
                 new Label("Kết thúc: " + endTime),
                 new Label("Phân loại: " + category),
                 new Label("Trạng thái: " + status)
@@ -188,8 +190,14 @@ public class AuctionsController extends com.example.controller.BaseController {
         Button btnJoin = new Button("THAM GIA ĐẤU GIÁ");
         btnJoin.getStyleClass().add("btn-primary");
         btnJoin.setMaxWidth(Double.MAX_VALUE);
-        btnJoin.setOnAction(e -> handleJoinAuction(id, ten));
         VBox.setMargin(btnJoin, new javafx.geometry.Insets(8, 10, 10, 10));
+        if ("RUNNING".equalsIgnoreCase(status)) {
+            btnJoin.setOnAction(e -> handleJoinAuction(id, ten));
+        } else {
+            btnJoin.setText("CHƯA ĐẾN GIỜ BẮT ĐẦU");
+            btnJoin.setDisable(true);
+            btnJoin.setStyle("-fx-opacity: 0.5;");
+        }
 
         if (imageBase64 != null && !imageBase64.isEmpty()) {
             try {

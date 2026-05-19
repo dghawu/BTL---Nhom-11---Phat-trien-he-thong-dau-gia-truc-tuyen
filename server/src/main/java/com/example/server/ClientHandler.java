@@ -384,7 +384,14 @@ public class ClientHandler implements Runnable {
         String category = req.optString("category", "ALL");
         List<Auction> auctions = auctionDAO.findAll();
         JSONArray arr = new JSONArray();
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(auth.getRole());
         for (Auction a : auctions) {
+            if (!isAdmin) {
+                AuctionStatus st = a.getStatus();
+                if (st != AuctionStatus.APPROVED && st != AuctionStatus.RUNNING) continue;
+                // Ẩn phiên đã quá endTime dù status chưa được cập nhật
+                if (a.getEndTime().isBefore(java.time.LocalDateTime.now())) continue;
+            }
             if (!"ALL".equals(category)) {
                 String itemType = a.getItem().getClass().getSimpleName().toUpperCase();
                 if (!itemType.contains(category.replace("_", ""))) continue;
@@ -404,6 +411,10 @@ public class ClientHandler implements Runnable {
 
         Auction auction = auctionDAO.findById(sessionId);
         if (auction == null) return fail("Không tìm thấy phiên đấu giá.");
+        if (auction.getStatus() != AuctionStatus.RUNNING)
+            return fail("Phiên đấu giá không còn hoạt động.");
+        if (auction.getEndTime().isBefore(java.time.LocalDateTime.now()))
+            return fail("Phiên đấu giá đã kết thúc.");
         if (!sellerId.equals(auction.getItem().getSellerId()))
             return fail("Bạn không có quyền sửa phiên này.");
 
@@ -500,8 +511,13 @@ public class ClientHandler implements Runnable {
 
         Auction auction = auctionDAO.findById(sessionId);
         if (auction == null) return fail("Không tìm thấy phiên.");
-        if (bidAmount <= auction.getCurrentPrice())
-            return fail("Giá đặt phải cao hơn giá hiện tại.");
+        if (auction.getStatus() != AuctionStatus.RUNNING)
+            return fail("Phiên đấu giá không còn hoạt động.");
+        if (auction.getEndTime().isBefore(java.time.LocalDateTime.now()))
+            return fail("Phiên đấu giá đã kết thúc.");
+        if (bidAmount < auction.getCurrentPrice() + auction.getMinIncrement())
+            return fail("Giá đặt phải cao hơn giá hiện tại ít nhất "
+                    + auction.getMinIncrement() + " đ (bước giá tối thiểu).");
 
         // Lưu bid vào DB
         BidTransaction bid = new BidTransaction(bidderId, sessionId, bidAmount);

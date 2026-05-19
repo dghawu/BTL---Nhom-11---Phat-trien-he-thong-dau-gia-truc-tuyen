@@ -6,6 +6,10 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.*;
+import com.example.server.BidRegistry;
+import dao.AuctionDAO;
+import model.enums.AuctionStatus;
+import observer.SocketBroadcaster;
 
 /**
  * AuctionTimer quản lý việc tự động đóng phiên đấu giá khi hết thời gian.
@@ -15,6 +19,7 @@ import java.util.concurrent.*;
  * đảm bảo hoạt động đúng cả trong môi trường production lẫn unit test.
  */
 public class AuctionTimer {
+    private final AuctionDAO auctionDAO = new AuctionDAO();
 
     // Singleton
     private static volatile AuctionTimer instance;
@@ -70,6 +75,18 @@ public class AuctionTimer {
             System.out.println("[AuctionTimer] Phiên " + auctionId
                     + " đã hết giờ, đóng ngay.");
             auction.closeAuction();
+            scheduledTasks.remove(auctionId);
+            auctionDAO.updateStatus(auctionId, AuctionStatus.FINISHED);
+
+            Auction fresh = auctionDAO.findById(auctionId);
+            String winner = fresh != null ? fresh.getCurrentWinner() : auction.getCurrentWinner();
+            double finalPrice = fresh != null ? fresh.getCurrentPrice() : auction.getCurrentPrice();
+
+            SocketBroadcaster broadcaster = BidRegistry.getInstance().get(auctionId);
+            if (broadcaster != null) {
+                broadcaster.broadcastClose(auctionId, winner, finalPrice);
+                BidRegistry.getInstance().remove(auctionId);
+            }
             return;
         }
 
@@ -77,14 +94,22 @@ public class AuctionTimer {
                 + auctionId + " sau " + delaySeconds + " giây.");
 
         ScheduledFuture<?> task = getActiveScheduler().schedule(() -> {
-            // Kiểm tra lại endTime vì anti-sniping có thể đã gia hạn
             if (LocalDateTime.now().isBefore(auction.getEndTime())) {
-                // Phiên đã được gia hạn → lên lịch lại
                 reschedule(auction);
             } else {
                 auction.closeAuction();
                 scheduledTasks.remove(auctionId);
-                System.out.println("[AuctionTimer] Đã đóng phiên: " + auctionId);
+                auctionDAO.updateStatus(auctionId, AuctionStatus.FINISHED);
+
+                Auction fresh = auctionDAO.findById(auctionId);
+                String winner = fresh != null ? fresh.getCurrentWinner() : auction.getCurrentWinner();
+                double finalPrice = fresh != null ? fresh.getCurrentPrice() : auction.getCurrentPrice();
+
+                SocketBroadcaster broadcaster = BidRegistry.getInstance().get(auctionId);
+                if (broadcaster != null) {
+                    broadcaster.broadcastClose(auctionId, winner, finalPrice);
+                    BidRegistry.getInstance().remove(auctionId);
+                }
             }
         }, delaySeconds, TimeUnit.SECONDS);
 

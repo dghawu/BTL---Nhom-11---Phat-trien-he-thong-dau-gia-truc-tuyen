@@ -42,7 +42,8 @@
         </VBox>
 
         <!-- Middle: Bid history -->
-        <VBox style="-fx-border-color: transparent #CCCCCC transparent transparent;                      -fx-border-width: 0 1px 0 0; -fx-padding: 16;"
+        <VBox style="-fx-border-color: transparent #CCCCCC transparent transparent;
+        -fx-border-width: 0 1px 0 0; -fx-padding: 16;"
               HBox.hgrow="ALWAYS">
             <Label style="-fx-font-size: 20px; -fx-font-weight: bold;                           -fx-alignment: CENTER; -fx-max-width: Infinity; -fx-padding: 0 0 14 0;"
                    text="YOU ARE IN THE AUCTION"/>
@@ -55,7 +56,7 @@
         </VBox>
 
         <!-- Right: Price + bid actions -->
-        <VBox spacing="0" style="-fx-pref-width: 340px; -fx-min-width: 300px; -fx-padding: 16 20 16 20;">
+        <VBox spacing="0" style="-fx-pref-width: 420px; -fx-min-width: 300px; -fx-padding: 16 20 16 20;">
 
             <!-- Timer -->
             <VBox spacing="4"
