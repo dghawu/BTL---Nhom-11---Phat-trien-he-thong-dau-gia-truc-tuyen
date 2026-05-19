@@ -19,7 +19,7 @@
     <VBox spacing="0" styleClass="content-area" VBox.vgrow="ALWAYS">
 
         <Label fx:id="welcomeLabel" prefHeight="94.0" prefWidth="855.0" style="-fx-font-size: 32px;"
-               styleClass="welcome-title" text="WELCOME BIDDER @USER_NAME TO ABCXYZ" textAlignment="CENTER"
+               styleClass="welcome-title" text="WELCOME" textAlignment="CENTER"
                wrapText="true">
             <VBox.margin>
                 <Insets left="40.0" right="20.0" top="40.0"/>
