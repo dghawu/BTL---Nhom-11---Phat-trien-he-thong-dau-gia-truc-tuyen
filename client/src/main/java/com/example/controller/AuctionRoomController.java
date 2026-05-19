@@ -81,6 +81,8 @@ public class AuctionRoomController extends BaseController {
     private String sessionId;
     private double currentPrice = 0;
     private double stepPrice = 0;
+    private java.time.LocalDateTime endDateTime;
+    private javafx.animation.Timeline countdownTimer;
 
     private static final DateTimeFormatter DT_DISPLAY =
             DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy");
@@ -162,9 +164,15 @@ public class AuctionRoomController extends BaseController {
                 String endTime = s.getString("endTime");
                 lblThoiGianBatDau.setText(formatTime(startTime));
                 lblThoiGianKetThuc.setText(formatTime(endTime));
-
+                try {
+                    String normalized = endTime.length() == 16 ? endTime + ":00" : endTime;
+                    endDateTime = java.time.LocalDateTime.parse(normalized);
+                    startCountdown();
+                } catch (Exception ex) {
+                    System.err.println("[AuctionRoom] Lỗi parse endTime countdown: " + ex.getMessage());
+                }
                 String winner = s.optString("currentWinner", "");
-                lblNguoiGiuGia.setText(winner.isEmpty() ? "Chưa có" : winner);
+                lblNguoiGiuGia.setText("Current winner: " + (winner.isEmpty() ? "Chưa có" : winner));
                 break;
             }
         });
@@ -184,11 +192,16 @@ public class AuctionRoomController extends BaseController {
                 // Cập nhật giá và người giữ giá
                 currentPrice = event.price;
                 lblGiaHienTai.setText(String.format("%,.0f đ", event.price));
-                lblNguoiGiuGia.setText(event.bidderName);
+                lblNguoiGiuGia.setText("Current winner: " + event.bidderName);
 
                 // Cập nhật endTime nếu bị anti-snipe kéo dài
                 if (!event.endTime.isBlank()) {
                     lblThoiGianKetThuc.setText(formatTime(event.endTime));
+                    // Cập nhật endDateTime để countdown chạy đúng
+                    try {
+                        String normalized = event.endTime.length() == 16 ? event.endTime + ":00" : event.endTime;
+                        endDateTime = java.time.LocalDateTime.parse(normalized);
+                    } catch (Exception ex) { /* ignore */ }
                 }
 
                 // Thêm vào feed lịch sử
@@ -249,12 +262,20 @@ public class AuctionRoomController extends BaseController {
     @FXML
     private void handleToggleManual() {
         manualEnabled = !manualEnabled;
+        // Nếu bật manual thì tắt auto
+        if (manualEnabled && autoEnabled) {
+            autoEnabled = false;
+            lblAutoToggle.setText("OFF");
+            lblAutoToggle.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white;"
+                    + "-fx-font-size: 11px; -fx-font-weight: bold;"
+                    + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+            autoBuocGiaField.setDisable(true);
+            autoMaxGiaField.setDisable(true);
+        }
         lblManualToggle.setText(manualEnabled ? "ON" : "OFF");
-        lblManualToggle.setStyle(
-                "-fx-background-color: " + (manualEnabled ? "#22C55E" : "#9CA3AF") + ";"
-                        + "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;"
-                        + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;"
-        );
+        lblManualToggle.setStyle("-fx-background-color: " + (manualEnabled ? "#22C55E" : "#9CA3AF") + ";"
+                + "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;"
+                + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
         manualBidField.setDisable(!manualEnabled);
     }
 
@@ -301,12 +322,19 @@ public class AuctionRoomController extends BaseController {
     @FXML
     private void handleToggleAuto() {
         autoEnabled = !autoEnabled;
+        // Nếu bật auto thì tắt manual
+        if (autoEnabled && manualEnabled) {
+            manualEnabled = false;
+            lblManualToggle.setText("OFF");
+            lblManualToggle.setStyle("-fx-background-color: #9CA3AF; -fx-text-fill: white;"
+                    + "-fx-font-size: 11px; -fx-font-weight: bold;"
+                    + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+            manualBidField.setDisable(true);
+        }
         lblAutoToggle.setText(autoEnabled ? "ON" : "OFF");
-        lblAutoToggle.setStyle(
-                "-fx-background-color: " + (autoEnabled ? "#22C55E" : "#EF4444") + ";"
-                        + "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;"
-                        + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;"
-        );
+        lblAutoToggle.setStyle("-fx-background-color: " + (autoEnabled ? "#22C55E" : "#EF4444") + ";"
+                + "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;"
+                + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
         autoBuocGiaField.setDisable(!autoEnabled);
         autoMaxGiaField.setDisable(!autoEnabled);
     }
@@ -346,30 +374,35 @@ public class AuctionRoomController extends BaseController {
     private void handleBack() {
         BidSocketClient.getInstance().leave();
         navigateTo("/fxml/Auctions.fxml", getStage(bidHistoryBox));
+        if (countdownTimer != null) countdownTimer.stop();
     }
 
     @FXML
     private void handleHome() {
         BidSocketClient.getInstance().leave();
         goHome(getStage(bidHistoryBox));
+        if (countdownTimer != null) countdownTimer.stop();
     }
 
     @FXML
     private void handleAuctions() {
         BidSocketClient.getInstance().leave();
         navigateTo("/fxml/Auctions.fxml", getStage(bidHistoryBox));
+        if (countdownTimer != null) countdownTimer.stop();
     }
 
     @FXML
     private void handleBidderCentre() {
         BidSocketClient.getInstance().leave();
         navigateTo("/fxml/BidderCentre.fxml", getStage(bidHistoryBox));
+        if (countdownTimer != null) countdownTimer.stop();
     }
 
     @FXML
     private void handleSettings() {
         BidSocketClient.getInstance().leave();
         goSettings(getStage(bidHistoryBox));
+        if (countdownTimer != null) countdownTimer.stop();
     }
 
     // ------------------------------------------------------------------ //
@@ -389,5 +422,32 @@ public class AuctionRoomController extends BaseController {
         } catch (Exception e) {
             return raw; // fallback hiển thị raw nếu parse lỗi
         }
+    }
+
+    private void startCountdown() {
+        if (countdownTimer != null) countdownTimer.stop();
+        countdownTimer = new javafx.animation.Timeline(
+                new javafx.animation.KeyFrame(javafx.util.Duration.seconds(1), e -> {
+                    if (endDateTime == null) return;
+                    java.time.Duration remaining = java.time.Duration.between(
+                            java.time.LocalDateTime.now(), endDateTime);
+                    if (remaining.isNegative() || remaining.isZero()) {
+                        lblThoiGianConLai.setText("Đã kết thúc");
+                        lblThoiGianConLai.setStyle("-fx-font-size: 13px; -fx-text-fill: #CC0000; -fx-font-weight: bold;");
+                        countdownTimer.stop();
+                    } else {
+                        long h = remaining.toHours();
+                        long m = remaining.toMinutesPart();
+                        long s = remaining.toSecondsPart();
+                        String txt = h > 0
+                                ? String.format("%02d:%02d:%02d", h, m, s)
+                                : String.format("%02d:%02d", m, s);
+                        lblThoiGianConLai.setText("Remaining time: " + txt);
+                        lblThoiGianConLai.setStyle("-fx-font-size: 13px; -fx-text-fill: #CC0000; -fx-font-weight: bold;");
+                    }
+                })
+        );
+        countdownTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
+        countdownTimer.play();
     }
 }
