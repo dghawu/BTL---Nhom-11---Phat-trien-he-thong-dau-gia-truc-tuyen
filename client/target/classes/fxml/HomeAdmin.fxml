@@ -21,7 +21,7 @@
     <VBox spacing="0" styleClass="content-area" VBox.vgrow="ALWAYS">
 
         <Label fx:id="welcomeLabel" style="-fx-font-size: 34px;" styleClass="welcome-title"
-               text="WELCOME ADMIN @USER_NAME"/>
+               text="WELCOME"/>
 
         <Region prefHeight="50"/>
 

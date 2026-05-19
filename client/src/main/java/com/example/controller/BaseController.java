@@ -34,6 +34,20 @@ public abstract class BaseController {
                 bc.currentUsername = this.currentUsername;
                 bc.currentRole = this.currentRole;
                 bc.currentUserId = this.currentUserId;
+
+                // cập nhật UI sau khi truyền dữ liệu
+                if (ctrl instanceof HomeAdminController homeAdmin) {
+                    homeAdmin.initData(currentUsername, currentUserId);
+                }
+
+                if (ctrl instanceof HomeSellerController homeSeller) {
+                    homeSeller.initData(currentUsername, currentUserId);
+                }
+
+                if (ctrl instanceof HomeBidderController homeBidder) {
+                    homeBidder.initData(currentUsername, currentUserId);
+                }
+
                 //Gọi onReady() sau khi set xong
                 bc.onReady();
             }

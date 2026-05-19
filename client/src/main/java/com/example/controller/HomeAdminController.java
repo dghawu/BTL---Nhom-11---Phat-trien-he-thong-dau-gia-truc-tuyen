@@ -18,7 +18,7 @@ public class HomeAdminController extends com.example.controller.BaseController {
         currentUsername = username;
         currentRole = "ADMIN";
         currentUserId = userId;
-        welcomeLabel.setText("WELCOME Admin @" + username);
+        welcomeLabel.setText("WELCOME ADMIN @" + username);
     }
 
     @FXML

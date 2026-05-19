@@ -20,7 +20,7 @@
     <VBox spacing="0" styleClass="content-area" VBox.vgrow="ALWAYS">
 
         <Label fx:id="welcomeLabel" style="-fx-font-size: 32px;" styleClass="welcome-title"
-               text="WELCOME SELLER @USER_NAME TO ABCXYZ" wrapText="true">
+               text="WELCOME" wrapText="true">
             <VBox.margin>
                 <Insets left="40.0" right="20.0" top="40.0"/>
             </VBox.margin>
