@@ -174,18 +174,21 @@ public class ItemDAO {
     // ── Helper ─────────────────────────────────────────────────────
 
     private Item mapToItem(ResultSet rs) throws SQLException {
-        String id = rs.getString("id");
-        String sellerId = rs.getString("seller_id");
-        String name = rs.getString("name");
+        String id          = rs.getString("id");
+        String sellerId    = rs.getString("seller_id");
+        String name        = rs.getString("name");
         String description = rs.getString("description");
-        double startPrice = rs.getDouble("starting_price");
-        String statusStr = rs.getString("status");
-        String typeStr = rs.getString("type");
+        double startPrice  = rs.getDouble("starting_price");
+        String statusStr   = rs.getString("status");
+        String typeStr     = rs.getString("type");
+
+        String image = null;
+        try { image = rs.getString("image"); } catch (SQLException ignored) {}
 
         Item.ItemStatus status = Item.ItemStatus.valueOf(statusStr);
-        Item.ItemType type = Item.ItemType.valueOf(typeStr);
-
+        Item.ItemType   type   = Item.ItemType.valueOf(typeStr);
         Item item = type.create(sellerId, name, id, description, startPrice, status);
+        item.setImage(image);
         return item;
     }
 }

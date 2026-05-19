@@ -40,16 +40,23 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
     @Override
     protected void onReady() {
-        JSONArray items = com.example.socket.ServerService.getMyItems();
-        if (items == null) return;
-        for (int i = 0; i < items.length(); i++) {
-            JSONObject item = items.getJSONObject(i);
-            String name = item.getString("name");
-            String id = item.getString("id");
-            itemNameToId.put(name, id);
-            itemCache.put(id, item);  // Cache toàn bộ item data
-            sanPhamBox.getItems().add(name);
-        }
+        new Thread(() -> {
+            JSONArray items = com.example.socket.ServerService.getMyItems();
+            if (items == null) return;
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject item = items.getJSONObject(i);
+
+                if (!"APPROVED".equals(item.optString("status"))) continue;
+
+                String name = item.getString("name");
+                String id   = item.getString("id");
+                itemNameToId.put(name, id);
+                itemCache.put(id, item);
+
+                javafx.application.Platform.runLater(() ->
+                        sanPhamBox.getItems().add(name));
+            }
+        }).start();
     }
 
     /**
@@ -113,45 +120,42 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     @FXML
     private void handleSave() {
         String selectedName = sanPhamBox.getValue();
-        String startStr = thoiGianMoField.getText().trim();
-        String endStr = thoiGianDongField.getText().trim();
-        String buocGiaStr = buocGiaField.getText().trim();
+        String startStr     = thoiGianMoField.getText().trim();
+        String endStr       = thoiGianDongField.getText().trim();
+        String buocGiaStr   = buocGiaField.getText().trim();
 
         if (selectedName == null || startStr.isEmpty() || endStr.isEmpty() || buocGiaStr.isEmpty()) {
-            showNotification(getStage(buocGiaField), "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!");
-            return;
+            showNotification(getStage(buocGiaField), "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!"); return;
         }
-
         java.time.LocalDateTime startDT = parseTime(startStr);
-        java.time.LocalDateTime endDT = parseTime(endStr);
-
+        java.time.LocalDateTime endDT   = parseTime(endStr);
         if (startDT == null || endDT == null) {
-            showNotification(getStage(buocGiaField), "SAI ĐỊNH DẠNG THỜI GIAN!\nVD: 2025-05-15 20:00");
-            return;
+            showNotification(getStage(buocGiaField), "SAI ĐỊNH DẠNG THỜI GIAN!\nVD: 2025-05-15 20:00"); return;
         }
         if (endDT.isBefore(startDT)) {
-            showNotification(getStage(buocGiaField), "THỜI GIAN ĐÓNG PHẢI SAU THỜI GIAN MỞ!");
-            return;
+            showNotification(getStage(buocGiaField), "THỜI GIAN ĐÓNG PHẢI SAU THỜI GIAN MỞ!"); return;
         }
 
         String itemId = itemNameToId.get(selectedName);
         double buocGia;
-        try {
-            buocGia = Double.parseDouble(buocGiaStr);
-        } catch (NumberFormatException e) {
-            showNotification(getStage(buocGiaField), "BƯỚC GIÁ KHÔNG HỢP LỆ!");
-            return;
+        try { buocGia = Double.parseDouble(buocGiaStr); }
+        catch (NumberFormatException e) {
+            showNotification(getStage(buocGiaField), "BƯỚC GIÁ KHÔNG HỢP LỆ!"); return;
         }
 
-        boolean ok = com.example.socket.ServerService.createSession(
-                itemId, startDT.toString(), endDT.toString(), buocGia);
-
-        if (ok) {
-            showNotification(getStage(buocGiaField), "TẠO PHIÊN THÀNH CÔNG!");
-            navigateTo("/fxml/SellerSessionList.fxml", getStage(buocGiaField));
-        } else {
-            showNotification(getStage(buocGiaField), "TẠO PHIÊN THẤT BẠI!");
-        }
+        double finalBuocGia = buocGia;
+        new Thread(() -> {
+            boolean ok = com.example.socket.ServerService.createSession(
+                    itemId, startDT.toString(), endDT.toString(), finalBuocGia);
+            javafx.application.Platform.runLater(() -> {
+                if (ok) {
+                    showNotification(getStage(buocGiaField), "TẠO PHIÊN THÀNH CÔNG!");
+                    navigateTo("/fxml/SellerSessionList.fxml", getStage(buocGiaField));
+                } else {
+                    showNotification(getStage(buocGiaField), "TẠO PHIÊN THẤT BẠI!\n(Sản phẩm chưa APPROVED hoặc lỗi server)");
+                }
+            });
+        }).start();
     }
 
     @FXML
