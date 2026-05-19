@@ -165,6 +165,11 @@ public class AuctionDAO {
                 rs.getTimestamp("end_time").toLocalDateTime()
         );
         auction.setStatus(AuctionStatus.valueOf(rs.getString("status")));
+
+        // Load lại giá hiện tại và người đang dẫn đầu từ DB
+        auction.setCurrentPrice(rs.getDouble("current_price"));
+        auction.setCurrentWinner(rs.getString("current_winner"));
+
         return auction;
     }
 }

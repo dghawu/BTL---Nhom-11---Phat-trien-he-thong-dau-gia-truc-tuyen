@@ -183,4 +183,12 @@ public class Auction extends Entity implements Subject {
     public void setMinIncrement(double minIncrement) {
         this.minIncrement = minIncrement;
     }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public void setCurrentWinner(String currentWinner) {
+        this.currentWinner = currentWinner;
+    }
 }
