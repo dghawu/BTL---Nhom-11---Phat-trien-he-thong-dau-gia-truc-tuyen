@@ -181,13 +181,11 @@ public class ItemDAO {
         double startPrice = rs.getDouble("starting_price");
         String statusStr = rs.getString("status");
         String typeStr = rs.getString("type");
-        String image = rs.getString("image");
 
         Item.ItemStatus status = Item.ItemStatus.valueOf(statusStr);
         Item.ItemType type = Item.ItemType.valueOf(typeStr);
 
         Item item = type.create(sellerId, name, id, description, startPrice, status);
-        item.setImage(image);
         return item;
     }
 }

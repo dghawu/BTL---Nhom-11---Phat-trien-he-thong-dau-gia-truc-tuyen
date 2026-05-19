@@ -115,7 +115,15 @@ public class DatabaseConnection {
                     FOREIGN KEY (auction_id) REFERENCES auctions(id)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
                 """);
+        // Thêm cột image nếu chưa có (tự động khi upgrade)
+        try {
+            stmt.execute("ALTER TABLE items ADD COLUMN image LONGTEXT");
+            System.out.println("[DB] Đã thêm cột image vào bảng items.");
+        } catch (SQLException ignored) {
+            // Cột đã tồn tại → bỏ qua, không báo lỗi
+        }
 
+        stmt.close();
         stmt.close();
         System.out.println("[DB] Khởi tạo bảng MySQL thành công!");
     }
