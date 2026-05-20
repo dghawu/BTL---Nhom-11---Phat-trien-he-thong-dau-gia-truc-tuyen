@@ -255,6 +255,13 @@ public class ServerService {
         return send(req).getBoolean("success");
     }
 
+    public static JSONArray getBidHistory(String sessionId) {
+        JSONObject req = req("getBidHistory");
+        req.put("sessionId", sessionId);
+        JSONObject res = send(req);
+        return (res != null && res.getBoolean("success")) ? res.getJSONArray("history") : null;
+    }
+
     // ================================================================== //
     //  TRANSACTIONS
     // ================================================================== //

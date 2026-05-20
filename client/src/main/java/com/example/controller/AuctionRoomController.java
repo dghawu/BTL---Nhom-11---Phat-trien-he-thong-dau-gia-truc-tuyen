@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -176,6 +178,21 @@ public class AuctionRoomController extends BaseController {
                 break;
             }
         });
+        new Thread(() -> {
+            JSONArray history = ServerService.getBidHistory(sessionId);
+            if (history == null) return;
+            Platform.runLater(() -> {
+                // Thêm từ cũ → mới (index 0 là mới nhất nên add ngược)
+                for (int j = history.length() - 1; j >= 0; j--) {
+                    JSONObject h = history.getJSONObject(j);
+                    String ts = h.getString("timestamp");
+                    String time = formatTime(ts); // dùng lại method có sẵn
+                    addBidEntry(h.getString("bidderName") + " bid "
+                            + String.format("%,.0f đ", h.getDouble("amount"))
+                            + " at " + time);
+                }
+            });
+        }).start();
     }
 
     // ------------------------------------------------------------------ //
@@ -210,7 +227,7 @@ public class AuctionRoomController extends BaseController {
             });
 
             case AUCTION_CLOSED -> Platform.runLater(() -> {
-                addBidEntry("🏁 Phiên kết thúc!");
+                addBidEntry("Phiên kết thúc!");
                 if (!event.bidderName.isEmpty() && !"NO_WINNER".equals(event.bidderName)) {
                     showNotification(getStage(bidHistoryBox),
                             "PHIÊN ĐẤU GIÁ KẾT THÚC!\nNgười thắng: " + event.bidderName
