@@ -78,7 +78,7 @@ public class SellerProductListController extends com.example.controller.BaseCont
         Hyperlink link = new Hyperlink("Xem chi tiết");
         link.getStyleClass().add("link-text");
         link.setStyle("-fx-text-fill: #0044CC;");
-        link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang));
+        link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64));
         info.getChildren().add(link);
 
         if (imageBase64 != null && !imageBase64.isEmpty()) {
@@ -100,14 +100,15 @@ public class SellerProductListController extends com.example.controller.BaseCont
         return card;
     }
 
-    private void openDetail(String id, String ten, String category, String gia, String moTa, String tinhTrang) {
+    private void openDetail(String id, String ten, String category, String gia, String moTa, String tinhTrang, String imageBase64) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SellerProductDetail.fxml"));
             Parent root = loader.load();
             com.example.controller.SellerProductDetailController ctrl = loader.getController();
             ctrl.currentUsername = currentUsername;
             ctrl.currentRole = currentRole;
-            ctrl.initData(id, ten, category, gia, moTa, tinhTrang);
+            ctrl.currentUserId = currentUserId;
+            ctrl.initData(id, ten, category, gia, moTa, tinhTrang, imageBase64);
             Stage stage = getStage(productGrid);
             stage.setScene(new Scene(root));
             stage.show();

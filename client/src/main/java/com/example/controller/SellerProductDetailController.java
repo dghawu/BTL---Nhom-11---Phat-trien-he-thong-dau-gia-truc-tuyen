@@ -34,25 +34,30 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
     private Label lblTinhTrang;
     @FXML
     private Pane imgPane;
+    @FXML
+    private javafx.scene.control.Button btnChooseImage;
 
     // TextFields cho edit mode
     private TextField txtTen;
     private TextField txtGia;
     private TextField txtMoTa;
     private TextField txtTinhTrang;
+    private String currentImageBase64 = "";
 
     private boolean isEditMode = false;
     private String currentId;
     private byte[] newImageData = null;
 
-    public void initData(String id, String ten, String phanLoai, String gia, String moTa, String tinhTrang) {
+    public void initData(String id, String ten, String phanLoai, String gia, String moTa, String tinhTrang, String imageBase64) {
         this.currentId = id;
+        this.currentImageBase64 = imageBase64 != null ? imageBase64 : "";
         lblId.setText(id);
         lblTen.setText(ten);
         lblPhanLoai.setText(phanLoai != null && !phanLoai.isEmpty() ? phanLoai : "N/A");
         lblGia.setText(gia);
         lblMoTa.setText(moTa != null && !moTa.isEmpty() ? moTa : "Chưa có mô tả");
         lblTinhTrang.setText(tinhTrang);
+        displayCurrentImage();
     }
 
     @FXML
@@ -96,11 +101,13 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
             // Chuyển sang edit mode
             enableEditMode();
             isEditMode = true;
+            btnChooseImage.setVisible(true);
         } else {
             // Quay lại view mode (cancel)
             disableEditMode();
             isEditMode = false;
             newImageData = null;
+            btnChooseImage.setVisible(false);
         }
     }
 
@@ -145,6 +152,25 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         lblTinhTrang.setGraphic(null);
         lblTinhTrang.setText(txtTinhTrang != null ? txtTinhTrang.getText() : "");
     }
+    private void displayCurrentImage() {
+        if (currentImageBase64 != null && !currentImageBase64.isEmpty()) {
+            try {
+                byte[] decodedBytes = java.util.Base64.getDecoder().decode(currentImageBase64);
+                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(decodedBytes);
+                Image img = new Image(bais);
+                ImageView iv = new ImageView(img);
+                iv.setFitWidth(200);
+                iv.setFitHeight(200);
+                iv.setPreserveRatio(true);
+                imgPane.getChildren().setAll(iv);
+            } catch (Exception e) {
+                System.err.println("[SellerProductDetailController] Lỗi decode image: " + e.getMessage());
+                imgPane.getChildren().clear();
+            }
+        } else {
+            imgPane.getChildren().clear();
+        }
+    }
 
     /**
      * Cho phép chọn ảnh sản phẩm mới trong edit mode
@@ -162,11 +188,11 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
             try {
                 newImageData = java.nio.file.Files.readAllBytes(file.toPath());
 
-                // Hiển thị preview
+                // Hiển thị preview ảnh mới
                 Image img = new Image(file.toURI().toString());
                 ImageView iv = new ImageView(img);
-                iv.setFitWidth(150);
-                iv.setFitHeight(150);
+                iv.setFitWidth(200);
+                iv.setFitHeight(200);
                 iv.setPreserveRatio(true);
                 imgPane.getChildren().setAll(iv);
 
@@ -201,7 +227,14 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
                 if (newImageData != null) {
                     ok = ServerService.updateItemWithImage(currentId, tenMoi, moTaMoi, giaMoi, newImageData);
                 } else {
-                    ok = ServerService.updateItem(currentId, tenMoi, moTaMoi, giaMoi, tinhTrangMoi);
+                    if (newImageData != null) {
+                        ok = ServerService.updateItemWithImage(currentId, tenMoi, moTaMoi, giaMoi, newImageData);
+                        if (ok) {
+                            currentImageBase64 = java.util.Base64.getEncoder().encodeToString(newImageData);
+                        }
+                    } else {
+                        ok = ServerService.updateItem(currentId, tenMoi, moTaMoi, giaMoi, tinhTrangMoi);
+                    }
                 }
 
                 if (ok) {
@@ -214,6 +247,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
                     disableEditMode();
                     isEditMode = false;
                     newImageData = null;
+                    btnChooseImage.setVisible(false);
                     showNotification(getStage(lblTen), "Cập nhật sản phẩm thành công!");
                 } else {
                     showNotification(getStage(lblTen), "Cập nhật thất bại!");
