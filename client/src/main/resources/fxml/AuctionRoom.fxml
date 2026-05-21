@@ -108,8 +108,8 @@
             </HBox>
             <Region prefHeight="8" />
             <VBox spacing="8">
-                <TextField fx:id="autoBuocGiaField" disable="true" promptText="Nhập bước giá tự động" styleClass="text-field-rounded" text="Enter the automatic bid increment" />
-                <TextField fx:id="autoMaxGiaField" disable="true" promptText="Nhập mức giá tối đa" styleClass="text-field-rounded" text="Enter your maximum bid" />
+                <TextField fx:id="autoBuocGiaField" disable="true" promptText="Enter the automatic bid increment" styleClass="text-field-rounded" />
+                <TextField fx:id="autoMaxGiaField" disable="true" promptText="Enter your maximum bid" styleClass="text-field-rounded" />
             </VBox>
 
             <Region prefHeight="10" />

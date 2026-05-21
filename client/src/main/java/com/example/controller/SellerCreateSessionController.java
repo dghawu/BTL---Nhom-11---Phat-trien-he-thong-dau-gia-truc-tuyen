@@ -2,6 +2,7 @@ package com.example.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -20,10 +21,12 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
     @FXML
     private ComboBox<String> sanPhamBox;
-    @FXML
-    private TextField thoiGianMoField;
-    @FXML
-    private TextField thoiGianDongField;
+
+    @FXML private DatePicker ngayMoPicker;
+    @FXML private DatePicker ngayDongPicker;
+    @FXML private ComboBox<String> gioMoBox;
+    @FXML private ComboBox<String> gioDongBox;
+
     @FXML
     private TextField buocGiaField;
     @FXML
@@ -36,6 +39,16 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
     @FXML
     public void initialize() {
+
+
+
+        for (int i = 0; i < 24; i++) {
+
+            String gio = String.format("%02d:00", i);
+
+            gioMoBox.getItems().add(gio);
+            gioDongBox.getItems().add(gio);
+        }
     }
 
     @Override
@@ -102,8 +115,13 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
     @FXML
     private void handleEdit() {
-        thoiGianMoField.setEditable(true);
-        thoiGianDongField.setEditable(true);
+
+        ngayMoPicker.setDisable(false);
+        ngayDongPicker.setDisable(false);
+
+        gioMoBox.setDisable(false);
+        gioDongBox.setDisable(false);
+
         buocGiaField.setEditable(true);
     }
 
@@ -119,42 +137,93 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
     @FXML
     private void handleSave() {
-        String selectedName = sanPhamBox.getValue();
-        String startStr     = thoiGianMoField.getText().trim();
-        String endStr       = thoiGianDongField.getText().trim();
-        String buocGiaStr   = buocGiaField.getText().trim();
 
-        if (selectedName == null || startStr.isEmpty() || endStr.isEmpty() || buocGiaStr.isEmpty()) {
-            showNotification(getStage(buocGiaField), "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!"); return;
+        String selectedName = sanPhamBox.getValue();
+
+        String gioMo = gioMoBox.getValue();
+        String gioDong = gioDongBox.getValue();
+
+        String buocGiaStr = buocGiaField.getText().trim();
+
+        // Ghép ngày + giờ
+        String startStr = ngayMoPicker.getValue() + " " + gioMo;
+        String endStr   = ngayDongPicker.getValue() + " " + gioDong;
+
+        if (selectedName == null
+                || ngayMoPicker.getValue() == null
+                || gioMo == null
+                || ngayDongPicker.getValue() == null
+                || gioDong == null
+                || buocGiaStr.isEmpty()) {
+
+            showNotification(getStage(buocGiaField),
+                    "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!");
+
+            return;
         }
+
         java.time.LocalDateTime startDT = parseTime(startStr);
         java.time.LocalDateTime endDT   = parseTime(endStr);
+
         if (startDT == null || endDT == null) {
-            showNotification(getStage(buocGiaField), "SAI ĐỊNH DẠNG THỜI GIAN!\nVD: 2025-05-15 20:00"); return;
+
+            showNotification(getStage(buocGiaField),
+                    "SAI ĐỊNH DẠNG THỜI GIAN!");
+
+            return;
         }
+
         if (endDT.isBefore(startDT)) {
-            showNotification(getStage(buocGiaField), "THỜI GIAN ĐÓNG PHẢI SAU THỜI GIAN MỞ!"); return;
+
+            showNotification(getStage(buocGiaField),
+                    "THỜI GIAN ĐÓNG PHẢI SAU THỜI GIAN MỞ!");
+
+            return;
         }
 
         String itemId = itemNameToId.get(selectedName);
+
         double buocGia;
-        try { buocGia = Double.parseDouble(buocGiaStr); }
+
+        try {
+            buocGia = Double.parseDouble(buocGiaStr);
+        }
         catch (NumberFormatException e) {
-            showNotification(getStage(buocGiaField), "BƯỚC GIÁ KHÔNG HỢP LỆ!"); return;
+
+            showNotification(getStage(buocGiaField),
+                    "BƯỚC GIÁ KHÔNG HỢP LỆ!");
+
+            return;
         }
 
         double finalBuocGia = buocGia;
+
         new Thread(() -> {
+
             boolean ok = com.example.socket.ServerService.createSession(
-                    itemId, startDT.toString(), endDT.toString(), finalBuocGia);
+                    itemId,
+                    startDT.toString(),
+                    endDT.toString(),
+                    finalBuocGia
+            );
+
             javafx.application.Platform.runLater(() -> {
+
                 if (ok) {
-                    showNotification(getStage(buocGiaField), "TẠO PHIÊN THÀNH CÔNG!");
-                    navigateTo("/fxml/SellerSessionList.fxml", getStage(buocGiaField));
+
+                    showNotification(getStage(buocGiaField),
+                            "TẠO PHIÊN THÀNH CÔNG!");
+
+                    navigateTo("/fxml/SellerSessionList.fxml",
+                            getStage(buocGiaField));
+
                 } else {
-                    showNotification(getStage(buocGiaField), "TẠO PHIÊN THẤT BẠI!\n(Sản phẩm chưa APPROVED hoặc lỗi server)");
+
+                    showNotification(getStage(buocGiaField),
+                            "TẠO PHIÊN THẤT BẠI!\n(Sản phẩm chưa APPROVED hoặc lỗi server)");
                 }
             });
+
         }).start();
     }
 

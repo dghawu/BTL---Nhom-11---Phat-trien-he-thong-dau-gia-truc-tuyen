@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
@@ -39,11 +38,21 @@
             <HBox spacing="30" style="-fx-padding: 20 20 0 20;" HBox.hgrow="ALWAYS">
                 <VBox spacing="12" HBox.hgrow="ALWAYS">
                     <ComboBox fx:id="sanPhamBox" maxWidth="Infinity" onAction="#handleSelectSanPham" promptText="Select product" styleClass="text-field-rounded" />
-               <DatePicker prefHeight="30.0" prefWidth="947.0" promptText="Opening date " styleClass="text-field-rounded" />
-                    <TextField fx:id="thoiGianMoField" maxWidth="Infinity" promptText="VD: 2025-05-15 20:00" styleClass="text-field-rounded" />
-               <DatePicker layoutX="10.0" layoutY="74.0" prefHeight="30.0" prefWidth="851.0" promptText="Closing date" styleClass="text-field-rounded" />
 
-                    <TextField fx:id="thoiGianDongField" maxWidth="Infinity" promptText="VD: 2025-05-15 21:00" styleClass="text-field-rounded" />
+                    <!-- Thời gian mở phiên -->
+                    <HBox spacing="10">
+                        <DatePicker fx:id="ngayMoPicker" prefHeight="52.0" prefWidth="477.0" promptText="Opening date" styleClass="text-field-rounded" HBox.hgrow="ALWAYS" />
+
+                        <ComboBox fx:id="gioMoBox" prefHeight="52.0" prefWidth="476.0" promptText="Opening time" styleClass="text-field-rounded" />
+                    </HBox>
+
+                    <!-- Thời gian đóng phiên -->
+                    <HBox spacing="10">
+                        <DatePicker fx:id="ngayDongPicker" prefHeight="52.0" prefWidth="477.0" promptText="Closing date" styleClass="text-field-rounded" HBox.hgrow="ALWAYS" />
+
+                        <ComboBox fx:id="gioDongBox" prefHeight="54.0" prefWidth="476.0" promptText="Closing time" styleClass="text-field-rounded" />
+                    </HBox>
+
                     <TextField fx:id="buocGiaField" maxWidth="Infinity" promptText="Bid increment" styleClass="text-field-rounded" />
                     <TextArea fx:id="moTaArea" editable="false" maxWidth="Infinity" prefRowCount="5" promptText="Starting price + Descriptions&#10;&#10;After selecting a product&#10;-&gt;the system will automatically fill in the descriptions here." styleClass="text-area-rounded" wrapText="true" />
                 </VBox>
