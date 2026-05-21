@@ -110,6 +110,7 @@ public class ClientHandler implements Runnable {
                 // Bidding
                 case "placeBid" -> handlePlaceBid(req);
                 case "setAutoBid" -> handleSetAutoBid(req);
+                case "getBidHistory" -> handleGetBidHistory(req);
 
                 //Transactions
                 case "getMyTransactions" -> handleGetMyTransactions(req);
@@ -513,28 +514,35 @@ public class ClientHandler implements Runnable {
         if (auction == null) return fail("Không tìm thấy phiên.");
         if (auction.getStatus() != AuctionStatus.RUNNING)
             return fail("Phiên đấu giá không còn hoạt động.");
-        if (auction.getEndTime().isBefore(java.time.LocalDateTime.now()))
+        if (auction.getEndTime().isBefore(LocalDateTime.now()))
             return fail("Phiên đấu giá đã kết thúc.");
-        if (bidAmount < auction.getCurrentPrice() + auction.getMinIncrement())
-            return fail("Giá đặt phải cao hơn giá hiện tại ít nhất "
-                    + auction.getMinIncrement() + " đ (bước giá tối thiểu).");
-
-        // Lưu bid vào DB
-        BidTransaction bid = new BidTransaction(bidderId, sessionId, bidAmount);
-        bidDAO.save(bid);
 
         // Lấy tên người đặt
         User bidder = userDAO.findById(bidderId);
         String bidderName = bidder != null ? bidder.getName() : bidderId;
-        auctionDAO.updateBid(sessionId, bidAmount, bidderName);
 
-        // ── Broadcast realtime qua port 8889 ──────────────────────────
+        // Tạo bid và set tên
+        BidTransaction bid = new BidTransaction(bidderId, sessionId, bidAmount);
+        bid.setBidderName(bidderName);
+
+        // Gọi auction.placeBid() để anti-snipe + validate chạy
+        try {
+            auction.handleNewBid(bid);
+        } catch (Exception e) {
+            return fail(e.getMessage());
+        }
+
+        // Lưu DB sau khi placeBid thành công
+        bidDAO.save(bid);
+        auctionDAO.updateBid(sessionId, auction.getCurrentPrice(), bidderName);
+        auctionDAO.updateEndTime(sessionId, auction.getEndTime());
+
+        // Broadcast realtime qua port 8889
         SocketBroadcaster broadcaster = BidRegistry.getInstance().get(sessionId);
         if (broadcaster != null) {
-            // Format: BID_UPDATE:sessionId:price:bidderName:endTime
             String msg = "BID_UPDATE"
                     + ":" + sessionId
-                    + ":" + bidAmount
+                    + ":" + auction.getCurrentPrice()
                     + ":" + bidderName
                     + ":" + auction.getEndTime();
             broadcaster.broadcast(msg);
@@ -542,10 +550,9 @@ public class ClientHandler implements Runnable {
         } else {
             System.out.println("[ClientHandler] Không có client nào đang watch phiên " + sessionId);
         }
-        // ─────────────────────────────────────────────────────────────
 
         return success()
-                .put("currentPrice", bidAmount)
+                .put("currentPrice", auction.getCurrentPrice())
                 .put("currentWinner", bidderName)
                 .toString();
     }
@@ -555,6 +562,24 @@ public class ClientHandler implements Runnable {
         if (!auth.isOk()) return fail(auth.getErrorMessage());
         // TODO: tích hợp AuctionService.setAutoBid()
         return success().toString();
+    }
+
+    private String handleGetBidHistory(JSONObject req) {
+        AuthResult auth = TokenGuard.check(req);
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sessionId = req.getString("sessionId");
+        List<BidTransaction> txList = bidDAO.findByAuctionId(sessionId);
+        JSONArray arr = new JSONArray();
+        for (BidTransaction tx : txList) {
+            User bidder = userDAO.findById(tx.getBidderId());
+            String name = bidder != null ? bidder.getName() : tx.getBidderId();
+            arr.put(new JSONObject()
+                    .put("bidderName", name)
+                    .put("amount", tx.getAmount())
+                    .put("timestamp", tx.getTimestamp().toString()));
+        }
+        return success().put("history", arr).toString();
     }
 
     // ================================================================== //

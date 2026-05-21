@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
  */
 public class BidTransaction extends Entity {
     private String bidderId;
+    private String bidderName;
     private String auctionId;
     private double amount;
     private LocalDateTime timestamp;
 
-    // FIX: constructor đầy đủ 3 tham số — Bidder.java cần truyền auctionId
     public BidTransaction(String bidderId, String auctionId, double amount) {
         super(generateId());
         this.bidderId = bidderId;
@@ -30,6 +30,10 @@ public class BidTransaction extends Entity {
     public String getBidderId() {
         return bidderId;
     }
+
+    public String getBidderName() { return bidderName; }
+
+    public void setBidderName(String bidderName) { this.bidderName = bidderName; }
 
     public String getAuctionId() {
         return auctionId;

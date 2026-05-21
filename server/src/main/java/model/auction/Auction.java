@@ -78,7 +78,7 @@ public class Auction extends Entity implements Subject {
             AuctionTimer.getInstance().reschedule(this);
         }
         this.currentPrice = bid.getAmount();
-        this.currentWinner = bid.getBidderId();
+        this.currentWinner = bid.getBidderName() != null ? bid.getBidderName() : bid.getBidderId();
         this.bidHistory.add(bid);
         notifyObservers(this, currentPrice, bid.getBidderId());
         System.out.println("Đặt giá thành công! Giá hiện tại: " + currentPrice);
