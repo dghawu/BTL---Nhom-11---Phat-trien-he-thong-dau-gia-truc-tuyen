@@ -262,6 +262,25 @@ public class ServerService {
         return (res != null && res.getBoolean("success")) ? res.getJSONArray("history") : null;
     }
 
+    public static boolean confirmWin(String sessionId) {
+        JSONObject req = req("confirmWin");
+        req.put("sessionId", sessionId);
+        return send(req).getBoolean("success");
+    }
+
+    public static boolean pay(String sessionId, double amount) {
+        JSONObject req = req("pay");
+        req.put("sessionId", sessionId);
+        req.put("amount", amount);
+        return send(req).getBoolean("success");
+    }
+
+    public static JSONArray getMyWonSessions() {
+        JSONObject req = req("getMyWonSessions");
+        JSONObject res = send(req);
+        return res.getBoolean("success") ? res.optJSONArray("sessions") : null;
+    }
+
     // ================================================================== //
     //  TRANSACTIONS
     // ================================================================== //

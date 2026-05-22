@@ -146,14 +146,27 @@ public class BidderCentreController extends com.example.controller.BaseControlle
 
     private void loadWonProducts() {
         wonProductGrid.getChildren().clear();
-        // TODO: List<Item> wonItems = ServerService.getWonProducts(currentUsername);
-        // Mock
-        for (int i = 1; i <= 3; i++) {
-            wonProductGrid.getChildren().add(buildWonCard("Sản phẩm " + i, "SP00" + i));
-        }
+        new Thread(() -> {
+            org.json.JSONArray sessions = com.example.socket.ServerService.getAllSessions("ALL");
+            // Lấy thêm FINISHED/PAYING/PAID cho bidder centre
+            org.json.JSONArray myFinished = com.example.socket.ServerService.getMyWonSessions();
+            if (myFinished == null) return;
+            javafx.application.Platform.runLater(() -> {
+                for (int i = 0; i < myFinished.length(); i++) {
+                    org.json.JSONObject s = myFinished.getJSONObject(i);
+                    wonProductGrid.getChildren().add(buildWonCard(s));
+                }
+            });
+        }).start();
     }
 
-    private VBox buildWonCard(String ten, String id) {
+    private VBox buildWonCard(org.json.JSONObject s) {
+        String sessionId = s.getString("id");
+        String ten = s.getString("itemName");
+        String status = s.getString("status");
+        double finalPrice = s.getDouble("currentPrice");
+        String imageBase64 = s.optString("itemImage", "");
+
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(260);
@@ -166,15 +179,76 @@ public class BidderCentreController extends com.example.controller.BaseControlle
         img.getStyleClass().add("product-card-image");
         img.setPrefHeight(160);
 
+        if (!imageBase64.isEmpty()) {
+            try {
+                byte[] bytes = java.util.Base64.getDecoder().decode(imageBase64);
+                javafx.scene.image.ImageView iv = new javafx.scene.image.ImageView(
+                        new javafx.scene.image.Image(new java.io.ByteArrayInputStream(bytes)));
+                iv.setFitWidth(260); iv.setFitHeight(160); iv.setPreserveRatio(true);
+                img.getChildren().setAll(iv);
+            } catch (Exception ignored) {}
+        }
+
         VBox info = new VBox(4);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
-                new Label("Tên sản phẩm: " + ten),
-                new Label("Id sản phẩm: " + id)
+                new Label("Sản phẩm: " + ten),
+                new Label("Giá thắng: " + String.format("%,.0f đ", finalPrice)),
+                new Label("Trạng thái: " + status)
         );
+
+        // Nút theo trạng thái
+        if ("FINISHED".equals(status)) {
+            Button btnConfirm = new Button("XÁC NHẬN THẮNG");
+            btnConfirm.getStyleClass().add("btn-primary");
+            btnConfirm.setMaxWidth(Double.MAX_VALUE);
+            btnConfirm.setOnAction(e -> {
+                boolean ok = com.example.socket.ServerService.confirmWin(sessionId);
+                if (ok) {
+                    showNotification(getStage(contentStack), "Đã xác nhận! Bạn có 24h để thanh toán.");
+                    loadWonProducts();
+                }
+            });
+            info.getChildren().add(btnConfirm);
+        } else if ("PAYING".equals(status)) {
+            Button btnPay = new Button("THANH TOÁN");
+            btnPay.getStyleClass().add("btn-primary");
+            btnPay.setMaxWidth(Double.MAX_VALUE);
+            btnPay.setOnAction(e -> showPayDialog(sessionId, finalPrice));
+            info.getChildren().add(btnPay);
+        } else if ("PAID".equals(status)) {
+            Label lbl = new Label("✅ Đã thanh toán");
+            lbl.setStyle("-fx-text-fill: #22C55E; -fx-font-weight: bold;");
+            info.getChildren().add(lbl);
+        }
 
         card.getChildren().addAll(title, img, info);
         return card;
+    }
+
+    private void showPayDialog(String sessionId, double amount) {
+        javafx.stage.Stage dialog = new javafx.stage.Stage();
+        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        dialog.setTitle("Thanh toán");
+
+        javafx.scene.control.TextField tfAmount = new javafx.scene.control.TextField();
+        tfAmount.setPromptText("Nhập số tiền: " + String.format("%,.0f đ", amount));
+
+        javafx.scene.control.Button btnOk = new javafx.scene.control.Button("THANH TOÁN");
+        btnOk.setStyle("-fx-background-color: #111; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20;");
+        btnOk.setOnAction(e -> {
+            boolean ok = com.example.socket.ServerService.pay(sessionId, amount);
+            dialog.close();
+            showNotification(getStage(contentStack), ok ? "THANH TOÁN THÀNH CÔNG!" : "THANH TOÁN THẤT BẠI!");
+            if (ok) loadWonProducts();
+        });
+
+        javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(12,
+                new javafx.scene.control.Label("Số tiền cần thanh toán: " + String.format("%,.0f đ", amount)),
+                tfAmount, btnOk);
+        layout.setStyle("-fx-padding: 24; -fx-alignment: center;");
+        dialog.setScene(new javafx.scene.Scene(layout, 320, 160));
+        dialog.showAndWait();
     }
 
     // ------------------------------------------------------------------ //

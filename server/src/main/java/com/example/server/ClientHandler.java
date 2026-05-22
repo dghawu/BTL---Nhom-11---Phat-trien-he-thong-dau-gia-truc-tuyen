@@ -118,7 +118,9 @@ public class ClientHandler implements Runnable {
 
                 //Transactions
                 case "getMyTransactions" -> handleGetMyTransactions(req);
+                case "confirmWin" -> handleConfirmWin(req);
                 case "pay" -> handlePay(req);
+                case "getMyWonSessions" -> handleGetMyWonSessions(req);
 
                 // Admin
                 case "getAllUsers" -> handleGetAllUsers(req);
@@ -642,10 +644,68 @@ public class ClientHandler implements Runnable {
         return success().put("transactions", arr).toString();
     }
 
-    private String handlePay(JSONObject req) {
-        AuthResult auth = TokenGuard.check(req);
+    private String handleConfirmWin(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "BIDDER");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
-        return success().toString();
+
+        String sessionId = req.getString("sessionId");
+        Auction auction = auctionDAO.findById(sessionId);
+        if (auction == null) return fail("Không tìm thấy phiên.");
+        if (auction.getStatus() != AuctionStatus.FINISHED)
+            return fail("Phiên chưa kết thúc.");
+
+        // Kiểm tra đúng người thắng
+        String winnerId = userDAO.findByName(auction.getCurrentWinner()) != null
+                ? userDAO.findByName(auction.getCurrentWinner()).getId() : "";
+        if (!auth.getUserId().equals(winnerId))
+            return fail("Bạn không phải người thắng phiên này.");
+
+        auctionDAO.updateStatus(sessionId, AuctionStatus.PAYING);
+
+        // Lên lịch tự hủy sau 24h nếu chưa thanh toán
+        long delayHours = 24;
+        java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
+                .schedule(() -> {
+                    Auction a = auctionDAO.findById(sessionId);
+                    if (a != null && a.getStatus() == AuctionStatus.PAYING) {
+                        auctionDAO.updateStatus(sessionId, AuctionStatus.CANCELED);
+                        System.out.println("[Pay] Phiên " + sessionId + " hết 24h, tự hủy.");
+                    }
+                }, delayHours, java.util.concurrent.TimeUnit.HOURS);
+
+        return success().put("message", "Đã xác nhận! Bạn có 24h để thanh toán.").toString();
+    }
+
+    private String handlePay(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "BIDDER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sessionId = req.getString("sessionId");
+        Auction auction = auctionDAO.findById(sessionId);
+        if (auction == null) return fail("Không tìm thấy phiên.");
+        if (auction.getStatus() != AuctionStatus.PAYING)
+            return fail("Phiên không ở trạng thái chờ thanh toán.");
+
+        auctionDAO.updateStatus(sessionId, AuctionStatus.PAID);
+        return success().put("message", "Thanh toán thành công!").toString();
+    }
+
+    private String handleGetMyWonSessions(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "BIDDER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String bidderName = auth.getUsername(); // lấy từ token
+        List<Auction> all = auctionDAO.findAll();
+        JSONArray arr = new JSONArray();
+        for (Auction a : all) {
+            AuctionStatus st = a.getStatus();
+            // Chỉ hiện FINISHED, PAYING, PAID — không hiện CANCELED
+            if (st != AuctionStatus.FINISHED && st != AuctionStatus.PAYING
+                    && st != AuctionStatus.PAID) continue;
+            if (!bidderName.equals(a.getCurrentWinner())) continue;
+            arr.put(auctionToJson(a));
+        }
+        return success().put("sessions", arr).toString();
     }
 
     // ================================================================== //
