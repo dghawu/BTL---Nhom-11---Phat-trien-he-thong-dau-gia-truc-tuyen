@@ -10,6 +10,7 @@ import com.example.server.BidRegistry;
 import dao.AuctionDAO;
 import model.enums.AuctionStatus;
 import observer.SocketBroadcaster;
+import service.AutoBidManager;
 
 /**
  * AuctionTimer quản lý việc tự động đóng phiên đấu giá khi hết thời gian.
@@ -81,6 +82,7 @@ public class AuctionTimer {
             try {
                 AuctionDAO dao = getAuctionDAO();
                 dao.updateStatus(auctionId, AuctionStatus.FINISHED);
+                AutoBidManager.getInstance().clear(auctionId);
                 Auction fresh = dao.findById(auctionId);
                 String winner = fresh != null ? fresh.getCurrentWinner() : auction.getCurrentWinner();
                 double finalPrice = fresh != null ? fresh.getCurrentPrice() : auction.getCurrentPrice();
@@ -108,6 +110,7 @@ public class AuctionTimer {
                 try {
                     AuctionDAO dao = getAuctionDAO();
                     dao.updateStatus(auctionId, AuctionStatus.FINISHED);
+                    AutoBidManager.getInstance().clear(auctionId);
                     Auction fresh = dao.findById(auctionId);
                     String winner = fresh != null ? fresh.getCurrentWinner() : auction.getCurrentWinner();
                     double finalPrice = fresh != null ? fresh.getCurrentPrice() : auction.getCurrentPrice();

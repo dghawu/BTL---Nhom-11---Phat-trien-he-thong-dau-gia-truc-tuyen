@@ -304,4 +304,9 @@ public class ServerService {
         req.put("userId", userId);
         return send(req).getBoolean("success");
     }
+    public static boolean cancelAutoBid(String sessionId) {
+        JSONObject req = req("cancelAutoBid");
+        req.put("sessionId", sessionId);
+        return send(req).getBoolean("success");
+    }
 }

@@ -177,22 +177,23 @@ public class AuctionRoomController extends BaseController {
                 lblNguoiGiuGia.setText("Current winner: " + (winner.isEmpty() ? "Chưa có" : winner));
                 break;
             }
+            new Thread(() -> {
+                System.out.println("[AuctionRoom] Đang load history cho: " + sessionId);
+                JSONArray history = ServerService.getBidHistory(sessionId);
+                if (history == null) return;
+                Platform.runLater(() -> {
+                    // Thêm từ cũ → mới (index 0 là mới nhất nên add ngược)
+                    for (int j = 0; j < history.length(); j++) {
+                        JSONObject h = history.getJSONObject(j);
+                        String ts = h.getString("timestamp");
+                        String time = formatTime(ts); // dùng lại method có sẵn
+                        addBidEntry(h.getString("bidderName") + " bid "
+                                + String.format("%,.0f đ", h.getDouble("amount"))
+                                + " at " + time);
+                    }
+                });
+            }).start();
         });
-        new Thread(() -> {
-            JSONArray history = ServerService.getBidHistory(sessionId);
-            if (history == null) return;
-            Platform.runLater(() -> {
-                // Thêm từ cũ → mới (index 0 là mới nhất nên add ngược)
-                for (int j = history.length() - 1; j >= 0; j--) {
-                    JSONObject h = history.getJSONObject(j);
-                    String ts = h.getString("timestamp");
-                    String time = formatTime(ts); // dùng lại method có sẵn
-                    addBidEntry(h.getString("bidderName") + " bid "
-                            + String.format("%,.0f đ", h.getDouble("amount"))
-                            + " at " + time);
-                }
-            });
-        }).start();
     }
 
     // ------------------------------------------------------------------ //
@@ -222,8 +223,11 @@ public class AuctionRoomController extends BaseController {
                 }
 
                 // Thêm vào feed lịch sử
-                addBidEntry(event.bidderName + " đặt giá "
-                        + String.format("%,.0f đ", event.price));
+                String now = java.time.LocalDateTime.now().format(
+                        java.time.format.DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy"));
+                addBidEntry(event.bidderName + " bid "
+                        + String.format("%,.0f đ", event.price)
+                        + " at " + now);
             });
 
             case AUCTION_CLOSED -> Platform.runLater(() -> {
@@ -290,7 +294,7 @@ public class AuctionRoomController extends BaseController {
             autoMaxGiaField.setDisable(true);
         }
         lblManualToggle.setText(manualEnabled ? "ON" : "OFF");
-        lblManualToggle.setStyle("-fx-background-color: " + (manualEnabled ? "#22C55E" : "#9CA3AF") + ";"
+        lblManualToggle.setStyle("-fx-background-color: " + (manualEnabled ? "#22C55E" : "#EF4444") + ";"
                 + "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;"
                 + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
         manualBidField.setDisable(!manualEnabled);
@@ -339,14 +343,18 @@ public class AuctionRoomController extends BaseController {
     @FXML
     private void handleToggleAuto() {
         autoEnabled = !autoEnabled;
-        // Nếu bật auto thì tắt manual
         if (autoEnabled && manualEnabled) {
             manualEnabled = false;
             lblManualToggle.setText("OFF");
-            lblManualToggle.setStyle("-fx-background-color: #9CA3AF; -fx-text-fill: white;"
+            lblManualToggle.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white;"
                     + "-fx-font-size: 11px; -fx-font-weight: bold;"
                     + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
             manualBidField.setDisable(true);
+        }
+        if (!autoEnabled) {
+            // Tắt auto → enable lại manual toggle, huỷ auto-bid trên server
+            lblManualToggle.setDisable(false);
+            ServerService.cancelAutoBid(sessionId); // THÊM — huỷ trên server
         }
         lblAutoToggle.setText(autoEnabled ? "ON" : "OFF");
         lblAutoToggle.setStyle("-fx-background-color: " + (autoEnabled ? "#22C55E" : "#EF4444") + ";"
@@ -370,8 +378,19 @@ public class AuctionRoomController extends BaseController {
                 Double.parseDouble(buocGia),
                 Double.parseDouble(maxGia)
         );
-        showNotification(getStage(bidHistoryBox),
-                ok ? "ĐÃ BẬT ĐẤU GIÁ TỰ ĐỘNG!" : "CÀI ĐẶT TỰ ĐỘNG THẤT BẠI!");
+        if (ok) {
+            showNotification(getStage(bidHistoryBox), "ĐÃ BẬT ĐẤU GIÁ TỰ ĐỘNG!");
+            // Khoá hẳn manual khi auto đang chạy
+            manualEnabled = false;
+            lblManualToggle.setText("OFF");
+            lblManualToggle.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white;"
+                    + "-fx-font-size: 11px; -fx-font-weight: bold;"
+                    + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+            manualBidField.setDisable(true);
+            lblManualToggle.setDisable(true); // disable luôn nút toggle
+        } else {
+            showNotification(getStage(bidHistoryBox), "CÀI ĐẶT TỰ ĐỘNG THẤT BẠI!");
+        }
     }
 
     // ------------------------------------------------------------------ //

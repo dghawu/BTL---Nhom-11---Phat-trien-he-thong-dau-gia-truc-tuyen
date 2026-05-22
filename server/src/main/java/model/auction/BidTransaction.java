@@ -47,6 +47,10 @@ public class BidTransaction extends Entity {
         return timestamp;
     }
 
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
     @Override
     public void printInfo() {
         System.out.println("Transaction: " + getId()

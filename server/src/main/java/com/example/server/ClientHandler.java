@@ -8,6 +8,7 @@ import dao.BidTransactionDAO;
 import dao.ItemDAO;
 import dao.UserDAO;
 import model.auction.Auction;
+import model.auction.AutoBidConfig;
 import model.auction.BidTransaction;
 import model.enums.AuctionStatus;
 import model.item.Item;
@@ -15,11 +16,13 @@ import model.user.User;
 import observer.SocketBroadcaster;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import service.AutoBidManager;
 
 import java.io.*;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -111,6 +114,7 @@ public class ClientHandler implements Runnable {
                 case "placeBid" -> handlePlaceBid(req);
                 case "setAutoBid" -> handleSetAutoBid(req);
                 case "getBidHistory" -> handleGetBidHistory(req);
+                case "cancelAutoBid" -> handleCancelAutoBid(req);
 
                 //Transactions
                 case "getMyTransactions" -> handleGetMyTransactions(req);
@@ -551,6 +555,13 @@ public class ClientHandler implements Runnable {
             System.out.println("[ClientHandler] Không có client nào đang watch phiên " + sessionId);
         }
 
+        // Trigger auto-bid — wrap riêng để lỗi không ảnh hưởng response
+        try {
+            triggerAutoBid(sessionId, bidderId);
+        } catch (Exception e) {
+            System.out.println("[AutoBid] Trigger error: " + e.getMessage());
+        }
+
         return success()
                 .put("currentPrice", auction.getCurrentPrice())
                 .put("currentWinner", bidderName)
@@ -560,8 +571,19 @@ public class ClientHandler implements Runnable {
     private String handleSetAutoBid(JSONObject req) {
         AuthResult auth = TokenGuard.checkRole(req, "BIDDER");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
-        // TODO: tích hợp AuctionService.setAutoBid()
-        return success().toString();
+
+        String sessionId = req.getString("sessionId");
+        String bidderId = auth.getUserId();
+        double increment = req.getDouble("stepPrice");
+        double maxBid = req.getDouble("maxPrice");
+
+        User bidder = userDAO.findById(bidderId);
+        String bidderName = bidder != null ? bidder.getName() : bidderId;
+
+        AutoBidConfig config = new AutoBidConfig(bidderId, bidderName, increment, maxBid);
+        AutoBidManager.getInstance().register(sessionId, config);
+
+        return success().put("message", "Đã bật auto-bid!").toString();
     }
 
     private String handleGetBidHistory(JSONObject req) {
@@ -580,6 +602,13 @@ public class ClientHandler implements Runnable {
                     .put("timestamp", tx.getTimestamp().toString()));
         }
         return success().put("history", arr).toString();
+    }
+
+    private String handleCancelAutoBid(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "BIDDER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+        AutoBidManager.getInstance().unregister(req.getString("sessionId"), auth.getUserId());
+        return success().toString();
     }
 
     // ================================================================== //
@@ -684,6 +713,51 @@ public class ClientHandler implements Runnable {
                     .put("status",    a != null ? a.getStatus().name() : ""));
         }
         return arr;
+    }
+
+    private void triggerAutoBid(String sessionId, String lastWinnerId) {
+        // Lấy copy để tránh ConcurrentModificationException khi unregister trong loop
+        List<AutoBidConfig> autoBids = new ArrayList<>(AutoBidManager.getInstance().getConfigs(sessionId));
+        if (autoBids.isEmpty()) return;
+
+        Auction auction = auctionDAO.findById(sessionId);
+        if (auction == null || auction.getStatus() != AuctionStatus.RUNNING) return;
+        if (auction.getEndTime().isBefore(LocalDateTime.now())) return;
+
+        for (AutoBidConfig cfg : autoBids) {
+            if (cfg.getBidderId().equals(lastWinnerId)) continue;
+
+            double nextBid = auction.getCurrentPrice() + cfg.getIncrement();
+            if (nextBid > cfg.getMaxBid()) {
+                System.out.println("[AutoBid] " + cfg.getBidderName() + " đã đạt maxBid, dừng.");
+                AutoBidManager.getInstance().unregister(sessionId, cfg.getBidderId());
+                continue;
+            }
+
+            BidTransaction bid = new BidTransaction(cfg.getBidderId(), sessionId, nextBid);
+            bid.setBidderName(cfg.getBidderName());
+
+            try {
+                auction.handleNewBid(bid);
+                bidDAO.save(bid);
+                auctionDAO.updateBid(sessionId, auction.getCurrentPrice(), cfg.getBidderName());
+                auctionDAO.updateEndTime(sessionId, auction.getEndTime());
+
+                SocketBroadcaster broadcaster = BidRegistry.getInstance().get(sessionId);
+                if (broadcaster != null) {
+                    String msg = "BID_UPDATE:" + sessionId
+                            + ":" + auction.getCurrentPrice()
+                            + ":" + cfg.getBidderName()
+                            + ":" + auction.getEndTime();
+                    broadcaster.broadcast(msg);
+                }
+                System.out.println("[AutoBid] " + cfg.getBidderName() + " tự đặt " + nextBid);
+                triggerAutoBid(sessionId, cfg.getBidderId());
+                return;
+            } catch (Exception e) {
+                System.out.println("[AutoBid] Lỗi: " + e.getMessage());
+            }
+        }
     }
 
     private JSONObject success() { return new JSONObject().put("success", true); }

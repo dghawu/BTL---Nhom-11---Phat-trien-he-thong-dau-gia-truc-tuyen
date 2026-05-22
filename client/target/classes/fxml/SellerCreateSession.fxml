@@ -39,12 +39,6 @@
             <HBox spacing="30" style="-fx-padding: 20 20 0 20;" HBox.hgrow="ALWAYS">
                 <VBox spacing="12" HBox.hgrow="ALWAYS">
                     <ComboBox fx:id="sanPhamBox" maxWidth="Infinity" onAction="#handleSelectSanPham" promptText="Select product" styleClass="text-field-rounded" />
-<<<<<<< HEAD
-               <DatePicker prefHeight="30.0" prefWidth="947.0" promptText="Opening date " styleClass="text-field-rounded" />
-                    <TextField fx:id="thoiGianMoField" maxWidth="Infinity" promptText="VD: 2025-05-15 20:00" styleClass="text-field-rounded" />
-               <DatePicker layoutX="10.0" layoutY="74.0" prefHeight="30.0" prefWidth="851.0" promptText="Closing date" styleClass="text-field-rounded" />
-=======
->>>>>>> f517d763b4d158ca7b31ca19606aea81cb65a70d
 
                     <!-- Thời gian mở phiên -->
                     <HBox spacing="10">

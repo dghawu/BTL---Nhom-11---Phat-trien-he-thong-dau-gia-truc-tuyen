@@ -91,10 +91,17 @@ public class BidTransactionDAO {
     // ── Helper ─────────────────────────────────────────────────────
 
     private BidTransaction mapToBid(ResultSet rs) throws SQLException {
-        return new BidTransaction(
+        BidTransaction tx = new BidTransaction(
                 rs.getString("bidder_id"),
                 rs.getString("auction_id"),
                 rs.getDouble("amount")
         );
+        String ts = rs.getString("timestamp");
+        if (ts != null) {
+            tx.setTimestamp(java.time.LocalDateTime.parse(
+                    ts.replace(" ", "T"),
+                    java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
+        }
+        return tx;
     }
 }
