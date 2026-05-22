@@ -65,7 +65,11 @@
             </GridPane>
 
             <HBox style="-fx-padding: 8 0 0 140;">
-                <Pane fx:id="imgPane" prefHeight="160" prefWidth="180" styleClass="image-placeholder"/>
+                <VBox>
+                    <Pane fx:id="imgPane" prefHeight="160" prefWidth="180" styleClass="image-placeholder"/>
+                    <Button fx:id="btnChooseImage" onAction="#handleChooseNewImage" styleClass="btn-secondary"
+                            text="Chọn ảnh khác" style="-fx-margin: 8 0 0 0;" visible="false"/>
+                </VBox>
             </HBox>
 
             <Region VBox.vgrow="ALWAYS"/>
