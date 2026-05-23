@@ -27,32 +27,44 @@ public abstract class BaseController {
     protected void navigateTo(String fxmlPath, Stage stage) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            //Set controller TRƯỚC khi load
+
             Parent root = loader.load();
             Object ctrl = loader.getController();
+
             if (ctrl instanceof BaseController bc) {
+
+                // truyền dữ liệu chung
                 bc.currentUsername = this.currentUsername;
                 bc.currentRole = this.currentRole;
                 bc.currentUserId = this.currentUserId;
 
-                // cập nhật UI sau khi truyền dữ liệu
-                if (ctrl instanceof HomeAdminController homeAdmin) {
+                // Settings
+                if (bc instanceof SettingsController sc) {
+                    sc.loadUserData();
+                }
+
+                // Home Admin
+                if (bc instanceof HomeAdminController homeAdmin) {
                     homeAdmin.initData(currentUsername, currentUserId);
                 }
 
-                if (ctrl instanceof HomeSellerController homeSeller) {
+                // Home Seller
+                if (bc instanceof HomeSellerController homeSeller) {
                     homeSeller.initData(currentUsername, currentUserId);
                 }
 
-                if (ctrl instanceof HomeBidderController homeBidder) {
+                // Home Bidder
+                if (bc instanceof HomeBidderController homeBidder) {
                     homeBidder.initData(currentUsername, currentUserId);
                 }
 
-                //Gọi onReady() sau khi set xong
+                // gọi sau cùng
                 bc.onReady();
             }
+
             stage.setScene(new Scene(root));
             stage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
