@@ -32,6 +32,8 @@ public class SettingsController extends BaseController {
 
     @FXML
     public void initialize() {
+    }
+    public void loadUserData() {
         if (currentUsername != null) {
             accountTitleLabel.setText("Your account @" + currentUsername);
             displayUsername.setText(currentUsername);
