@@ -26,6 +26,8 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     @FXML private DatePicker ngayDongPicker;
     @FXML private ComboBox<String> gioMoBox;
     @FXML private ComboBox<String> gioDongBox;
+    @FXML private ComboBox<String> phutMoBox;
+    @FXML private ComboBox<String> phutDongBox;
 
     @FXML
     private TextField buocGiaField;
@@ -40,14 +42,20 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     @FXML
     public void initialize() {
 
-
-
         for (int i = 0; i < 24; i++) {
 
-            String gio = String.format("%02d:00", i);
+            String gio = String.format("%02d", i);
 
             gioMoBox.getItems().add(gio);
             gioDongBox.getItems().add(gio);
+        }
+
+        for (int i = 0; i < 60; i++) {
+
+            String phut = String.format("%02d", i);
+
+            phutMoBox.getItems().add(phut);
+            phutDongBox.getItems().add(phut);
         }
     }
 
@@ -141,13 +149,19 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
         String selectedName = sanPhamBox.getValue();
 
         String gioMo = gioMoBox.getValue();
+        String phutMo = phutMoBox.getValue();
+
         String gioDong = gioDongBox.getValue();
+        String phutDong = phutDongBox.getValue();
 
         String buocGiaStr = buocGiaField.getText().trim();
 
         // Ghép ngày + giờ
-        String startStr = ngayMoPicker.getValue() + " " + gioMo;
-        String endStr   = ngayDongPicker.getValue() + " " + gioDong;
+        String startStr =
+                ngayMoPicker.getValue() + " " + gioMo + ":" + phutMo;
+
+        String endStr =
+                ngayDongPicker.getValue() + " " + gioDong + ":" + phutDong;
 
         if (selectedName == null
                 || ngayMoPicker.getValue() == null

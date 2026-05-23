@@ -42,16 +42,24 @@
 
                     <!-- Thời gian mở phiên -->
                     <HBox spacing="10">
-                        <DatePicker fx:id="ngayMoPicker" prefHeight="52.0" prefWidth="477.0" promptText="Opening date" styleClass="text-field-rounded" HBox.hgrow="ALWAYS" />
 
-                        <ComboBox fx:id="gioMoBox" prefHeight="52.0" prefWidth="476.0" promptText="Opening time" styleClass="text-field-rounded" />
+                        <DatePicker fx:id="ngayMoPicker" prefHeight="52.0" prefWidth="382.0" promptText="Opening date" styleClass="text-field-rounded" />
+
+                        <ComboBox fx:id="gioMoBox" prefHeight="52.0" prefWidth="190.0" promptText="Opening time" styleClass="text-field-rounded" />
+
+                        <ComboBox fx:id="phutMoBox" prefHeight="52.0" prefWidth="171.0" promptText="minute" styleClass="text-field-rounded" />
+
                     </HBox>
 
                     <!-- Thời gian đóng phiên -->
                     <HBox spacing="10">
-                        <DatePicker fx:id="ngayDongPicker" prefHeight="52.0" prefWidth="477.0" promptText="Closing date" styleClass="text-field-rounded" HBox.hgrow="ALWAYS" />
 
-                        <ComboBox fx:id="gioDongBox" prefHeight="54.0" prefWidth="476.0" promptText="Closing time" styleClass="text-field-rounded" />
+                        <DatePicker fx:id="ngayDongPicker" prefHeight="52.0" prefWidth="382.0" promptText="Closing date" styleClass="text-field-rounded" />
+
+                        <ComboBox fx:id="gioDongBox" prefHeight="52.0" prefWidth="190.0" promptText="Closing time" styleClass="text-field-rounded" />
+
+                        <ComboBox fx:id="phutDongBox" prefHeight="52.0" prefWidth="168.0" promptText="minute" styleClass="text-field-rounded" />
+
                     </HBox>
 
                     <TextField fx:id="buocGiaField" maxWidth="Infinity" promptText="Bid increment" styleClass="text-field-rounded" />
