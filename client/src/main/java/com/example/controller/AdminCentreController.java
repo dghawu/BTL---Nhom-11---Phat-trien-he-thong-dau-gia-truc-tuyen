@@ -27,28 +27,44 @@ import java.util.Base64;
 public class AdminCentreController extends BaseController {
 
     // ── Nav sidebar ───────────────────────────────────────────────────
-    @FXML private Button btnNguoiDung;
-    @FXML private Button btnSanPham;
-    @FXML private Button btnPhien;
-    @FXML private Button btnGiaoDich;
+    @FXML
+    private Button btnNguoiDung;
+    @FXML
+    private Button btnSanPham;
+    @FXML
+    private Button btnPhien;
+    @FXML
+    private Button btnGiaoDich;
 
     // ── Tiêu đề tab ───────────────────────────────────────────────────
-    @FXML private Label lblTabTitle;
+    @FXML
+    private Label lblTabTitle;
 
     // ── Table ─────────────────────────────────────────────────────────
-    @FXML private TableView<JSONObject>          dataTable;
-    @FXML private TableColumn<JSONObject,String> colId;
-    @FXML private TableColumn<JSONObject, Node> colImage;
-    @FXML private TableColumn<JSONObject,String> colTen;
-    @FXML private TableColumn<JSONObject,String> colThongTin;
-    @FXML private TableColumn<JSONObject,String> colExtra;
-    @FXML private TableColumn<JSONObject,String> colTrangThai;
+    @FXML
+    private TableView<JSONObject> dataTable;
+    @FXML
+    private TableColumn<JSONObject, String> colId;
+    @FXML
+    private TableColumn<JSONObject, Node> colImage;
+    @FXML
+    private TableColumn<JSONObject, String> colTen;
+    @FXML
+    private TableColumn<JSONObject, String> colThongTin;
+    @FXML
+    private TableColumn<JSONObject, String> colExtra;
+    @FXML
+    private TableColumn<JSONObject, String> colTrangThai;
 
     // ── Action buttons ────────────────────────────────────────────────
-    @FXML private Button btnBan;
-    @FXML private Button btnMakeAdmin;
-    @FXML private Button btnEdit;
-    @FXML private Button btnSave;
+    @FXML
+    private Button btnBan;
+    @FXML
+    private Button btnMakeAdmin;
+    @FXML
+    private Button btnEdit;
+    @FXML
+    private Button btnSave;
 
     private String currentTab = "NGUOIDUNG";
 
@@ -146,12 +162,12 @@ public class AdminCentreController extends BaseController {
         grid.add(imageBox, 0, 0, 2, 1);
 
         String[][] rows = {
-                {"Tên sản phẩm",  product.optString("name", "")},
-                {"ID sản phẩm",   product.optString("id", "")},
+                {"Tên sản phẩm", product.optString("name", "")},
+                {"ID sản phẩm", product.optString("id", "")},
                 {"Loại sản phẩm", product.optString("type", "")},
                 {"Giá khởi điểm", String.format("%,.0f đ", product.optDouble("startPrice", 0))},
-                {"Seller",        product.optString("sellerId", "")},
-                {"Trạng thái",    product.optString("status", "")},
+                {"Seller", product.optString("sellerId", "")},
+                {"Trạng thái", product.optString("status", "")},
         };
 
         for (int i = 0; i < rows.length; i++) {
@@ -167,8 +183,8 @@ public class AdminCentreController extends BaseController {
         boolean isPending = "PENDING".equals(product.optString("status"));
         if (isPending) {
             ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
-            ButtonType rejectBtn  = new ButtonType("✘ REJECT",  ButtonBar.ButtonData.CANCEL_CLOSE);
-            ButtonType cancelBtn  = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType rejectBtn = new ButtonType("✘ REJECT", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType cancelBtn = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
             dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
 
             dialog.showAndWait().ifPresent(result -> {
@@ -261,15 +277,15 @@ public class AdminCentreController extends BaseController {
         grid.add(imageBox, 0, 0, 2, 1);
 
         String[][] rows = {
-                {"Sản phẩm",      session.optString("itemName")},
-                {"ID phiên",      session.optString("id")},
-                {"Trạng thái",    session.optString("status")},
-                {"Giá khởi điểm", String.format("%,.0f đ", session.optDouble("startPrice",0))},
-                {"Bước giá",      String.format("%,.0f đ", session.optDouble("stepPrice",0))},
-                {"Giá hiện tại",  String.format("%,.0f đ", session.optDouble("currentPrice",0))},
-                {"Thời gian mở",  session.optString("startTime","").replace("T"," ")},
-                {"Thời gian đóng",session.optString("endTime","").replace("T"," ")},
-                {"Người thắng",   session.optString("currentWinner","—")},
+                {"Sản phẩm", session.optString("itemName")},
+                {"ID phiên", session.optString("id")},
+                {"Trạng thái", session.optString("status")},
+                {"Giá khởi điểm", String.format("%,.0f đ", session.optDouble("startPrice", 0))},
+                {"Bước giá", String.format("%,.0f đ", session.optDouble("stepPrice", 0))},
+                {"Giá hiện tại", String.format("%,.0f đ", session.optDouble("currentPrice", 0))},
+                {"Thời gian mở", session.optString("startTime", "").replace("T", " ")},
+                {"Thời gian đóng", session.optString("endTime", "").replace("T", " ")},
+                {"Người thắng", session.optString("currentWinner", "—")},
         };
 
         for (int i = 0; i < rows.length; i++) {
@@ -285,8 +301,8 @@ public class AdminCentreController extends BaseController {
         boolean isPending = "PENDING".equals(session.optString("status"));
         if (isPending) {
             ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
-            ButtonType rejectBtn  = new ButtonType("✘ REJECT",  ButtonBar.ButtonData.CANCEL_CLOSE);
-            ButtonType cancelBtn  = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType rejectBtn = new ButtonType("✘ REJECT", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType cancelBtn = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
             dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
 
             java.util.Optional<ButtonType> result = dialog.showAndWait();
@@ -544,10 +560,10 @@ public class AdminCentreController extends BaseController {
     }
 
     private void showButtons(boolean ban, boolean admin, boolean approve, boolean reject) {
-        setVis(btnBan,       ban);
+        setVis(btnBan, ban);
         setVis(btnMakeAdmin, admin);
-        setVis(btnEdit,      approve);
-        setVis(btnSave,      reject);
+        setVis(btnEdit, approve);
+        setVis(btnSave, reject);
     }
 
     private void setVis(Button btn, boolean v) {
@@ -555,8 +571,19 @@ public class AdminCentreController extends BaseController {
         btn.setManaged(v);
     }
 
-    @FXML private void handleHome()        { goHome(getStage(dataTable)); }
-    @FXML private void handleAdminCentre() { /* đã ở đây */ }
-    @FXML private void handleUserReport()  { /* TODO */ }
-    @FXML private void handleSettings()    { goSettings(getStage(dataTable)); }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(dataTable));
+    }
+
+    @FXML
+    private void handleAdminCentre() { /* đã ở đây */ }
+
+    @FXML
+    private void handleUserReport() { /* TODO */ }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(dataTable));
+    }
 }

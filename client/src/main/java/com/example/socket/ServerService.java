@@ -12,10 +12,6 @@ public class ServerService {
 
     private static String currentToken = null;
 
-    public static void setToken(String token) {
-        currentToken = token;
-    }
-
     public static void clearToken() {
         currentToken = null;
     }
@@ -26,6 +22,10 @@ public class ServerService {
      */
     public static String getToken() {
         return currentToken;
+    }
+
+    public static void setToken(String token) {
+        currentToken = token;
     }
 
     private static JSONObject req(String action) {
@@ -45,19 +45,6 @@ public class ServerService {
     // ================================================================== //
     //  AUTH
     // ================================================================== //
-
-    public static class UserResult {
-        public boolean success;
-        public String message;
-        public String username;
-        public String role;
-        public String userId;
-
-        public UserResult(boolean success, String message) {
-            this.success = success;
-            this.message = message;
-        }
-    }
 
     public static UserResult login(String username, String password) {
         JSONObject req = new JSONObject();
@@ -105,15 +92,16 @@ public class ServerService {
         return new UserResult(res.getBoolean("success"), res.optString("message", ""));
     }
 
-    // ================================================================== //
-    //  ITEMS
-    // ================================================================== //
-
     public static JSONArray getMyItems() {
         JSONObject res = send(req("getMyItems"));
         if (!res.getBoolean("success")) return new JSONArray();
         return res.optJSONArray("items");
     }
+
+    // ================================================================== //
+    //  ITEMS
+    // ================================================================== //
+
     public static JSONArray getAllItems() {
         JSONObject res = send(req("getAllItems"));
         return res.getBoolean("success") ? res.optJSONArray("items") : new JSONArray();
@@ -183,11 +171,6 @@ public class ServerService {
         return send(req).getBoolean("success");
     }
 
-
-    // ================================================================== //
-    //  SESSIONS
-    // ================================================================== //
-
     public static JSONArray getAllSessions(String category) {
         JSONObject req = req("getAllSessions");
         req.put("category", category);
@@ -195,6 +178,11 @@ public class ServerService {
         if (!res.getBoolean("success")) return new JSONArray();
         return res.optJSONArray("sessions");
     }
+
+
+    // ================================================================== //
+    //  SESSIONS
+    // ================================================================== //
 
     public static JSONArray getMySessions() {
         JSONObject res = send(req("getMySessions"));
@@ -236,16 +224,16 @@ public class ServerService {
         return res.optJSONObject("session");
     }
 
-    // ================================================================== //
-    //  BIDDING
-    // ================================================================== //
-
     public static boolean placeBid(String sessionId, double bidAmount) {
         JSONObject req = req("placeBid");
         req.put("sessionId", sessionId);
         req.put("bidAmount", bidAmount);
         return send(req).getBoolean("success");
     }
+
+    // ================================================================== //
+    //  BIDDING
+    // ================================================================== //
 
     public static boolean setAutoBid(String sessionId, double stepPrice, double maxPrice) {
         JSONObject req = req("setAutoBid");
@@ -281,15 +269,15 @@ public class ServerService {
         return res.getBoolean("success") ? res.optJSONArray("sessions") : null;
     }
 
-    // ================================================================== //
-    //  TRANSACTIONS
-    // ================================================================== //
-
     public static JSONArray getMyTransactions() {
         JSONObject res = send(req("getMyTransactions"));
         if (!res.getBoolean("success")) return new JSONArray();
         return res.optJSONArray("transactions");
     }
+
+    // ================================================================== //
+    //  TRANSACTIONS
+    // ================================================================== //
 
     public static boolean pay(String transactionId) {
         JSONObject req = req("pay");
@@ -302,15 +290,15 @@ public class ServerService {
         return res.getBoolean("success") ? res.optJSONArray("transactions") : new JSONArray();
     }
 
-    // ================================================================== //
-    //  ADMIN
-    // ================================================================== //
-
     public static JSONArray getAllUsers() {
         JSONObject res = send(req("getAllUsers"));
         if (!res.getBoolean("success")) return new JSONArray();
         return res.optJSONArray("users");
     }
+
+    // ================================================================== //
+    //  ADMIN
+    // ================================================================== //
 
     public static boolean banUser(String userId) {
         JSONObject req = req("banUser");
@@ -323,9 +311,23 @@ public class ServerService {
         req.put("userId", userId);
         return send(req).getBoolean("success");
     }
+
     public static boolean cancelAutoBid(String sessionId) {
         JSONObject req = req("cancelAutoBid");
         req.put("sessionId", sessionId);
         return send(req).getBoolean("success");
+    }
+
+    public static class UserResult {
+        public boolean success;
+        public String message;
+        public String username;
+        public String role;
+        public String userId;
+
+        public UserResult(boolean success, String message) {
+            this.success = success;
+            this.message = message;
+        }
     }
 }

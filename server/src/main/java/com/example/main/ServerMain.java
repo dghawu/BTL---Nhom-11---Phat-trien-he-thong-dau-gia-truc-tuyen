@@ -42,6 +42,7 @@ public class ServerMain {
         // SocketServer chạy blocking ở main thread
         apiServer.start();
     }
+
     private static void recoverRunningAuctions() {
         AuctionDAO auctionDAO = new AuctionDAO();
         for (Auction a : auctionDAO.findAll()) {

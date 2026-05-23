@@ -124,6 +124,7 @@ public class AuctionDAO {
             System.out.println("[AuctionDAO] Lỗi updateEndTime: " + e.getMessage());
         }
     }
+
     public void update(Auction auction) {
         String sql = "UPDATE auctions SET end_time = ?, min_increment = ? WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {

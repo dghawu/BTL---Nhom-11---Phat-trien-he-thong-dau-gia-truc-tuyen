@@ -184,9 +184,12 @@ public class BidderCentreController extends com.example.controller.BaseControlle
                 byte[] bytes = java.util.Base64.getDecoder().decode(imageBase64);
                 javafx.scene.image.ImageView iv = new javafx.scene.image.ImageView(
                         new javafx.scene.image.Image(new java.io.ByteArrayInputStream(bytes)));
-                iv.setFitWidth(260); iv.setFitHeight(160); iv.setPreserveRatio(true);
+                iv.setFitWidth(260);
+                iv.setFitHeight(160);
+                iv.setPreserveRatio(true);
                 img.getChildren().setAll(iv);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         VBox info = new VBox(4);

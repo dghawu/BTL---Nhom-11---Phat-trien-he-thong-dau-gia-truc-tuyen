@@ -39,6 +39,7 @@ public class ItemDAO {
             System.out.println("[ItemDAO] Lỗi save: " + e.getMessage());
         }
     }
+
     public void saveWithImage(Item item, String imageBase64) {
         String sql = "INSERT IGNORE INTO items " +
                 "(id, seller_id, name, description, starting_price, status, type, image, created_at) " +
@@ -141,6 +142,7 @@ public class ItemDAO {
             System.out.println("[ItemDAO] Lỗi update: " + e.getMessage());
         }
     }
+
     public void updateWithImage(String itemId, String name, String description,
                                 double startPrice, String status, String imageBase64) {
         String sql = "UPDATE items SET name = ?, description = ?, " +
@@ -174,19 +176,22 @@ public class ItemDAO {
     // ── Helper ─────────────────────────────────────────────────────
 
     private Item mapToItem(ResultSet rs) throws SQLException {
-        String id          = rs.getString("id");
-        String sellerId    = rs.getString("seller_id");
-        String name        = rs.getString("name");
+        String id = rs.getString("id");
+        String sellerId = rs.getString("seller_id");
+        String name = rs.getString("name");
         String description = rs.getString("description");
-        double startPrice  = rs.getDouble("starting_price");
-        String statusStr   = rs.getString("status");
-        String typeStr     = rs.getString("type");
+        double startPrice = rs.getDouble("starting_price");
+        String statusStr = rs.getString("status");
+        String typeStr = rs.getString("type");
 
         String image = null;
-        try { image = rs.getString("image"); } catch (SQLException ignored) {}
+        try {
+            image = rs.getString("image");
+        } catch (SQLException ignored) {
+        }
 
         Item.ItemStatus status = Item.ItemStatus.valueOf(statusStr);
-        Item.ItemType   type   = Item.ItemType.valueOf(typeStr);
+        Item.ItemType type = Item.ItemType.valueOf(typeStr);
         Item item = type.create(sellerId, name, id, description, startPrice, status);
         item.setImage(image);
         return item;

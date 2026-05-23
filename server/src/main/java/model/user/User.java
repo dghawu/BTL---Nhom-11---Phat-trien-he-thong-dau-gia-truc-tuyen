@@ -27,16 +27,16 @@ public abstract class User extends Entity {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public boolean isBanned() {
         return banned;
     }
 
     public void setBanned(boolean banned) {
         this.banned = banned;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public boolean login(String name, String pass) {

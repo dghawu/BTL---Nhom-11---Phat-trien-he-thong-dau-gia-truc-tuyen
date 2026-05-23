@@ -19,14 +19,18 @@ import org.json.JSONObject;
  */
 public class SellerCreateSessionController extends com.example.controller.BaseController {
 
+    private final java.util.Map<String, String> itemNameToId = new java.util.HashMap<>();
+    private final java.util.Map<String, JSONObject> itemCache = new java.util.HashMap<>();
     @FXML
     private ComboBox<String> sanPhamBox;
-
-    @FXML private DatePicker ngayMoPicker;
-    @FXML private DatePicker ngayDongPicker;
-    @FXML private ComboBox<String> gioMoBox;
-    @FXML private ComboBox<String> gioDongBox;
-
+    @FXML
+    private DatePicker ngayMoPicker;
+    @FXML
+    private DatePicker ngayDongPicker;
+    @FXML
+    private ComboBox<String> gioMoBox;
+    @FXML
+    private ComboBox<String> gioDongBox;
     @FXML
     private TextField buocGiaField;
     @FXML
@@ -34,12 +38,8 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     @FXML
     private Pane imgPreviewPane;
 
-    private final java.util.Map<String, String> itemNameToId = new java.util.HashMap<>();
-    private final java.util.Map<String, JSONObject> itemCache = new java.util.HashMap<>();
-
     @FXML
     public void initialize() {
-
 
 
         for (int i = 0; i < 24; i++) {
@@ -62,7 +62,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
                 if (!"APPROVED".equals(item.optString("status"))) continue;
 
                 String name = item.getString("name");
-                String id   = item.getString("id");
+                String id = item.getString("id");
                 itemNameToId.put(name, id);
                 itemCache.put(id, item);
 
@@ -147,7 +147,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
         // Ghép ngày + giờ
         String startStr = ngayMoPicker.getValue() + " " + gioMo;
-        String endStr   = ngayDongPicker.getValue() + " " + gioDong;
+        String endStr = ngayDongPicker.getValue() + " " + gioDong;
 
         if (selectedName == null
                 || ngayMoPicker.getValue() == null
@@ -163,7 +163,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
         }
 
         java.time.LocalDateTime startDT = parseTime(startStr);
-        java.time.LocalDateTime endDT   = parseTime(endStr);
+        java.time.LocalDateTime endDT = parseTime(endStr);
 
         if (startDT == null || endDT == null) {
 
@@ -187,8 +187,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
         try {
             buocGia = Double.parseDouble(buocGiaStr);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
 
             showNotification(getStage(buocGiaField),
                     "BƯỚC GIÁ KHÔNG HỢP LỆ!");

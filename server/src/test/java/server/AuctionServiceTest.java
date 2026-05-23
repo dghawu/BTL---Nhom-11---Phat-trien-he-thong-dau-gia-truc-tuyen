@@ -24,6 +24,90 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuctionServiceTest {
 
+    private final String auctionId = "SERVICE-AUC-001";
+    // ── Fields ─────────────────────────────────────────────────────
+    private InMemoryAuctionService service;
+    private Item testItem;
+
+    @BeforeEach
+    void setUp() {
+        service = InMemoryAuctionService.getInstance();
+        service.clear();
+
+        testItem = Item.ItemType.ELECTRONICS.create(
+                "SELLER-01", "Macbook Test", "ITEM-999", "Mô tả", 2000.0, Item.ItemStatus.APPROVED);
+    }
+
+    // ── Test 1: Singleton ──────────────────────────────────────────
+    @Test
+    @Order(1)
+    @DisplayName("Singleton: Kiểm tra tính duy nhất của instance")
+    void testSingleton() {
+        assertSame(InMemoryAuctionService.getInstance(), InMemoryAuctionService.getInstance(),
+                "AuctionService phải tuân thủ đúng mẫu Singleton");
+    }
+
+    // ── Test 2: Tạo phiên ─────────────────────────────────────────
+    @Test
+    @Order(2)
+    @DisplayName("Create: Tạo phiên mới và kiểm tra khởi tạo dữ liệu")
+    void testCreateAuction() {
+        LocalDateTime start = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime end = LocalDateTime.now().plusHours(2);
+
+        Auction auction = service.createAuction(auctionId, testItem, 500.0, start, end);
+
+        assertNotNull(auction);
+        assertEquals(auctionId, auction.getAuctionId());
+        assertEquals(2000.0, auction.getStartPrice(), "Giá khởi điểm phải lấy từ Item");
+        assertEquals(AuctionStatus.PENDING, auction.getStatus(), "Phiên mới tạo phải ở trạng thái PENDING");
+    }
+
+    // ── Test 3: Bắt đầu phiên ─────────────────────────────────────
+    @Test
+    @Order(3)
+    @DisplayName("Start: Đăng ký Observers và chuyển trạng thái RUNNING")
+    void testStartAuction() {
+        Auction auction = service.createAuction(auctionId, testItem, 100.0,
+                LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+
+        service.startAuction(auction);
+
+        assertEquals(AuctionStatus.RUNNING, auction.getStatus());
+        assertNotNull(service.getBroadcaster(auctionId), "Broadcaster phải được tạo khi bắt đầu phiên");
+    }
+
+    // KHÔNG có @AfterAll shutdown() — để AuctionTimer Singleton sống xuyên suốt test session
+
+    // ── Test 4: Đóng phiên ────────────────────────────────────────
+    @Test
+    @Order(4)
+    @DisplayName("Close: Kết thúc phiên và giải phóng Broadcaster")
+    void testCloseAuction() {
+        Auction auction = service.createAuction(auctionId, testItem, 100.0,
+                LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        service.startAuction(auction);
+
+        service.closeAuction(auction);
+
+        assertEquals(AuctionStatus.FINISHED, auction.getStatus());
+        assertNull(service.getBroadcaster(auctionId), "Broadcaster phải bị xóa sau khi phiên kết thúc");
+    }
+
+    // ── Test 5: Lấy đúng Broadcaster ─────────────────────────────
+    @Test
+    @Order(5)
+    @DisplayName("Broadcaster: Kiểm tra lấy đúng socket cho đúng phiên")
+    void testGetBroadcaster() {
+        String id2 = "AUC-REALTIME-02";
+        Auction auction = service.createAuction(id2, testItem, 100.0,
+                LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+        service.startAuction(auction);
+
+        assertNotNull(service.getBroadcaster(id2));
+        assertEquals(id2, service.getBroadcaster(id2).getAuctionId());
+    }
+
     // ── Fake SocketBroadcaster (không cần Socket thật) ─────────────
     static class FakeBroadcaster extends SocketBroadcaster {
         FakeBroadcaster(String auctionId) {
@@ -99,89 +183,5 @@ class AuctionServiceTest {
         SocketBroadcaster getBroadcaster(String auctionId) {
             return broadcasters.get(auctionId);
         }
-    }
-
-    // ── Fields ─────────────────────────────────────────────────────
-    private InMemoryAuctionService service;
-    private Item testItem;
-    private final String auctionId = "SERVICE-AUC-001";
-
-    @BeforeEach
-    void setUp() {
-        service = InMemoryAuctionService.getInstance();
-        service.clear();
-
-        testItem = Item.ItemType.ELECTRONICS.create(
-                "SELLER-01", "Macbook Test", "ITEM-999", "Mô tả", 2000.0, Item.ItemStatus.APPROVED);
-    }
-
-    // KHÔNG có @AfterAll shutdown() — để AuctionTimer Singleton sống xuyên suốt test session
-
-    // ── Test 1: Singleton ──────────────────────────────────────────
-    @Test
-    @Order(1)
-    @DisplayName("Singleton: Kiểm tra tính duy nhất của instance")
-    void testSingleton() {
-        assertSame(InMemoryAuctionService.getInstance(), InMemoryAuctionService.getInstance(),
-                "AuctionService phải tuân thủ đúng mẫu Singleton");
-    }
-
-    // ── Test 2: Tạo phiên ─────────────────────────────────────────
-    @Test
-    @Order(2)
-    @DisplayName("Create: Tạo phiên mới và kiểm tra khởi tạo dữ liệu")
-    void testCreateAuction() {
-        LocalDateTime start = LocalDateTime.now().plusMinutes(5);
-        LocalDateTime end = LocalDateTime.now().plusHours(2);
-
-        Auction auction = service.createAuction(auctionId, testItem, 500.0, start, end);
-
-        assertNotNull(auction);
-        assertEquals(auctionId, auction.getAuctionId());
-        assertEquals(2000.0, auction.getStartPrice(), "Giá khởi điểm phải lấy từ Item");
-        assertEquals(AuctionStatus.PENDING, auction.getStatus(), "Phiên mới tạo phải ở trạng thái PENDING");
-    }
-
-    // ── Test 3: Bắt đầu phiên ─────────────────────────────────────
-    @Test
-    @Order(3)
-    @DisplayName("Start: Đăng ký Observers và chuyển trạng thái RUNNING")
-    void testStartAuction() {
-        Auction auction = service.createAuction(auctionId, testItem, 100.0,
-                LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-
-        service.startAuction(auction);
-
-        assertEquals(AuctionStatus.RUNNING, auction.getStatus());
-        assertNotNull(service.getBroadcaster(auctionId), "Broadcaster phải được tạo khi bắt đầu phiên");
-    }
-
-    // ── Test 4: Đóng phiên ────────────────────────────────────────
-    @Test
-    @Order(4)
-    @DisplayName("Close: Kết thúc phiên và giải phóng Broadcaster")
-    void testCloseAuction() {
-        Auction auction = service.createAuction(auctionId, testItem, 100.0,
-                LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        service.startAuction(auction);
-
-        service.closeAuction(auction);
-
-        assertEquals(AuctionStatus.FINISHED, auction.getStatus());
-        assertNull(service.getBroadcaster(auctionId), "Broadcaster phải bị xóa sau khi phiên kết thúc");
-    }
-
-    // ── Test 5: Lấy đúng Broadcaster ─────────────────────────────
-    @Test
-    @Order(5)
-    @DisplayName("Broadcaster: Kiểm tra lấy đúng socket cho đúng phiên")
-    void testGetBroadcaster() {
-        String id2 = "AUC-REALTIME-02";
-        Auction auction = service.createAuction(id2, testItem, 100.0,
-                LocalDateTime.now(), LocalDateTime.now().plusHours(1));
-        service.startAuction(auction);
-
-        assertNotNull(service.getBroadcaster(id2));
-        assertEquals(id2, service.getBroadcaster(id2).getAuctionId());
     }
 }

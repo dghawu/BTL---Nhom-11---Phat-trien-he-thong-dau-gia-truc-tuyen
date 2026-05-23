@@ -20,9 +20,9 @@ public class SocketServer {
     private static final int MAX_CLIENTS = 50;
 
     private final int port;
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
     private ServerSocket serverSocket;
     private boolean running = false;
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
 
     public SocketServer(int port) {
         this.port = port;

@@ -152,6 +152,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         lblTinhTrang.setGraphic(null);
         lblTinhTrang.setText(txtTinhTrang != null ? txtTinhTrang.getText() : "");
     }
+
     private void displayCurrentImage() {
         if (currentImageBase64 != null && !currentImageBase64.isEmpty()) {
             try {

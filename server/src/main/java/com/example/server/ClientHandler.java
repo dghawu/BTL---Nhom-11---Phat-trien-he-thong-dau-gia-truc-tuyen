@@ -37,15 +37,14 @@ import java.util.UUID;
  */
 public class ClientHandler implements Runnable {
 
+    // Format thời gian client gửi lên: "2025-05-15T20:00"
+    private static final DateTimeFormatter DT_FMT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
     private final Socket clientSocket;
     private final UserDAO userDAO = new UserDAO();
     private final ItemDAO itemDAO = new ItemDAO();
     private final AuctionDAO auctionDAO = new AuctionDAO();
     private final BidTransactionDAO bidDAO = new BidTransactionDAO();
-
-    // Format thời gian client gửi lên: "2025-05-15T20:00"
-    private static final DateTimeFormatter DT_FMT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
@@ -283,6 +282,7 @@ public class ClientHandler implements Runnable {
         itemDAO.update(itemId, name, description, startPrice, status.toUpperCase());
         return success().toString();
     }
+
     private String handleAddItemWithImage(JSONObject req) {
         AuthResult auth = TokenGuard.checkRole(req, "SELLER");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
@@ -407,6 +407,7 @@ public class ClientHandler implements Runnable {
         }
         return success().put("sessions", arr).toString();
     }
+
     private String handleUpdateSession(JSONObject req) {
         AuthResult auth = TokenGuard.checkRole(req, "SELLER");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
@@ -632,13 +633,13 @@ public class ClientHandler implements Runnable {
             for (BidTransaction tx : bidDAO.findByAuctionId(a.getAuctionId())) {
                 User bidder = userDAO.findById(tx.getBidderId());
                 arr.put(new JSONObject()
-                        .put("id",          tx.getId())
-                        .put("auctionId",   tx.getAuctionId())
-                        .put("itemName",    a.getItem().getName())
-                        .put("bidderName",  bidder != null ? bidder.getName() : tx.getBidderId())
-                        .put("amount",      tx.getAmount())
-                        .put("timestamp",   tx.getTimestamp().toString())
-                        .put("status",      a.getStatus().name()));
+                        .put("id", tx.getId())
+                        .put("auctionId", tx.getAuctionId())
+                        .put("itemName", a.getItem().getName())
+                        .put("bidderName", bidder != null ? bidder.getName() : tx.getBidderId())
+                        .put("amount", tx.getAmount())
+                        .put("timestamp", tx.getTimestamp().toString())
+                        .put("status", a.getStatus().name()));
             }
         }
         return success().put("transactions", arr).toString();
@@ -760,17 +761,18 @@ public class ClientHandler implements Runnable {
                 .put("currentWinner", a.getCurrentWinner() != null ? a.getCurrentWinner() : "");
 
     }
+
     private JSONArray txToJson(List<BidTransaction> list, boolean includeAuction) {
         JSONArray arr = new JSONArray();
         for (BidTransaction tx : list) {
             Auction a = auctionDAO.findById(tx.getAuctionId());
             arr.put(new JSONObject()
-                    .put("id",        tx.getId())
+                    .put("id", tx.getId())
                     .put("auctionId", tx.getAuctionId())
-                    .put("itemName",  a != null ? a.getItem().getName() : "")
-                    .put("amount",    tx.getAmount())
+                    .put("itemName", a != null ? a.getItem().getName() : "")
+                    .put("amount", tx.getAmount())
                     .put("timestamp", tx.getTimestamp().toString())
-                    .put("status",    a != null ? a.getStatus().name() : ""));
+                    .put("status", a != null ? a.getStatus().name() : ""));
         }
         return arr;
     }
@@ -820,7 +822,10 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private JSONObject success() { return new JSONObject().put("success", true); }
+    private JSONObject success() {
+        return new JSONObject().put("success", true);
+    }
+
     private String fail(String msg) {
         return new JSONObject().put("success", false).put("message", msg).toString();
     }

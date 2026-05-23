@@ -176,14 +176,11 @@ public class BidSocketClient {
      */
     public static class BidEvent {
 
-        public enum Type {BID_UPDATE, AUCTION_CLOSED, UNKNOWN}
-
         public final Type type;
         public final String sessionId;
         public final double price;        // giá mới (BID_UPDATE) hoặc giá cuối (AUCTION_CLOSED)
         public final String bidderName;   // người đặt (BID_UPDATE) hoặc người thắng (AUCTION_CLOSED)
         public final String endTime;      // endTime mới (có thể thay đổi vì anti-snipe)
-
         private BidEvent(Type type, String sessionId, double price,
                          String bidderName, String endTime) {
             this.type = type;
@@ -239,5 +236,7 @@ public class BidSocketClient {
             return "BidEvent{type=" + type + ", session=" + sessionId
                     + ", price=" + price + ", bidder=" + bidderName + "}";
         }
+
+        public enum Type {BID_UPDATE, AUCTION_CLOSED, UNKNOWN}
     }
 }

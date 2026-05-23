@@ -27,6 +27,8 @@ import java.time.format.DateTimeFormatter;
  */
 public class AuctionRoomController extends BaseController {
 
+    private static final DateTimeFormatter DT_DISPLAY =
+            DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy");
     // Left: product info
     @FXML
     private Label lblProductName;
@@ -42,11 +44,9 @@ public class AuctionRoomController extends BaseController {
     private Label lblMoTa;
     @FXML
     private Pane imgPane;
-
     // Middle: bid history
     @FXML
     private VBox bidHistoryBox;
-
     // Right: timer + price
     @FXML
     private Label lblThoiGianBatDau;
@@ -62,13 +62,11 @@ public class AuctionRoomController extends BaseController {
     private Label lblGiaHienTai;
     @FXML
     private Label lblNguoiGiuGia;
-
     // Manual bid
     @FXML
     private Label lblManualToggle;
     @FXML
     private TextField manualBidField;
-
     // Auto bid
     @FXML
     private Label lblAutoToggle;
@@ -76,18 +74,13 @@ public class AuctionRoomController extends BaseController {
     private TextField autoBuocGiaField;
     @FXML
     private TextField autoMaxGiaField;
-
     private boolean manualEnabled = true;
     private boolean autoEnabled = false;
-
     private String sessionId;
     private double currentPrice = 0;
     private double stepPrice = 0;
     private java.time.LocalDateTime endDateTime;
     private javafx.animation.Timeline countdownTimer;
-
-    private static final DateTimeFormatter DT_DISPLAY =
-            DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy");
 
     // ------------------------------------------------------------------ //
     //  Khởi tạo

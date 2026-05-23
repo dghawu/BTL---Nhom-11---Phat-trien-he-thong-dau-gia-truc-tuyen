@@ -7,41 +7,48 @@ import model.auction.Auction;
 import model.auction.BidTransaction;
 import model.enums.AuctionStatus;
 import model.item.Item;
+import model.user.Bidder;
 import org.junit.jupiter.api.*;
 import service.AuctionTimer;
 import service.UserService;
-import model.user.Bidder;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Disabled;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * ConcurrencyTest — kiểm tra hệ thống dưới tải 50 người dùng đồng thời.
- *
+ * <p>
  * Mỗi test giả lập đúng hành vi của 50 client thật:
- *   - Tạo 50 thread độc lập (1 thread = 1 user)
- *   - Tất cả bắt đầu cùng lúc nhờ CountDownLatch (startGun)
- *   - Chờ tất cả hoàn thành nhờ CountDownLatch (doneLatch)
- *   - Kiểm tra tính đúng đắn của kết quả cuối
- *
+ * - Tạo 50 thread độc lập (1 thread = 1 user)
+ * - Tất cả bắt đầu cùng lúc nhờ CountDownLatch (startGun)
+ * - Chờ tất cả hoàn thành nhờ CountDownLatch (doneLatch)
+ * - Kiểm tra tính đúng đắn của kết quả cuối
+ * <p>
  * Các tình huống được kiểm tra:
- *   1. 50 bidder đặt giá đồng thời → chỉ 1 người thắng hợp lệ
- *   2. 50 user đăng ký đồng thời  → không có trùng ID
- *   3. Race condition: bid + closeAuction cùng lúc → không corrupt dữ liệu
- *   4. 50 bidder trên 5 phiên song song → mỗi phiên độc lập
+ * 1. 50 bidder đặt giá đồng thời → chỉ 1 người thắng hợp lệ
+ * 2. 50 user đăng ký đồng thời  → không có trùng ID
+ * 3. Race condition: bid + closeAuction cùng lúc → không corrupt dữ liệu
+ * 4. 50 bidder trên 5 phiên song song → mỗi phiên độc lập
  */
 @DisplayName("Concurrency Test — 50 Users Simultaneously")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ConcurrencyTest {
 
-    private static final int NUM_USERS   = 50;
+    private static final int NUM_USERS = 50;
     private static final int TIMEOUT_SEC = 15; // timeout tối đa mỗi test
+
+    @AfterAll
+    static void globalTearDown() {
+        AuctionTimer.getInstance().shutdown();
+    }
 
     // ── Helper: tạo Auction đang RUNNING ──────────────────────────
     private Auction makeRunningAuction(String id, double startPrice, double minIncrement) {
@@ -56,11 +63,6 @@ class ConcurrencyTest {
         return a;
     }
 
-    @AfterAll
-    static void globalTearDown() {
-        AuctionTimer.getInstance().shutdown();
-    }
-
     // ════════════════════════════════════════════════════════════════
     // TEST 1: 50 Bidder đặt giá đồng thời trên 1 phiên
     // ════════════════════════════════════════════════════════════════
@@ -71,12 +73,12 @@ class ConcurrencyTest {
     void testConcurrentBidding() throws InterruptedException {
         Auction auction = makeRunningAuction("CONC-AUC-01", 1_000_000.0, 100_000.0);
 
-        CountDownLatch startGun  = new CountDownLatch(1);   // súng lệnh: tất cả cùng bắt đầu
+        CountDownLatch startGun = new CountDownLatch(1);   // súng lệnh: tất cả cùng bắt đầu
         CountDownLatch doneLatch = new CountDownLatch(NUM_USERS); // chờ tất cả xong
 
         AtomicInteger successCount = new AtomicInteger(0);  // số lần đặt thành công
-        AtomicInteger failCount    = new AtomicInteger(0);  // số lần thất bại (hợp lệ)
-        List<String>  errors       = Collections.synchronizedList(new ArrayList<>());
+        AtomicInteger failCount = new AtomicInteger(0);  // số lần thất bại (hợp lệ)
+        List<String> errors = Collections.synchronizedList(new ArrayList<>());
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS);
 
@@ -137,19 +139,19 @@ class ConcurrencyTest {
     void testConcurrentRegistration() throws InterruptedException {
         UserService service = UserService.getInstance();
 
-        CountDownLatch startGun  = new CountDownLatch(1);
+        CountDownLatch startGun = new CountDownLatch(1);
         CountDownLatch doneLatch = new CountDownLatch(NUM_USERS);
 
         // Dùng ConcurrentHashMap để đếm ID đã tạo một cách thread-safe
         Set<String> registeredIds = ConcurrentHashMap.newKeySet();
         AtomicInteger successCount = new AtomicInteger(0);
-        AtomicInteger dupCount     = new AtomicInteger(0);
-        List<String>  errors       = Collections.synchronizedList(new ArrayList<>());
+        AtomicInteger dupCount = new AtomicInteger(0);
+        List<String> errors = Collections.synchronizedList(new ArrayList<>());
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS);
 
         for (int i = 0; i < NUM_USERS; i++) {
-            final String userId   = "CONC-USER-" + String.format("%03d", i);
+            final String userId = "CONC-USER-" + String.format("%03d", i);
             final String userName = "ConcUser_" + i; // tên duy nhất cho mỗi user
 
             pool.submit(() -> {
@@ -195,11 +197,11 @@ class ConcurrencyTest {
     void testBidVsCloseRaceCondition() throws InterruptedException {
         Auction auction = makeRunningAuction("CONC-AUC-RACE", 500_000.0, 50_000.0);
 
-        CountDownLatch startGun  = new CountDownLatch(1);
+        CountDownLatch startGun = new CountDownLatch(1);
         CountDownLatch doneLatch = new CountDownLatch(NUM_USERS + 1); // +1 cho closeAuction thread
 
         AtomicInteger bidAfterClose = new AtomicInteger(0); // bid sau khi phiên đóng
-        List<String>  errors        = Collections.synchronizedList(new ArrayList<>());
+        List<String> errors = Collections.synchronizedList(new ArrayList<>());
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS + 1);
 
@@ -219,7 +221,7 @@ class ConcurrencyTest {
         // 50 thread đặt giá liên tục
         for (int i = 0; i < NUM_USERS; i++) {
             final String bidderId = "RACE-BIDDER-" + i;
-            final double amount   = 500_000.0 + (i + 1) * 50_000.0;
+            final double amount = 500_000.0 + (i + 1) * 50_000.0;
 
             pool.submit(() -> {
                 try {
@@ -265,8 +267,8 @@ class ConcurrencyTest {
     @Order(4)
     @DisplayName("50 bidder phân bổ vào 5 phiên song song → Mỗi phiên hoạt động độc lập")
     void testMultipleAuctionsConcurrently() throws InterruptedException {
-        final int NUM_AUCTIONS   = 5;
-        final int BIDDERS_EACH   = NUM_USERS / NUM_AUCTIONS; // 10 bidder/phiên
+        final int NUM_AUCTIONS = 5;
+        final int BIDDERS_EACH = NUM_USERS / NUM_AUCTIONS; // 10 bidder/phiên
 
         // Tạo 5 phiên đang chạy
         Auction[] auctions = new Auction[NUM_AUCTIONS];
@@ -275,18 +277,18 @@ class ConcurrencyTest {
                     "MULTI-AUC-0" + i, 1_000_000.0, 100_000.0);
         }
 
-        CountDownLatch startGun  = new CountDownLatch(1);
+        CountDownLatch startGun = new CountDownLatch(1);
         CountDownLatch doneLatch = new CountDownLatch(NUM_USERS);
 
         AtomicInteger totalSuccess = new AtomicInteger(0);
-        List<String>  errors       = Collections.synchronizedList(new ArrayList<>());
+        List<String> errors = Collections.synchronizedList(new ArrayList<>());
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS);
 
         for (int i = 0; i < NUM_USERS; i++) {
             final int auctionIdx = i % NUM_AUCTIONS; // phân bổ đều vào 5 phiên
             final String bidderId = "MULTI-BIDDER-" + i;
-            final double amount   = 1_000_000.0 + (i + 1) * 100_000.0;
+            final double amount = 1_000_000.0 + (i + 1) * 100_000.0;
 
             pool.submit(() -> {
                 try {
@@ -338,15 +340,15 @@ class ConcurrencyTest {
     void testBiddingThroughput() throws InterruptedException {
         Auction auction = makeRunningAuction("THROUGHPUT-AUC", 1_000.0, 1.0);
 
-        CountDownLatch startGun  = new CountDownLatch(1);
+        CountDownLatch startGun = new CountDownLatch(1);
         CountDownLatch doneLatch = new CountDownLatch(NUM_USERS);
-        AtomicInteger processed  = new AtomicInteger(0);
+        AtomicInteger processed = new AtomicInteger(0);
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS);
 
         for (int i = 0; i < NUM_USERS; i++) {
             final String bidderId = "PERF-BIDDER-" + i;
-            final double amount   = 1_000.0 + (i + 1);
+            final double amount = 1_000.0 + (i + 1);
 
             pool.submit(() -> {
                 try {

@@ -13,8 +13,19 @@ public class AutoBidConfig {
         this.maxBid = maxBid;
     }
 
-    public String getBidderId()   { return bidderId; }
-    public String getBidderName() { return bidderName; }
-    public double getIncrement()  { return increment; }
-    public double getMaxBid()     { return maxBid; }
+    public String getBidderId() {
+        return bidderId;
+    }
+
+    public String getBidderName() {
+        return bidderName;
+    }
+
+    public double getIncrement() {
+        return increment;
+    }
+
+    public double getMaxBid() {
+        return maxBid;
+    }
 }

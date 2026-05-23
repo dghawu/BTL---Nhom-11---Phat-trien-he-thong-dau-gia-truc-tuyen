@@ -22,17 +22,17 @@ class SellerTest {
     private Seller seller;
     private Item laptop;
 
+    @AfterAll
+    static void tearDown() {
+        AuctionTimer.getInstance().shutdown();
+    }
+
     @BeforeEach
     void setUp() {
         seller = new Seller("S01", "Dương Seller", "pass123");
         laptop = Item.ItemType.ELECTRONICS.create(
                 "I01", "Macbook Pro", "ITEM-001",
                 "M3 Chip", 30_000_000.0, Item.ItemStatus.APPROVED);
-    }
-
-    @AfterAll
-    static void tearDown() {
-        AuctionTimer.getInstance().shutdown();
     }
 
     // ── Test 1: Tạo phiên ─────────────────────────────────────────

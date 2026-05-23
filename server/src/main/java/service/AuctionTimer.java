@@ -1,16 +1,15 @@
 package service;
 
+import com.example.server.BidRegistry;
+import dao.AuctionDAO;
 import model.auction.Auction;
+import model.enums.AuctionStatus;
+import observer.SocketBroadcaster;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.*;
-import com.example.server.BidRegistry;
-import dao.AuctionDAO;
-import model.enums.AuctionStatus;
-import observer.SocketBroadcaster;
-import service.AutoBidManager;
 
 /**
  * AuctionTimer quản lý việc tự động đóng phiên đấu giá khi hết thời gian.
@@ -20,18 +19,12 @@ import service.AutoBidManager;
  * đảm bảo hoạt động đúng cả trong môi trường production lẫn unit test.
  */
 public class AuctionTimer {
-    private AuctionDAO getAuctionDAO() {
-        return new AuctionDAO();
-    }
-
     // Singleton
     private static volatile AuctionTimer instance;
-
-    // Thread pool — dùng volatile để đảm bảo visibility khi restart
-    private volatile ScheduledExecutorService scheduler;
-
     // Lưu task của từng phiên để có thể hủy nếu cần
     private final Map<String, ScheduledFuture<?>> scheduledTasks;
+    // Thread pool — dùng volatile để đảm bảo visibility khi restart
+    private volatile ScheduledExecutorService scheduler;
 
     private AuctionTimer() {
         this.scheduler = Executors.newScheduledThreadPool(4);
@@ -47,6 +40,10 @@ public class AuctionTimer {
             }
         }
         return instance;
+    }
+
+    private AuctionDAO getAuctionDAO() {
+        return new AuctionDAO();
     }
 
     /**

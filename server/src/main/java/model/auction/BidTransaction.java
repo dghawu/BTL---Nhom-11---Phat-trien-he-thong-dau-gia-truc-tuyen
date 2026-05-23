@@ -31,9 +31,13 @@ public class BidTransaction extends Entity {
         return bidderId;
     }
 
-    public String getBidderName() { return bidderName; }
+    public String getBidderName() {
+        return bidderName;
+    }
 
-    public void setBidderName(String bidderName) { this.bidderName = bidderName; }
+    public void setBidderName(String bidderName) {
+        this.bidderName = bidderName;
+    }
 
     public String getAuctionId() {
         return auctionId;

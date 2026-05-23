@@ -136,12 +136,24 @@ public class Auction extends Entity implements Subject {
         return currentPrice;
     }
 
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
     public double getStartPrice() {
         return startPrice;
     }
 
+    public void setStartPrice(double price) {
+        item.setStartPrice(price);
+    }
+
     public double getMinIncrement() {
         return minIncrement;
+    }
+
+    public void setMinIncrement(double minIncrement) {
+        this.minIncrement = minIncrement;
     }
 
     public LocalDateTime getStartTime() {
@@ -152,8 +164,16 @@ public class Auction extends Entity implements Subject {
         return endTime;
     }
 
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     public String getCurrentWinner() {
         return currentWinner;
+    }
+
+    public void setCurrentWinner(String currentWinner) {
+        this.currentWinner = currentWinner;
     }
 
     public List<BidTransaction> getBidHistory() {
@@ -170,25 +190,5 @@ public class Auction extends Entity implements Subject {
 
     public void setName(String name) {
         item.setName(name);
-    }
-
-    public void setStartPrice(double price) {
-        item.setStartPrice(price);
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public void setMinIncrement(double minIncrement) {
-        this.minIncrement = minIncrement;
-    }
-
-    public void setCurrentPrice(double currentPrice) {
-        this.currentPrice = currentPrice;
-    }
-
-    public void setCurrentWinner(String currentWinner) {
-        this.currentWinner = currentWinner;
     }
 }

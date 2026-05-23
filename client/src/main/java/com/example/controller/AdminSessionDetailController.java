@@ -14,19 +14,32 @@ import org.json.JSONObject;
  */
 public class AdminSessionDetailController extends BaseController {
 
-    @FXML private Label lblSessionId;
-    @FXML private Label lblTenSP;
-    @FXML private Label lblCategory;
-    @FXML private Label lblSeller;
-    @FXML private Label lblThoiGianMo;
-    @FXML private Label lblThoiGianDong;
-    @FXML private Label lblGiaKhoiDiem;
-    @FXML private Label lblBuocGia;
-    @FXML private Label lblGiaHienTai;
-    @FXML private Label lblNguoiThang;
-    @FXML private Label lblTrangThai;
-    @FXML private Button btnApprove;
-    @FXML private Button btnReject;
+    @FXML
+    private Label lblSessionId;
+    @FXML
+    private Label lblTenSP;
+    @FXML
+    private Label lblCategory;
+    @FXML
+    private Label lblSeller;
+    @FXML
+    private Label lblThoiGianMo;
+    @FXML
+    private Label lblThoiGianDong;
+    @FXML
+    private Label lblGiaKhoiDiem;
+    @FXML
+    private Label lblBuocGia;
+    @FXML
+    private Label lblGiaHienTai;
+    @FXML
+    private Label lblNguoiThang;
+    @FXML
+    private Label lblTrangThai;
+    @FXML
+    private Button btnApprove;
+    @FXML
+    private Button btnReject;
 
     private String currentSessionId;
 
@@ -70,8 +83,10 @@ public class AdminSessionDetailController extends BaseController {
                         ok ? "Đã duyệt phiên đấu giá!" : "Duyệt thất bại!");
                 if (ok) {
                     lblTrangThai.setText("RUNNING");
-                    btnApprove.setVisible(false); btnApprove.setManaged(false);
-                    btnReject.setVisible(false);  btnReject.setManaged(false);
+                    btnApprove.setVisible(false);
+                    btnApprove.setManaged(false);
+                    btnReject.setVisible(false);
+                    btnReject.setManaged(false);
                 }
             });
         }).start();
@@ -86,8 +101,10 @@ public class AdminSessionDetailController extends BaseController {
                         ok ? "Đã từ chối phiên!" : "Thao tác thất bại!");
                 if (ok) {
                     lblTrangThai.setText("CANCELED");
-                    btnApprove.setVisible(false); btnApprove.setManaged(false);
-                    btnReject.setVisible(false);  btnReject.setManaged(false);
+                    btnApprove.setVisible(false);
+                    btnApprove.setManaged(false);
+                    btnReject.setVisible(false);
+                    btnReject.setManaged(false);
                 }
             });
         }).start();
@@ -99,7 +116,18 @@ public class AdminSessionDetailController extends BaseController {
     }
 
     // ── Nav ───────────────────────────────────────────────────────────
-    @FXML private void handleHome()       { goHome(getStage(lblTenSP)); }
-    @FXML private void handleUserReport() { navigateTo("/fxml/AdminCentre.fxml", getStage(lblTenSP)); }
-    @FXML private void handleSettings()   { goSettings(getStage(lblTenSP)); }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(lblTenSP));
+    }
+
+    @FXML
+    private void handleUserReport() {
+        navigateTo("/fxml/AdminCentre.fxml", getStage(lblTenSP));
+    }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(lblTenSP));
+    }
 }

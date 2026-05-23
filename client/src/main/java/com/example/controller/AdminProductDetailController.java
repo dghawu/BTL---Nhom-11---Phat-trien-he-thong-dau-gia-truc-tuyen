@@ -14,15 +14,24 @@ import org.json.JSONObject;
  */
 public class AdminProductDetailController extends BaseController {
 
-    @FXML private Label lblTen;
-    @FXML private Label lblId;
-    @FXML private Label lblLoai;
-    @FXML private Label lblGia;
-    @FXML private Label lblSeller;
-    @FXML private Label lblMoTa;
-    @FXML private Label lblTrangThai;
-    @FXML private Button btnApprove;
-    @FXML private Button btnReject;
+    @FXML
+    private Label lblTen;
+    @FXML
+    private Label lblId;
+    @FXML
+    private Label lblLoai;
+    @FXML
+    private Label lblGia;
+    @FXML
+    private Label lblSeller;
+    @FXML
+    private Label lblMoTa;
+    @FXML
+    private Label lblTrangThai;
+    @FXML
+    private Button btnApprove;
+    @FXML
+    private Button btnReject;
 
     private String currentItemId;
 
@@ -60,8 +69,10 @@ public class AdminProductDetailController extends BaseController {
                         ok ? "Đã duyệt sản phẩm!" : "Duyệt thất bại!");
                 if (ok) {
                     lblTrangThai.setText("APPROVED");
-                    btnApprove.setVisible(false); btnApprove.setManaged(false);
-                    btnReject.setVisible(false);  btnReject.setManaged(false);
+                    btnApprove.setVisible(false);
+                    btnApprove.setManaged(false);
+                    btnReject.setVisible(false);
+                    btnReject.setManaged(false);
                 }
             });
         }).start();
@@ -76,8 +87,10 @@ public class AdminProductDetailController extends BaseController {
                         ok ? "Đã từ chối sản phẩm!" : "Thao tác thất bại!");
                 if (ok) {
                     lblTrangThai.setText("REJECTED");
-                    btnApprove.setVisible(false); btnApprove.setManaged(false);
-                    btnReject.setVisible(false);  btnReject.setManaged(false);
+                    btnApprove.setVisible(false);
+                    btnApprove.setManaged(false);
+                    btnReject.setVisible(false);
+                    btnReject.setManaged(false);
                 }
             });
         }).start();
@@ -89,7 +102,18 @@ public class AdminProductDetailController extends BaseController {
     }
 
     // ── Nav ───────────────────────────────────────────────────────────
-    @FXML private void handleHome()       { goHome(getStage(lblTen)); }
-    @FXML private void handleUserReport() { navigateTo("/fxml/AdminCentre.fxml", getStage(lblTen)); }
-    @FXML private void handleSettings()   { goSettings(getStage(lblTen)); }
+    @FXML
+    private void handleHome() {
+        goHome(getStage(lblTen));
+    }
+
+    @FXML
+    private void handleUserReport() {
+        navigateTo("/fxml/AdminCentre.fxml", getStage(lblTen));
+    }
+
+    @FXML
+    private void handleSettings() {
+        goSettings(getStage(lblTen));
+    }
 }

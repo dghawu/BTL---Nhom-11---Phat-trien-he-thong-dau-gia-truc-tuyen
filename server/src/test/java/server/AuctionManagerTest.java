@@ -23,68 +23,10 @@ class AuctionManagerTest {
 
     // ── In-memory stub (không cần DB) ─────────────────────────────
 
-    static class InMemoryAuctionManager {
-        private static volatile InMemoryAuctionManager instance;
-        private final Map<String, Auction> store = new ConcurrentHashMap<>();
-
-        private InMemoryAuctionManager() {
-        }
-
-        static InMemoryAuctionManager getInstance() {
-            if (instance == null) {
-                synchronized (InMemoryAuctionManager.class) {
-                    if (instance == null) instance = new InMemoryAuctionManager();
-                }
-            }
-            return instance;
-        }
-
-        void clear() {
-            store.clear();
-        }
-
-        void addAuction(Auction auction) {
-            store.put(auction.getAuctionId(), auction);
-        }
-
-        void removeAuction(String id) {
-            store.remove(id);
-        }
-
-        Auction findAuction(String id) {
-            Auction a = store.get(id);
-            if (a == null) throw new IllegalArgumentException("Không tìm thấy phiên: " + id);
-            return a;
-        }
-
-        List<Auction> getPendingAuctions() {
-            List<Auction> r = new ArrayList<>();
-            for (Auction a : store.values())
-                if (a.getStatus() == AuctionStatus.PENDING) r.add(a);
-            return r;
-        }
-
-        List<Auction> getRunningAuctions() {
-            List<Auction> r = new ArrayList<>();
-            for (Auction a : store.values())
-                if (a.getStatus() == AuctionStatus.RUNNING) r.add(a);
-            return r;
-        }
-
-        void approveAuction(String id) {
-            Auction a = findAuction(id);
-            if (a.getStatus() == AuctionStatus.PENDING) a.setStatus(AuctionStatus.APPROVED);
-        }
-
-        void rejectAuction(String id) {
-            findAuction(id).setStatus(AuctionStatus.REJECTED);
-        }
-    }
-
+    private final String auctionId = "AUC-999";
     // ── Fields ─────────────────────────────────────────────────────
     private InMemoryAuctionManager manager;
     private Auction testAuction;
-    private final String auctionId = "AUC-999";
 
     @BeforeEach
     void setUp() {
@@ -167,5 +109,63 @@ class AuctionManagerTest {
         manager.addAuction(testAuction);
         manager.removeAuction(auctionId);
         assertThrows(IllegalArgumentException.class, () -> manager.findAuction(auctionId));
+    }
+
+    static class InMemoryAuctionManager {
+        private static volatile InMemoryAuctionManager instance;
+        private final Map<String, Auction> store = new ConcurrentHashMap<>();
+
+        private InMemoryAuctionManager() {
+        }
+
+        static InMemoryAuctionManager getInstance() {
+            if (instance == null) {
+                synchronized (InMemoryAuctionManager.class) {
+                    if (instance == null) instance = new InMemoryAuctionManager();
+                }
+            }
+            return instance;
+        }
+
+        void clear() {
+            store.clear();
+        }
+
+        void addAuction(Auction auction) {
+            store.put(auction.getAuctionId(), auction);
+        }
+
+        void removeAuction(String id) {
+            store.remove(id);
+        }
+
+        Auction findAuction(String id) {
+            Auction a = store.get(id);
+            if (a == null) throw new IllegalArgumentException("Không tìm thấy phiên: " + id);
+            return a;
+        }
+
+        List<Auction> getPendingAuctions() {
+            List<Auction> r = new ArrayList<>();
+            for (Auction a : store.values())
+                if (a.getStatus() == AuctionStatus.PENDING) r.add(a);
+            return r;
+        }
+
+        List<Auction> getRunningAuctions() {
+            List<Auction> r = new ArrayList<>();
+            for (Auction a : store.values())
+                if (a.getStatus() == AuctionStatus.RUNNING) r.add(a);
+            return r;
+        }
+
+        void approveAuction(String id) {
+            Auction a = findAuction(id);
+            if (a.getStatus() == AuctionStatus.PENDING) a.setStatus(AuctionStatus.APPROVED);
+        }
+
+        void rejectAuction(String id) {
+            findAuction(id).setStatus(AuctionStatus.REJECTED);
+        }
     }
 }

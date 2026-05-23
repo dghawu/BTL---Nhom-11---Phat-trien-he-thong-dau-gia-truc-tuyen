@@ -186,6 +186,7 @@ public class UserDAO {
             default -> throw new SQLException("Role không hợp lệ: " + role);
         };
     }
+
     public void initAdminIfNotExists() {
         User existing = findByName("admin");
         if (existing != null) {

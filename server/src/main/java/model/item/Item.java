@@ -5,45 +5,18 @@ import model.entity.Entity;
 
 public abstract class Item extends Entity implements ItemFactory {
 
-    public enum ItemStatus {
-        PENDING, APPROVED, REJECTED, SOLD
-    }
-
-    public enum ItemType {
-        ELECTRONICS, ART, VEHICLE, FASHION, ETC;
-
-        /**
-         * Tạo model.item.Item tương ứng với loại enum — dùng như static factory.
-         */
-        public Item create(String sellerId, String name, String id,
-                           String description, double startPrice,
-                           ItemStatus status) {
-            Item prototype = switch (this) {
-                case ELECTRONICS -> new Electronics();
-                case ART -> new Art();
-                case VEHICLE -> new Vehicle();
-                case FASHION -> new Fashion();
-                case ETC -> new ETC();
-
-            };
-            return prototype.createItem(sellerId, name, id, description, startPrice, status);
-        }
-    }
-
     private String sellerId;
     private String name;
     private String description;
     private double startPrice;
     private ItemStatus status;
     private String image;
-
     /**
      * Constructor rỗng — cần thiết để các subclass dùng làm prototype.
      */
     protected Item() {
         super();
     }
-
     /**
      * Constructor đầy đủ — gọi từ createItem() trong từng subclass.
      */
@@ -97,6 +70,7 @@ public abstract class Item extends Entity implements ItemFactory {
     public void setStatus(ItemStatus status) {
         this.status = status;
     }
+
     public String getImage() {
         return image;
     }
@@ -120,6 +94,31 @@ public abstract class Item extends Entity implements ItemFactory {
      * Mặc định không in gì thêm.
      */
     protected void printExtraInfo() {
+    }
+
+    public enum ItemStatus {
+        PENDING, APPROVED, REJECTED, SOLD
+    }
+
+    public enum ItemType {
+        ELECTRONICS, ART, VEHICLE, FASHION, ETC;
+
+        /**
+         * Tạo model.item.Item tương ứng với loại enum — dùng như static factory.
+         */
+        public Item create(String sellerId, String name, String id,
+                           String description, double startPrice,
+                           ItemStatus status) {
+            Item prototype = switch (this) {
+                case ELECTRONICS -> new Electronics();
+                case ART -> new Art();
+                case VEHICLE -> new Vehicle();
+                case FASHION -> new Fashion();
+                case ETC -> new ETC();
+
+            };
+            return prototype.createItem(sellerId, name, id, description, startPrice, status);
+        }
     }
 
 }

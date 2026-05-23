@@ -8,9 +8,6 @@ import java.sql.Statement;
 
 public class DatabaseConnection {
 
-    private static volatile DatabaseConnection instance;
-    private Connection connection;
-
     // ── Cấu hình kết nối MySQL ─────────────────────────────────────
     private static final String DB_URL = "jdbc:mysql://localhost:3306/auction_db" +
             "?useSSL=false" +
@@ -19,6 +16,8 @@ public class DatabaseConnection {
             "&characterEncoding=UTF-8";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "6789";
+    private static volatile DatabaseConnection instance;
+    private Connection connection;
 
     private DatabaseConnection() {
         try {

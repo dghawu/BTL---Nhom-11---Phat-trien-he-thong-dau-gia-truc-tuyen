@@ -26,9 +26,9 @@ public class BidPushServer {
     private static final int MAX_CLIENTS = 200; // nhiều hơn API server vì giữ lâu hơn
 
     private final int port;
+    private final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
     private ServerSocket serverSocket;
     private boolean running = false;
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
 
     public BidPushServer(int port) {
         this.port = port;

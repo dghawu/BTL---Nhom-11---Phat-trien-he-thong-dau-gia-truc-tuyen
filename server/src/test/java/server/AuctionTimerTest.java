@@ -26,12 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuctionTimerTest {
 
-    // ── Fake observer (không cần DB hay Socket) ────────────────────
-    static class NoOpObserver implements AuctionObserver {
-        @Override
-        public void update(Auction auction, double newPrice, String lastBidderId) {
-        }
-    }
+    // ── Fields ─────────────────────────────────────────────────────
+    private AuctionTimer timer;
 
     // ── Helper: tạo Auction đã sẵn sàng để lên lịch ───────────────
     private static Auction makeAuction(String id, int durationSeconds) {
@@ -45,17 +41,14 @@ class AuctionTimerTest {
         return a;
     }
 
-    // ── Fields ─────────────────────────────────────────────────────
-    private AuctionTimer timer;
+    @AfterAll
+    static void globalTearDown() {
+        AuctionTimer.getInstance().shutdown();
+    }
 
     @BeforeEach
     void setUp() {
         timer = AuctionTimer.getInstance();
-    }
-
-    @AfterAll
-    static void globalTearDown() {
-        AuctionTimer.getInstance().shutdown();
     }
 
     // ── Test 1: Tự động đóng phiên ────────────────────────────────
@@ -131,5 +124,12 @@ class AuctionTimerTest {
 
         assertEquals(AuctionStatus.FINISHED, auction.getStatus(),
                 "Nếu thời gian kết thúc ở quá khứ, phiên phải đóng ngay lập tức");
+    }
+
+    // ── Fake observer (không cần DB hay Socket) ────────────────────
+    static class NoOpObserver implements AuctionObserver {
+        @Override
+        public void update(Auction auction, double newPrice, String lastBidderId) {
+        }
     }
 }
