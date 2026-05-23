@@ -1,20 +1,19 @@
 package com.example.socket;
 
+import com.example.config.ServerConfig;
+
 import java.io.*;
 import java.net.Socket;
 
 /**
- * SocketClient - quản lý kết nối TCP từ client đến server.
+ * SocketClient - quản lý kết nối TCP từ client đến server (port API).
  * Dùng Singleton để toàn app chỉ có 1 kết nối duy nhất.
- * <p>
- * Cách dùng:
- * SocketClient.getInstance().connect();
- * String response = SocketClient.getInstance().sendRequest("{\"action\":\"login\",...}");
+ *
+ * ── Thay đổi so với bản gốc ──────────────────────────────────────────────
+ * Bỏ hardcode "localhost" → đọc từ ServerConfig (hỗ trợ ngrok/internet).
+ * Thêm reconnect() để tạo lại kết nối sau khi đổi server config.
  */
 public class SocketClient {
-
-    private static final String SERVER_HOST = "localhost";
-    private static final int SERVER_PORT = 8888;
 
     // Singleton instance
     private static SocketClient instance;
@@ -24,8 +23,7 @@ public class SocketClient {
     private PrintWriter writer;
     private boolean connected = false;
 
-    private SocketClient() {
-    }
+    private SocketClient() {}
 
     public static SocketClient getInstance() {
         if (instance == null) {
@@ -34,26 +32,47 @@ public class SocketClient {
         return instance;
     }
 
-    // ------------------------------------------------------------------ //
-    //  Kết nối / ngắt kết nối
-    // ------------------------------------------------------------------ //
+    /**
+     * Reset singleton — gọi sau khi đổi ServerConfig để tạo kết nối mới.
+     */
+    public static void resetInstance() {
+        if (instance != null) {
+            instance.disconnect();
+            instance = null;
+        }
+    }
+
+    // ── Kết nối / ngắt kết nối ──────────────────────────────────────────
 
     /**
      * Mở kết nối đến server. Gọi 1 lần khi khởi động app.
+     * Host và port lấy từ ServerConfig (đã load từ server.properties).
      */
     public boolean connect() {
+        String host = ServerConfig.getApiHost();
+        int    port = ServerConfig.getApiPort();
         try {
-            socket = new Socket(SERVER_HOST, SERVER_PORT);
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
-            writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+            socket  = new Socket(host, port);
+            reader  = new BufferedReader(new InputStreamReader(socket.getInputStream(),  "UTF-8"));
+            writer  = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
             connected = true;
-            System.out.println("[Client] Đã kết nối đến server " + SERVER_HOST + ":" + SERVER_PORT);
+            System.out.println("[Client] Đã kết nối đến server " + host + ":" + port);
             return true;
         } catch (IOException e) {
-            System.err.println("[Client] Không thể kết nối đến server: " + e.getMessage());
+            System.err.println("[Client] Không thể kết nối đến " + host + ":" + port
+                    + " — " + e.getMessage());
             connected = false;
             return false;
         }
+    }
+
+    /**
+     * Ngắt kết nối hiện tại rồi kết nối lại với config mới.
+     * Gọi sau khi user lưu ServerConfig mới từ dialog.
+     */
+    public boolean reconnect() {
+        disconnect();
+        return connect();
     }
 
     /**
@@ -69,15 +88,10 @@ public class SocketClient {
         }
     }
 
-    // ------------------------------------------------------------------ //
-    //  Gửi request - nhận response
-    // ------------------------------------------------------------------ //
+    // ── Gửi request - nhận response ─────────────────────────────────────
 
     /**
      * Gửi 1 dòng JSON lên server và nhận về 1 dòng JSON response.
-     *
-     * @param jsonRequest chuỗi JSON request (1 dòng, không xuống hàng)
-     * @return chuỗi JSON response từ server, hoặc null nếu lỗi
      */
     public synchronized String sendRequest(String jsonRequest) {
         if (!connected) {
@@ -85,8 +99,8 @@ public class SocketClient {
             return null;
         }
         try {
-            writer.println(jsonRequest);       // gửi đi
-            String response = reader.readLine(); // đợi nhận về
+            writer.println(jsonRequest);
+            String response = reader.readLine();
             System.out.println("[Client] Gửi:  " + jsonRequest);
             System.out.println("[Client] Nhận: " + response);
             return response;
@@ -97,7 +111,5 @@ public class SocketClient {
         }
     }
 
-    public boolean isConnected() {
-        return connected;
-    }
+    public boolean isConnected() { return connected; }
 }

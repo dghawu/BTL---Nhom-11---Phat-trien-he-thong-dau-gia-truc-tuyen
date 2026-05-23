@@ -43,34 +43,22 @@
                     <!-- Thời gian mở phiên -->
                     <HBox spacing="10">
 
-                        <DatePicker fx:id="ngayMoPicker"
-                                    promptText="Ngày mở phiên"
-                                    prefWidth="250"/>
+                        <DatePicker fx:id="ngayMoPicker" prefHeight="52.0" prefWidth="382.0" promptText="Opening date" styleClass="text-field-rounded" />
 
-                        <ComboBox fx:id="gioMoBox"
-                                  promptText="Giờ"
-                                  prefWidth="90"/>
+                        <ComboBox fx:id="gioMoBox" prefHeight="52.0" prefWidth="190.0" promptText="Opening time" styleClass="text-field-rounded" />
 
-                        <ComboBox fx:id="phutMoBox"
-                                  promptText="Phút"
-                                  prefWidth="90"/>
+                        <ComboBox fx:id="phutMoBox" prefHeight="52.0" prefWidth="171.0" promptText="minute" styleClass="text-field-rounded" />
 
                     </HBox>
 
                     <!-- Thời gian đóng phiên -->
                     <HBox spacing="10">
 
-                        <DatePicker fx:id="ngayDongPicker"
-                                    promptText="Ngày đóng phiên"
-                                    prefWidth="250"/>
+                        <DatePicker fx:id="ngayDongPicker" prefHeight="52.0" prefWidth="382.0" promptText="Closing date" styleClass="text-field-rounded" />
 
-                        <ComboBox fx:id="gioDongBox"
-                                  promptText="Giờ"
-                                  prefWidth="90"/>
+                        <ComboBox fx:id="gioDongBox" prefHeight="52.0" prefWidth="190.0" promptText="Closing time" styleClass="text-field-rounded" />
 
-                        <ComboBox fx:id="phutDongBox"
-                                  promptText="Phút"
-                                  prefWidth="90"/>
+                        <ComboBox fx:id="phutDongBox" prefHeight="52.0" prefWidth="168.0" promptText="minute" styleClass="text-field-rounded" />
 
                     </HBox>
 

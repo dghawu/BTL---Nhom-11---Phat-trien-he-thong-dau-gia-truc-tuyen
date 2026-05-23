@@ -1,7 +1,8 @@
 package com.example.main;
 
+import com.example.config.ServerConfig;
+import com.example.controller.ServerSetupController;
 import com.example.socket.SocketClient;
-import dao.UserDAO;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -9,36 +10,64 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Main — điểm khởi động ứng dụng client.
+ *
+ * ── Thay đổi so với bản gốc ──────────────────────────────────────────────
+ * 1. Hiển thị màn hình ServerSetup trước khi Login (nếu chưa có config
+ *    hoặc config là localhost).
+ * 2. Sau khi kết nối thành công → chuyển sang Login.
+ * 3. Bỏ UserDAO.initAdminIfNotExists() ở client (việc này thuộc server).
+ */
 public class Main extends Application {
 
-    @Override
-    public void init() throws Exception {
-        UserDAO userDAO = new UserDAO();
-        userDAO.initAdminIfNotExists();
-    }
+    private Stage primaryStage;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        boolean connected = SocketClient.getInstance().connect();
-        if (!connected) {
-            System.err.println("[App] Cảnh báo: Không kết nối được server. " +
-                    "Một số tính năng sẽ không hoạt động.");
-        }
+    public void start(Stage stage) throws Exception {
+        this.primaryStage = stage;
 
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
-        Scene scene = new Scene(root, 1280, 720);
+        stage.setTitle("Auction System");
+        stage.setMinWidth(1000);
+        stage.setMinHeight(600);
 
-        primaryStage.setTitle("Auction System");
-        primaryStage.setScene(scene);
-        primaryStage.setMinWidth(1000);
-        primaryStage.setMinHeight(600);
-
-        primaryStage.setOnCloseRequest(e -> {
+        stage.setOnCloseRequest(e -> {
             SocketClient.getInstance().disconnect();
             Platform.exit();
         });
 
-        primaryStage.show();
+        // Luôn hiển thị màn hình cài đặt server trước
+        showServerSetup();
+
+        stage.show();
+    }
+
+    // ── Màn hình cài đặt server ─────────────────────────────────────────
+
+    private void showServerSetup() throws Exception {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/fxml/ServerSetup.fxml"));
+        Parent root = loader.load();
+
+        ServerSetupController ctrl = loader.getController();
+        // Khi kết nối thành công → chuyển sang Login
+        ctrl.setOnConnectSuccess(() -> {
+            try {
+                showLogin();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        primaryStage.setScene(new Scene(root, 1280, 720));
+    }
+
+    // ── Màn hình Login ──────────────────────────────────────────────────
+
+    private void showLogin() throws Exception {
+        Parent root = FXMLLoader.load(
+                getClass().getResource("/fxml/Login.fxml"));
+        primaryStage.setScene(new Scene(root, 1280, 720));
     }
 
     public static void main(String[] args) {
