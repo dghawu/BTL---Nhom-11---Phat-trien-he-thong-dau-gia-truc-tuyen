@@ -1,0 +1,9 @@
+version: "2"
+authtoken: 3DwvzIMQ6AO8ntZHqXTDpkyJVPe_4EkShUpuQg3gVh35tHV5L
+tunnels:
+  api:
+    proto: tcp
+    addr: 8888
+  push:
+    proto: tcp
+    addr: 8889

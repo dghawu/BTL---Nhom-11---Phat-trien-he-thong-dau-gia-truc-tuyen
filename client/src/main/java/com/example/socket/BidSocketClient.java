@@ -1,5 +1,6 @@
 package com.example.socket;
 
+import com.example.config.ServerConfig;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -8,26 +9,12 @@ import java.util.function.Consumer;
 
 /**
  * BidSocketClient — kết nối persistent đến Push Server (port 8889).
- * Cách dùng trong AuctionRoomController:
- * <p>
- * // Khi mở phòng đấu giá
- * BidSocketClient.getInstance().joinSession(
- * sessionId,
- * ServerService.getToken(),
- * event -> handleBidEvent(event)   // callback chạy trên background thread
- * );
- * <p>
- * // Khi thoát phòng
- * BidSocketClient.getInstance().leave();
- * <p>
- * Message format server → client:
- * BID_UPDATE:sessionId:price:bidderName:endTime
- * AUCTION_CLOSED:sessionId:winnerName:finalPrice
+ *
+ * ── Thay đổi so với bản gốc ──────────────────────────────────────────────
+ * Bỏ hardcode "localhost":8889 → đọc từ ServerConfig.
+ * Hỗ trợ kết nối qua ngrok (host và port riêng biệt cho push server).
  */
 public class BidSocketClient {
-
-    private static final String SERVER_HOST = "localhost";
-    private static final int PUSH_PORT = 8889;
 
     // Singleton
     private static BidSocketClient instance;
@@ -37,45 +24,39 @@ public class BidSocketClient {
     private Thread listenerThread;
     private boolean running = false;
 
-    // Callback nhận event — set mỗi lần joinSession
     private Consumer<BidEvent> onEvent;
 
-    private BidSocketClient() {
-    }
+    private BidSocketClient() {}
 
     public static synchronized BidSocketClient getInstance() {
         if (instance == null) instance = new BidSocketClient();
         return instance;
     }
 
-    // ------------------------------------------------------------------ //
-    //  Public API
-    // ------------------------------------------------------------------ //
+    // ── Public API ───────────────────────────────────────────────────────
 
     /**
      * Kết nối đến Push Server và join vào phiên đấu giá.
-     *
-     * @param sessionId ID phiên đấu giá
-     * @param token     JWT token (lấy từ ServerService.getToken())
-     * @param callback  hàm xử lý event — gọi trên background thread,
-     *                  dùng Platform.runLater() trong callback nếu cập nhật UI
+     * Host/port lấy từ ServerConfig (hỗ trợ ngrok).
      */
     public void joinSession(String sessionId, String token, Consumer<BidEvent> callback) {
-        // Nếu đang kết nối phiên khác thì leave trước
         leave();
 
         this.onEvent = callback;
 
+        String pushHost = ServerConfig.getPushHost();
+        int    pushPort = ServerConfig.getPushPort();
+
         try {
-            socket = new Socket(SERVER_HOST, PUSH_PORT);
+            socket = new Socket(pushHost, pushPort);
             writer = new PrintWriter(
                     new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
 
             // Gửi joinSession request
             JSONObject req = new JSONObject();
-            req.put("action", "joinSession");
+            req.put("action",    "joinSession");
             req.put("sessionId", sessionId);
-            req.put("token", token);
+            req.put("token",     token);
             writer.println(req.toString());
 
             // Đọc response xác nhận join
@@ -96,22 +77,22 @@ public class BidSocketClient {
                 return;
             }
 
-            System.out.println("[BidSocketClient] Đã join phiên " + sessionId);
+            System.out.println("[BidSocketClient] Đã join phiên " + sessionId
+                    + " qua " + pushHost + ":" + pushPort);
 
-            // Khởi động background thread lắng nghe push
             running = true;
             listenerThread = new Thread(() -> listenLoop(reader), "BidPush-Listener");
             listenerThread.setDaemon(true);
             listenerThread.start();
 
         } catch (IOException e) {
-            System.err.println("[BidSocketClient] Không thể kết nối Push Server: " + e.getMessage());
+            System.err.println("[BidSocketClient] Không thể kết nối Push Server "
+                    + pushHost + ":" + pushPort + " — " + e.getMessage());
         }
     }
 
     /**
      * Rời phiên — đóng kết nối, dừng listener thread.
-     * Gọi khi người dùng thoát AuctionRoom.
      */
     public void leave() {
         running = false;
@@ -128,13 +109,8 @@ public class BidSocketClient {
         return socket != null && !socket.isClosed() && running;
     }
 
-    // ------------------------------------------------------------------ //
-    //  Internal
-    // ------------------------------------------------------------------ //
+    // ── Internal ─────────────────────────────────────────────────────────
 
-    /**
-     * Vòng lặp đọc push từ server — chạy trên listenerThread.
-     */
     private void listenLoop(BufferedReader reader) {
         try {
             String line;
@@ -157,67 +133,52 @@ public class BidSocketClient {
     private void disconnect() {
         try {
             if (socket != null && !socket.isClosed()) socket.close();
-        } catch (IOException ignored) {
-        }
+        } catch (IOException ignored) {}
         socket = null;
         writer = null;
     }
 
-    // ------------------------------------------------------------------ //
-    //  BidEvent — dữ liệu parse từ 1 dòng push
-    // ------------------------------------------------------------------ //
+    // ── BidEvent ─────────────────────────────────────────────────────────
 
-    /**
-     * Đại diện cho 1 sự kiện nhận từ Push Server.
-     * <p>
-     * Hai loại event:
-     * BID_UPDATE      → type=BID_UPDATE,  sessionId, price, bidderName, endTime
-     * AUCTION_CLOSED  → type=AUCTION_CLOSED, sessionId, winnerName, finalPrice
-     */
     public static class BidEvent {
 
-        public final Type type;
+        public enum Type { BID_UPDATE, AUCTION_CLOSED, UNKNOWN }
+
+        public final Type   type;
         public final String sessionId;
-        public final double price;        // giá mới (BID_UPDATE) hoặc giá cuối (AUCTION_CLOSED)
-        public final String bidderName;   // người đặt (BID_UPDATE) hoặc người thắng (AUCTION_CLOSED)
-        public final String endTime;      // endTime mới (có thể thay đổi vì anti-snipe)
+        public final double price;
+        public final String bidderName;
+        public final String endTime;
+
         private BidEvent(Type type, String sessionId, double price,
                          String bidderName, String endTime) {
-            this.type = type;
-            this.sessionId = sessionId;
-            this.price = price;
+            this.type       = type;
+            this.sessionId  = sessionId;
+            this.price      = price;
             this.bidderName = bidderName;
-            this.endTime = endTime;
+            this.endTime    = endTime;
         }
 
-        /**
-         * Parse 1 dòng push từ server.
-         * <p>
-         * Format BID_UPDATE:     "BID_UPDATE:sessionId:price:bidderName:endTime"
-         * Format AUCTION_CLOSED: "AUCTION_CLOSED:sessionId:winnerName:finalPrice"
-         *
-         * @return BidEvent hoặc null nếu không parse được
-         */
         public static BidEvent parse(String line) {
             if (line == null || line.isBlank()) return null;
 
-            String[] parts = line.split(":", 5);   // tối đa 5 phần
+            String[] parts = line.split(":", 5);
             if (parts.length < 4) return null;
 
             try {
                 return switch (parts[0]) {
                     case "BID_UPDATE" -> new BidEvent(
                             Type.BID_UPDATE,
-                            parts[1],                        // sessionId
-                            Double.parseDouble(parts[2]),    // price
-                            parts[3],                        // bidderName
-                            parts.length > 4 ? parts[4] : ""// endTime (optional)
+                            parts[1],
+                            Double.parseDouble(parts[2]),
+                            parts[3],
+                            parts.length > 4 ? parts[4] : ""
                     );
                     case "AUCTION_CLOSED" -> new BidEvent(
                             Type.AUCTION_CLOSED,
-                            parts[1],                        // sessionId
-                            Double.parseDouble(parts[3]),    // finalPrice
-                            parts[2],                        // winnerName
+                            parts[1],
+                            Double.parseDouble(parts[3]),
+                            parts[2],
                             ""
                     );
                     default -> {
@@ -236,7 +197,5 @@ public class BidSocketClient {
             return "BidEvent{type=" + type + ", session=" + sessionId
                     + ", price=" + price + ", bidder=" + bidderName + "}";
         }
-
-        public enum Type {BID_UPDATE, AUCTION_CLOSED, UNKNOWN}
     }
 }

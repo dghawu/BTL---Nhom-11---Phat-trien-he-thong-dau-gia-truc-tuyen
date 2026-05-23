@@ -5,7 +5,9 @@ import com.example.socket.BidSocketClient.BidEvent;
 import com.example.socket.ServerService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -27,8 +29,6 @@ import java.time.format.DateTimeFormatter;
  */
 public class AuctionRoomController extends BaseController {
 
-    private static final DateTimeFormatter DT_DISPLAY =
-            DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy");
     // Left: product info
     @FXML
     private Label lblProductName;
@@ -44,9 +44,18 @@ public class AuctionRoomController extends BaseController {
     private Label lblMoTa;
     @FXML
     private Pane imgPane;
+
     // Middle: bid history
     @FXML
     private VBox bidHistoryBox;
+    @FXML private Button btnTabFeed;
+    @FXML private Button btnTabChart;
+    @FXML private ScrollPane scrollFeed;
+    @FXML private VBox chartPane;
+
+    private javafx.scene.chart.LineChart<String, Number> priceChart;
+    private javafx.scene.chart.XYChart.Series<String, Number> priceSeries;
+
     // Right: timer + price
     @FXML
     private Label lblThoiGianBatDau;
@@ -62,11 +71,13 @@ public class AuctionRoomController extends BaseController {
     private Label lblGiaHienTai;
     @FXML
     private Label lblNguoiGiuGia;
+
     // Manual bid
     @FXML
     private Label lblManualToggle;
     @FXML
     private TextField manualBidField;
+
     // Auto bid
     @FXML
     private Label lblAutoToggle;
@@ -74,13 +85,18 @@ public class AuctionRoomController extends BaseController {
     private TextField autoBuocGiaField;
     @FXML
     private TextField autoMaxGiaField;
+
     private boolean manualEnabled = true;
     private boolean autoEnabled = false;
+
     private String sessionId;
     private double currentPrice = 0;
     private double stepPrice = 0;
     private java.time.LocalDateTime endDateTime;
     private javafx.animation.Timeline countdownTimer;
+
+    private static final DateTimeFormatter DT_DISPLAY =
+            DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy");
 
     // ------------------------------------------------------------------ //
     //  Khởi tạo
@@ -103,6 +119,7 @@ public class AuctionRoomController extends BaseController {
         lblProductName.setText(productName.toUpperCase());
 
         // 1. Load thông tin phiên ban đầu
+        initChart();
         loadSessionInfo();
 
         // 2. Join Push Server để nhận realtime
@@ -183,6 +200,13 @@ public class AuctionRoomController extends BaseController {
                         addBidEntry(h.getString("bidderName") + " bid "
                                 + String.format("%,.0f đ", h.getDouble("amount"))
                                 + " at " + time);
+
+                        String chartTime = ts.length() >= 19 ? ts.substring(11, 19) : ts;
+                        final String ct = chartTime;
+                        final double amt = h.getDouble("amount");
+                        Platform.runLater(() ->
+                                priceSeries.getData().add(
+                                        new javafx.scene.chart.XYChart.Data<>(ct, amt)));
                     }
                 });
             }).start();
@@ -221,6 +245,7 @@ public class AuctionRoomController extends BaseController {
                 addBidEntry(event.bidderName + " bid "
                         + String.format("%,.0f đ", event.price)
                         + " at " + now);
+                addChartPoint(event.price);
             });
 
             case AUCTION_CLOSED -> Platform.runLater(() -> {
@@ -479,4 +504,52 @@ public class AuctionRoomController extends BaseController {
         countdownTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
         countdownTimer.play();
     }
+    private void initChart() {
+        javafx.scene.chart.CategoryAxis xAxis = new javafx.scene.chart.CategoryAxis();
+        javafx.scene.chart.NumberAxis yAxis = new javafx.scene.chart.NumberAxis();
+        xAxis.setLabel("Time");
+        yAxis.setLabel("Price (đ)");
+
+        priceChart = new javafx.scene.chart.LineChart<>(xAxis, yAxis);
+        priceChart.setTitle("Realtime Price Curve");
+        priceChart.setAnimated(false); // tắt animation để update nhanh
+        priceChart.setCreateSymbols(true);
+
+        priceSeries = new javafx.scene.chart.XYChart.Series<>();
+        priceSeries.setName("Bid price");
+        priceChart.getData().add(priceSeries);
+
+        VBox.setVgrow(priceChart, javafx.scene.layout.Priority.ALWAYS);
+        chartPane.getChildren().setAll(priceChart);
+    }
+    private void addChartPoint(double price) {
+        String time = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
+        priceSeries.getData().add(
+                new javafx.scene.chart.XYChart.Data<>(time, price));
+    }
+    @FXML
+    private void handleTabFeed() {
+        scrollFeed.setVisible(true);  scrollFeed.setManaged(true);
+        chartPane.setVisible(false);  chartPane.setManaged(false);
+        btnTabFeed.setStyle("-fx-background-color: #111111; -fx-text-fill: white;"
+                + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
+                + "-fx-cursor: hand; -fx-background-radius: 20px 0 0 20px;");
+        btnTabChart.setStyle("-fx-background-color: #DDDDDD; -fx-text-fill: #333;"
+                + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
+                + "-fx-cursor: hand; -fx-background-radius: 0 20px 20px 0;");
+    }
+
+    @FXML
+    private void handleTabChart() {
+        chartPane.setVisible(true);   chartPane.setManaged(true);
+        scrollFeed.setVisible(false); scrollFeed.setManaged(false);
+        btnTabChart.setStyle("-fx-background-color: #111111; -fx-text-fill: white;"
+                + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
+                + "-fx-cursor: hand; -fx-background-radius: 0 20px 20px 0;");
+        btnTabFeed.setStyle("-fx-background-color: #DDDDDD; -fx-text-fill: #333;"
+                + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
+                + "-fx-cursor: hand; -fx-background-radius: 20px 0 0 20px;");
+    }
+
 }
