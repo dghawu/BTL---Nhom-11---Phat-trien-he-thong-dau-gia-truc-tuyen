@@ -2,39 +2,63 @@ package com.example.controller;
 
 import com.example.socket.ServerService;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.function.Function;
+import java.io.ByteArrayInputStream;
+import java.util.Base64;
 
+/**
+ * AdminCentreController - AdminCentre.fxml
+ * Sidebar chuyển đổi giữa 4 bảng: Người dùng / Sản phẩm / Phiên / Giao dịch.
+ */
 @SuppressWarnings("unchecked")
 public class AdminCentreController extends BaseController {
 
+    // ── Nav sidebar ───────────────────────────────────────────────────
     @FXML private Button btnNguoiDung;
     @FXML private Button btnSanPham;
     @FXML private Button btnPhien;
     @FXML private Button btnGiaoDich;
 
-    @FXML private TableView<JSONObject> dataTable;
+    // ── Tiêu đề tab ───────────────────────────────────────────────────
+    @FXML private Label lblTabTitle;
+
+    // ── Table ─────────────────────────────────────────────────────────
+    @FXML private TableView<JSONObject>          dataTable;
+    @FXML private TableColumn<JSONObject,String> colId;
+    @FXML private TableColumn<JSONObject, Node> colImage;
+    @FXML private TableColumn<JSONObject,String> colTen;
+    @FXML private TableColumn<JSONObject,String> colThongTin;
+    @FXML private TableColumn<JSONObject,String> colExtra;
+    @FXML private TableColumn<JSONObject,String> colTrangThai;
+
+    // ── Action buttons ────────────────────────────────────────────────
     @FXML private Button btnBan;
     @FXML private Button btnMakeAdmin;
+    @FXML private Button btnEdit;
+    @FXML private Button btnSave;
 
     private String currentTab = "NGUOIDUNG";
 
     // ================================================================ //
     //  Init
     // ================================================================ //
+
     @FXML
     public void initialize() {
+        dataTable.setPlaceholder(new Label("Không có dữ liệu."));
         dataTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         Platform.runLater(this::handleShowNguoiDung);
     }
@@ -42,208 +66,488 @@ public class AdminCentreController extends BaseController {
     // ================================================================ //
     //  Sidebar tabs
     // ================================================================ //
+
     @FXML
     private void handleShowNguoiDung() {
         currentTab = "NGUOIDUNG";
         setActiveTab(btnNguoiDung);
-        setVis(btnBan, true);
-        setVis(btnMakeAdmin, true);
 
-        dataTable.getColumns().clear();
-        dataTable.getColumns().addAll(
-                strCol("ID",            90,  o -> truncate(o.optString("id"), 10)),
-                strCol("Tên đăng nhập",200,  o -> o.optString("name")),
-                strCol("Vai trò",       150, o -> o.optString("role"))
-        );
-        new Thread(() -> populate(ServerService.getAllUsers())).start();
+        colId.setText("ID");
+        colTen.setText("Tên đăng nhập");
+        colThongTin.setText("Vai trò");
+        colExtra.setText("");
+        colTrangThai.setVisible(false);
+        colImage.setVisible(false);
+
+        showButtons(true, true, false, false);
+
+        loadNguoiDung();
     }
 
     @FXML
     private void handleShowSanPham() {
         currentTab = "SANPHAM";
         setActiveTab(btnSanPham);
-        setVis(btnBan, false);
-        setVis(btnMakeAdmin, false);
 
-        dataTable.getColumns().clear();
-        dataTable.getColumns().addAll(
-                strCol("ID",           90,  o -> truncate(o.optString("id"), 10)),
-                linkCol("Tên sản phẩm",190, o -> o.optString("name"),  this::openProductDetail),
-                strCol("Loại",         120, o -> o.optString("type")),
-                strCol("Giá khởi điểm",150, o -> String.format("%,.0f đ", o.optDouble("startPrice", 0))),
-                strCol("Seller",       110, o -> truncate(o.optString("sellerId"), 10)),
-                strCol("Trạng thái",   120, o -> o.optString("status"))
-        );
-        new Thread(() -> populate(ServerService.getAllItems())).start();
+        colId.setText("ID");
+        colTen.setText("Tên sản phẩm");
+        colThongTin.setText("Loại  |  Giá khởi điểm");
+        colExtra.setText("Seller");
+        colTrangThai.setVisible(true);
+        colTrangThai.setText("Trạng thái");
+        colImage.setVisible(true);
+
+        showButtons(false, false, true, true);
+
+        dataTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
+                if (selected != null) showProductDetail(selected);
+            }
+        });
+
+        loadSanPham();
+    }
+
+    /**
+     * Dialog duyệt sản phẩm với hình ảnh
+     */
+    private void showProductDetail(JSONObject product) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Chi tiết sản phẩm");
+        dialog.initOwner(getStage(dataTable));
+
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(12);
+        grid.setPadding(new javafx.geometry.Insets(20));
+
+        // Hiển thị ảnh sản phẩm
+        VBox imageBox = new VBox();
+        imageBox.setStyle("-fx-alignment: CENTER;");
+        String imageBase64 = product.optString("image", "");
+        if (imageBase64 != null && !imageBase64.isEmpty()) {
+            try {
+                byte[] decodedBytes = Base64.getDecoder().decode(imageBase64);
+                ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+                Image img = new Image(bais);
+                ImageView iv = new ImageView(img);
+                iv.setFitWidth(250);
+                iv.setFitHeight(250);
+                iv.setPreserveRatio(true);
+                imageBox.getChildren().add(iv);
+            } catch (Exception e) {
+                System.err.println("[AdminCentre] Lỗi decode image: " + e.getMessage());
+                imageBox.getChildren().add(new Label("Không thể load ảnh"));
+            }
+        } else {
+            imageBox.getChildren().add(new Label("Không có ảnh"));
+        }
+        grid.add(imageBox, 0, 0, 2, 1);
+
+        String[][] rows = {
+                {"Tên sản phẩm",  product.optString("name", "")},
+                {"ID sản phẩm",   product.optString("id", "")},
+                {"Loại sản phẩm", product.optString("type", "")},
+                {"Giá khởi điểm", String.format("%,.0f đ", product.optDouble("startPrice", 0))},
+                {"Seller",        product.optString("sellerId", "")},
+                {"Trạng thái",    product.optString("status", "")},
+        };
+
+        for (int i = 0; i < rows.length; i++) {
+            Label key = new Label(rows[i][0]);
+            key.setStyle("-fx-font-weight: bold;");
+            Label val = new Label(rows[i][1]);
+            grid.add(key, 0, i + 1);
+            grid.add(val, 1, i + 1);
+        }
+
+        dialog.getDialogPane().setContent(grid);
+
+        boolean isPending = "PENDING".equals(product.optString("status"));
+        if (isPending) {
+            ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
+            ButtonType rejectBtn  = new ButtonType("✘ REJECT",  ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType cancelBtn  = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+            dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
+
+            dialog.showAndWait().ifPresent(result -> {
+                String id = product.optString("id");
+                if (result == approveBtn) {
+                    new Thread(() -> {
+                        boolean ok = ServerService.approveItem(id);
+                        Platform.runLater(() -> {
+                            showNotification(getStage(dataTable),
+                                    ok ? "Đã duyệt sản phẩm!" : "Duyệt thất bại!");
+                            if (ok) loadSanPham();
+                        });
+                    }).start();
+                } else if (result == rejectBtn) {
+                    new Thread(() -> {
+                        boolean ok = ServerService.rejectItem(id);
+                        Platform.runLater(() -> {
+                            showNotification(getStage(dataTable),
+                                    ok ? "Đã từ chối sản phẩm!" : "Thao tác thất bại!");
+                            if (ok) loadSanPham();
+                        });
+                    }).start();
+                }
+            });
+        } else {
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+            dialog.showAndWait();
+        }
     }
 
     @FXML
     private void handleShowPhien() {
         currentTab = "PHIEN";
         setActiveTab(btnPhien);
-        setVis(btnBan, false);
-        setVis(btnMakeAdmin, false);
 
-        dataTable.getColumns().clear();
-        dataTable.getColumns().addAll(
-                strCol("ID",             90,  o -> truncate(o.optString("id"), 10)),
-                linkCol("Sản phẩm",      160, o -> o.optString("itemName"), this::openSessionDetail),
-                strCol("Thời gian mở",   170, o -> o.optString("startTime","").replace("T"," ")),
-                strCol("Thời gian đóng", 170, o -> o.optString("endTime","").replace("T"," ")),
-                strCol("Giá khởi điểm",  150, o -> String.format("%,.0f đ", o.optDouble("startPrice", 0))),
-                strCol("Bước giá",       130, o -> String.format("%,.0f đ", o.optDouble("stepPrice", 0))),
-                strCol("Trạng thái",     120, o -> o.optString("status"))
-        );
-        new Thread(() -> populate(ServerService.getAllSessions("ALL"))).start();
+        colId.setText("ID");
+        colTen.setText("Sản phẩm");
+        colThongTin.setText("Thời gian mở → Đóng");
+        colExtra.setText("Giá khởi điểm  |  Bước giá");
+        colTrangThai.setVisible(true);
+        colTrangThai.setText("Trạng thái");
+        colImage.setVisible(true);
+
+        showButtons(false, false, false, false);
+
+        dataTable.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
+                if (selected != null) showSessionDetail(selected);
+            }
+        });
+
+        loadPhien();
+    }
+
+    /**
+     * Dialog duyệt phiên với hình ảnh
+     */
+    private void showSessionDetail(JSONObject session) {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Chi tiết phiên đấu giá");
+        dialog.initOwner(getStage(dataTable));
+
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(12);
+        grid.setPadding(new javafx.geometry.Insets(20));
+
+        // Hiển thị ảnh sản phẩm
+        VBox imageBox = new VBox();
+        imageBox.setStyle("-fx-alignment: CENTER;");
+        String imageBase64 = session.optString("itemImage", "");
+        if (imageBase64 != null && !imageBase64.isEmpty()) {
+            try {
+                byte[] decodedBytes = Base64.getDecoder().decode(imageBase64);
+                ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+                Image img = new Image(bais);
+                ImageView iv = new ImageView(img);
+                iv.setFitWidth(200);
+                iv.setFitHeight(200);
+                iv.setPreserveRatio(true);
+                imageBox.getChildren().add(iv);
+            } catch (Exception e) {
+                System.err.println("[AdminCentre] Lỗi decode image: " + e.getMessage());
+                imageBox.getChildren().add(new Label("Không thể load ảnh"));
+            }
+        } else {
+            imageBox.getChildren().add(new Label("Không có ảnh"));
+        }
+        grid.add(imageBox, 0, 0, 2, 1);
+
+        String[][] rows = {
+                {"Sản phẩm",      session.optString("itemName")},
+                {"ID phiên",      session.optString("id")},
+                {"Trạng thái",    session.optString("status")},
+                {"Giá khởi điểm", String.format("%,.0f đ", session.optDouble("startPrice",0))},
+                {"Bước giá",      String.format("%,.0f đ", session.optDouble("stepPrice",0))},
+                {"Giá hiện tại",  String.format("%,.0f đ", session.optDouble("currentPrice",0))},
+                {"Thời gian mở",  session.optString("startTime","").replace("T"," ")},
+                {"Thời gian đóng",session.optString("endTime","").replace("T"," ")},
+                {"Người thắng",   session.optString("currentWinner","—")},
+        };
+
+        for (int i = 0; i < rows.length; i++) {
+            Label key = new Label(rows[i][0]);
+            key.setStyle("-fx-font-weight: bold;");
+            Label val = new Label(rows[i][1]);
+            grid.add(key, 0, i + 1);
+            grid.add(val, 1, i + 1);
+        }
+
+        dialog.getDialogPane().setContent(grid);
+
+        boolean isPending = "PENDING".equals(session.optString("status"));
+        if (isPending) {
+            ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
+            ButtonType rejectBtn  = new ButtonType("✘ REJECT",  ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType cancelBtn  = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+            dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
+
+            java.util.Optional<ButtonType> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                String id = session.optString("id");
+                ButtonType clicked = result.get();
+
+                if (clicked == approveBtn) {
+                    new Thread(() -> {
+                        boolean ok = ServerService.approveSession(id);
+                        Platform.runLater(() -> {
+                            showNotification(getStage(dataTable),
+                                    ok ? "Đã duyệt phiên!" : "Duyệt thất bại!");
+                            if (ok) loadPhien();
+                        });
+                    }).start();
+                } else if (clicked == rejectBtn) {
+                    new Thread(() -> {
+                        boolean ok = ServerService.rejectSession(id);
+                        Platform.runLater(() -> {
+                            showNotification(getStage(dataTable),
+                                    ok ? "Đã từ chối phiên!" : "Thao tác thất bại!");
+                            if (ok) loadPhien();
+                        });
+                    }).start();
+                }
+            }
+        } else {
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+            dialog.showAndWait();
+        }
     }
 
     @FXML
     private void handleShowGiaoDich() {
         currentTab = "GIAODICH";
         setActiveTab(btnGiaoDich);
-        setVis(btnBan, false);
-        setVis(btnMakeAdmin, false);
 
-        dataTable.getColumns().clear();
-        dataTable.getColumns().addAll(
-                strCol("ID",        90,  o -> truncate(o.optString("id"), 10)),
-                strCol("Sản phẩm", 200,  o -> o.optString("itemName")),
-                strCol("Người đặt",180,  o -> o.optString("bidderName", o.optString("bidderId",""))),
-                strCol("Số tiền",  150,  o -> String.format("%,.0f đ", o.optDouble("amount", 0))),
-                strCol("Thời gian",200,  o -> o.optString("timestamp","").replace("T"," "))
-        );
-        new Thread(() -> populate(ServerService.getAllTransactions())).start();
-    }
+        colId.setText("ID");
+        colTen.setText("Sản phẩm");
+        colThongTin.setText("Người đặt");
+        colExtra.setText("Số tiền");
+        colTrangThai.setVisible(true);
+        colTrangThai.setText("Thời gian");
+        colImage.setVisible(true);
 
-    @FXML
-    private void handleRefresh() {
-        switch (currentTab) {
-            case "NGUOIDUNG" -> handleShowNguoiDung();
-            case "SANPHAM"   -> handleShowSanPham();
-            case "PHIEN"     -> handleShowPhien();
-            case "GIAODICH"  -> handleShowGiaoDich();
-        }
+        showButtons(false, false, false, false);
+
+        loadGiaoDich();
     }
 
     // ================================================================ //
-    //  Action buttons (Users tab only)
+    //  Action handlers
     // ================================================================ //
+
     @FXML
     private void handleBan() {
         JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
-        if (selected == null) { showNotification(getStage(dataTable), "Vui lòng chọn người dùng!"); return; }
+        if (selected == null) {
+            showNotification(getStage(dataTable), "Vui lòng chọn người dùng!");
+            return;
+        }
         boolean ok = ServerService.banUser(selected.optString("id"));
-        showNotification(getStage(dataTable), ok ? "Đã ban: " + selected.optString("name") : "Ban thất bại!");
-        if (ok) handleShowNguoiDung();
+        showNotification(getStage(dataTable),
+                ok ? "Đã khóa người dùng!" : "Thao tác thất bại!");
+        if (ok) loadNguoiDung();
     }
 
     @FXML
     private void handleMakeAdmin() {
         JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
-        if (selected == null) { showNotification(getStage(dataTable), "Vui lòng chọn người dùng!"); return; }
+        if (selected == null) {
+            showNotification(getStage(dataTable), "Vui lòng chọn người dùng!");
+            return;
+        }
         boolean ok = ServerService.makeAdmin(selected.optString("id"));
-        showNotification(getStage(dataTable), ok ? "Đã cấp quyền ADMIN!" : "Thao tác thất bại!");
-        if (ok) handleShowNguoiDung();
+        showNotification(getStage(dataTable),
+                ok ? "Đã cấp quyền ADMIN!" : "Thao tác thất bại!");
+        if (ok) loadNguoiDung();
     }
 
-    // ================================================================ //
-    //  Navigate to detail pages
-    // ================================================================ //
-    private void openProductDetail(JSONObject product) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminProductDetail.fxml"));
-            Parent root = loader.load();
-            AdminProductDetailController ctrl = loader.getController();
-            ctrl.currentUsername = currentUsername;
-            ctrl.currentRole     = currentRole;
-            ctrl.currentUserId   = currentUserId;
-            ctrl.initData(product);
-            Stage stage = getStage(dataTable);
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
+    @FXML
+    private void handleEdit() {
+        JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showNotification(getStage(dataTable), "Vui lòng chọn một mục!");
+            return;
+        }
+        switch (currentTab) {
+            case "PHIEN" -> {
+                boolean ok = ServerService.approveSession(selected.optString("id"));
+                showNotification(getStage(dataTable),
+                        ok ? "Đã duyệt phiên: " + selected.optString("itemName")
+                                : "Duyệt thất bại — chỉ duyệt được phiên PENDING.");
+                if (ok) loadPhien();
+            }
         }
     }
 
-    private void openSessionDetail(JSONObject session) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdminSessionDetail.fxml"));
-            Parent root = loader.load();
-            AdminSessionDetailController ctrl = loader.getController();
-            ctrl.currentUsername = currentUsername;
-            ctrl.currentRole     = currentRole;
-            ctrl.currentUserId   = currentUserId;
-            ctrl.initData(session);
-            Stage stage = getStage(dataTable);
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
+    @FXML
+    private void handleSave() {
+        JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showNotification(getStage(dataTable), "Vui lòng chọn một mục!");
+            return;
         }
+        switch (currentTab) {
+            case "PHIEN" -> {
+                boolean ok = ServerService.rejectSession(selected.optString("id"));
+                showNotification(getStage(dataTable),
+                        ok ? "Đã từ chối phiên: " + selected.optString("itemName")
+                                : "Thao tác thất bại.");
+                if (ok) loadPhien();
+            }
+        }
+    }
+
+    // ================================================================ //
+    //  Data loaders
+    // ================================================================ //
+
+    private void loadNguoiDung() {
+        colId.setCellValueFactory(c -> str(truncate(c.getValue().optString("id"), 10)));
+        colTen.setCellValueFactory(c -> str(c.getValue().optString("name")));
+        colThongTin.setCellValueFactory(c -> str(c.getValue().optString("role")));
+        colExtra.setCellValueFactory(c -> str(""));
+        colTrangThai.setCellValueFactory(c -> str(""));
+
+        new Thread(() -> populate(ServerService.getAllUsers())).start();
+    }
+
+    private void loadSanPham() {
+        colId.setCellValueFactory(c -> str(truncate(c.getValue().optString("id"), 10)));
+        colTen.setCellValueFactory(c -> str(c.getValue().optString("name")));
+        colThongTin.setCellValueFactory(c -> {
+            JSONObject o = c.getValue();
+            return str(o.optString("type") + "  |  "
+                    + String.format("%,.0f đ", o.optDouble("startPrice", 0)));
+        });
+        colExtra.setCellValueFactory(c -> str(truncate(c.getValue().optString("sellerId"), 10)));
+        colTrangThai.setCellValueFactory(c -> str(c.getValue().optString("status")));
+
+        colImage.setCellValueFactory(c -> {
+            String imageBase64 = c.getValue().optString("image", "");
+            VBox imgBox = createImageBox(imageBase64);
+            return new SimpleObjectProperty<Node>(imgBox);
+        });
+
+        new Thread(() -> populate(ServerService.getAllItems())).start();
+    }
+
+    private void loadPhien() {
+        colId.setCellValueFactory(c ->
+                str(truncate(c.getValue().optString("id"), 10)));
+        colTen.setCellValueFactory(c ->
+                str(c.getValue().optString("itemName")));
+        colThongTin.setCellValueFactory(c -> {
+            JSONObject o = c.getValue();
+            return str(o.optString("startTime", "").replace("T", " ")
+                    + "  →  "
+                    + o.optString("endTime", "").replace("T", " "));
+        });
+        colExtra.setCellValueFactory(c -> {
+            JSONObject o = c.getValue();
+            return str(String.format("%,.0f đ", o.optDouble("startPrice", 0))
+                    + "  |  "
+                    + String.format("%,.0f đ", o.optDouble("stepPrice", 0)));
+        });
+        colTrangThai.setCellValueFactory(c ->
+                str(c.getValue().optString("status")));
+
+        colImage.setCellValueFactory(c -> {
+            String imageBase64 = c.getValue().optString("itemImage", "");
+            VBox imgBox = createImageBox(imageBase64);
+            return new SimpleObjectProperty<Node>(imgBox);
+        });
+
+        new Thread(() -> populate(ServerService.getAllSessions("ALL"))).start();
+    }
+
+    private void loadGiaoDich() {
+        colId.setCellValueFactory(c -> str(truncate(c.getValue().optString("id"), 10)));
+        colTen.setCellValueFactory(c -> str(c.getValue().optString("itemName")));
+        colThongTin.setCellValueFactory(c ->
+                str(c.getValue().optString("bidderName", c.getValue().optString("bidderId", ""))));
+        colExtra.setCellValueFactory(c ->
+                str(String.format("%,.0f đ", c.getValue().optDouble("amount", 0))));
+        colTrangThai.setCellValueFactory(c ->
+                str(c.getValue().optString("timestamp", "").replace("T", " ")));
+
+        colImage.setCellValueFactory(c -> {
+            String imageBase64 = c.getValue().optString("itemImage", "");
+            VBox imgBox = createImageBox(imageBase64);
+            return new SimpleObjectProperty<Node>(imgBox);
+        });
+
+        new Thread(() -> populate(ServerService.getAllTransactions())).start();
     }
 
     // ================================================================ //
     //  Helpers
     // ================================================================ //
 
-    /** Đổ JSONArray vào TableView trên FX thread. */
+    private VBox createImageBox(String imageBase64) {
+        VBox imgBox = new VBox();
+        imgBox.setStyle("-fx-alignment: CENTER; -fx-padding: 5;");
+
+        if (imageBase64 != null && !imageBase64.isEmpty()) {
+            try {
+                byte[] decodedBytes = Base64.getDecoder().decode(imageBase64);
+                ByteArrayInputStream bais = new ByteArrayInputStream(decodedBytes);
+                Image img = new Image(bais);
+                ImageView iv = new ImageView(img);
+                iv.setFitWidth(80);
+                iv.setFitHeight(80);
+                iv.setPreserveRatio(true);
+                imgBox.getChildren().add(iv);
+            } catch (Exception e) {
+                System.err.println("[AdminCentre] Lỗi decode image: " + e.getMessage());
+                imgBox.getChildren().add(new Label("—"));
+            }
+        } else {
+            imgBox.getChildren().add(new Label("—"));
+        }
+        return imgBox;
+    }
+
     private void populate(JSONArray arr) {
         ObservableList<JSONObject> items = FXCollections.observableArrayList();
-        if (arr != null)
-            for (int i = 0; i < arr.length(); i++) items.add(arr.getJSONObject(i));
+        if (arr != null) {
+            for (int i = 0; i < arr.length(); i++)
+                items.add(arr.getJSONObject(i));
+        }
         Platform.runLater(() -> dataTable.setItems(items));
     }
 
-    /** Cột text đơn giản. */
-    private TableColumn<JSONObject, String> strCol(String header, int width,
-                                                   Function<JSONObject, String> fn) {
-        TableColumn<JSONObject, String> col = new TableColumn<>(header);
-        col.setPrefWidth(width);
-        col.setCellValueFactory(c -> new SimpleStringProperty(
-                fn.apply(c.getValue()) == null ? "" : fn.apply(c.getValue())));
-        return col;
+    private SimpleStringProperty str(String value) {
+        return new SimpleStringProperty(value == null ? "" : value);
     }
 
-    /** Cột tên — hiển thị dạng Hyperlink, click → callback với JSONObject của row đó. */
-    private TableColumn<JSONObject, String> linkCol(String header, int width,
-                                                    Function<JSONObject, String> textFn,
-                                                    java.util.function.Consumer<JSONObject> onClick) {
-        TableColumn<JSONObject, String> col = new TableColumn<>(header);
-        col.setPrefWidth(width);
-        col.setCellValueFactory(c -> new SimpleStringProperty(textFn.apply(c.getValue())));
-        col.setCellFactory(tc -> new TableCell<>() {
-            private final Hyperlink link = new Hyperlink();
-            {
-                link.setStyle("-fx-text-fill: #0044CC;");
-                link.setOnAction(e -> {
-                    JSONObject row = getTableRow().getItem();
-                    if (row != null) onClick.accept(row);
-                });
-            }
-            @Override
-            protected void updateItem(String s, boolean empty) {
-                super.updateItem(s, empty);
-                if (empty || s == null) { setGraphic(null); }
-                else { link.setText(s); setGraphic(link); }
-            }
-        });
-        return col;
-    }
-
-    private String truncate(String s, int max) {
-        if (s == null || s.length() <= max) return s != null ? s : "";
-        return s.substring(0, max) + "…";
+    private String truncate(String s, int maxLen) {
+        if (s == null || s.length() <= maxLen) return s != null ? s : "";
+        return s.substring(0, maxLen) + "…";
     }
 
     private void setActiveTab(Button active) {
         for (Button b : new Button[]{btnNguoiDung, btnSanPham, btnPhien, btnGiaoDich}) {
             b.getStyleClass().remove("sidebar-item-active");
-            if (!b.getStyleClass().contains("sidebar-item")) b.getStyleClass().add("sidebar-item");
+            if (!b.getStyleClass().contains("sidebar-item"))
+                b.getStyleClass().add("sidebar-item");
         }
         active.getStyleClass().remove("sidebar-item");
         if (!active.getStyleClass().contains("sidebar-item-active"))
             active.getStyleClass().add("sidebar-item-active");
+    }
+
+    private void showButtons(boolean ban, boolean admin, boolean approve, boolean reject) {
+        setVis(btnBan,       ban);
+        setVis(btnMakeAdmin, admin);
+        setVis(btnEdit,      approve);
+        setVis(btnSave,      reject);
     }
 
     private void setVis(Button btn, boolean v) {
@@ -251,7 +555,6 @@ public class AdminCentreController extends BaseController {
         btn.setManaged(v);
     }
 
-    // ── Nav ───────────────────────────────────────────────────────────
     @FXML private void handleHome()        { goHome(getStage(dataTable)); }
     @FXML private void handleAdminCentre() { /* đã ở đây */ }
     @FXML private void handleUserReport()  { /* TODO */ }
