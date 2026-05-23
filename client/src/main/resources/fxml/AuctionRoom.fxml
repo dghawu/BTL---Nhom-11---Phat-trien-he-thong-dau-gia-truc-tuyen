@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.StackPane?>
 <VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.AuctionRoomController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
@@ -43,13 +44,46 @@
             </VBox>
         </VBox>
 
-        <!-- Middle: Bid history -->
-        <VBox style="-fx-border-color: transparent #CCCCCC transparent transparent;         -fx-border-width: 0 1px 0 0; -fx-padding: 16;" HBox.hgrow="ALWAYS">
-            <Label style="-fx-font-size: 20px; -fx-font-weight: bold;                           -fx-alignment: CENTER; -fx-max-width: Infinity; -fx-padding: 0 0 14 0;" text="YOU ARE IN THE AUCTION" />
-            <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 0 0 8 0;" text="FOLLOW THE AUCTION" />
-            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
-                <VBox fx:id="bidHistoryBox" spacing="6" style="-fx-padding: 4 0 4 0; -fx-background-color: transparent;" />
-            </ScrollPane>
+        <!-- Middle: Feed / Chart toggle -->
+        <VBox style="-fx-border-color: transparent #CCCCCC transparent transparent;
+             -fx-border-width: 0 1px 0 0; -fx-padding: 16 16 16 16;"
+              HBox.hgrow="ALWAYS">
+
+            <Label style="-fx-font-size: 20px; -fx-font-weight: bold;
+                  -fx-alignment: CENTER; -fx-max-width: Infinity; -fx-padding: 0 0 14 0;"
+                   text="YOU ARE IN THE AUCTION"/>
+
+            <!-- Tab buttons -->
+            <HBox spacing="0" style="-fx-padding: 0 0 12 0;">
+                <Button fx:id="btnTabFeed" onAction="#handleTabFeed"
+                        style="-fx-background-color: #111111; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-font-size: 13px;
+                       -fx-padding: 6 20; -fx-cursor: hand;
+                       -fx-background-radius: 20px 0 0 20px;"
+                        text="FOLLOW THE AUCTION"/>
+                <Button fx:id="btnTabChart" onAction="#handleTabChart"
+                        style="-fx-background-color: #DDDDDD; -fx-text-fill: #333;
+                       -fx-font-weight: bold; -fx-font-size: 13px;
+                       -fx-padding: 6 20; -fx-cursor: hand;
+                       -fx-background-radius: 0 20px 20px 0;"
+                        text="PRICE CHART"/>
+            </HBox>
+
+            <!-- StackPane chứa cả 2 view -->
+            <StackPane VBox.vgrow="ALWAYS">
+
+                <!-- Feed view -->
+                <ScrollPane fx:id="scrollFeed" fitToWidth="true"
+                            style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <VBox fx:id="bidHistoryBox" spacing="6"
+                          style="-fx-padding: 4 0 4 0; -fx-background-color: transparent;"/>
+                </ScrollPane>
+
+                <!-- Chart view (ẩn mặc định) -->
+                <VBox fx:id="chartPane" visible="false" managed="false"
+                      style="-fx-background-color: transparent;"/>
+
+            </StackPane>
         </VBox>
 
         <!-- Right: Price + bid actions -->
