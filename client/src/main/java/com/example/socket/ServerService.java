@@ -255,6 +255,12 @@ public class ServerService {
         return send(req).getBoolean("success");
     }
 
+    public static JSONObject getAutoBidStatus(String sessionId) {
+        JSONObject req = req("getAutoBidStatus");
+        req.put("sessionId", sessionId);
+        return send(req);
+    }
+
     public static JSONArray getBidHistory(String sessionId) {
         JSONObject req = req("getBidHistory");
         req.put("sessionId", sessionId);
