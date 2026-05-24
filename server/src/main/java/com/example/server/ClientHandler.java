@@ -114,6 +114,7 @@ public class ClientHandler implements Runnable {
                 case "setAutoBid" -> handleSetAutoBid(req);
                 case "getBidHistory" -> handleGetBidHistory(req);
                 case "cancelAutoBid" -> handleCancelAutoBid(req);
+                case "getAutoBidStatus" -> handleGetAutoBidStatus(req);
 
                 //Transactions
                 case "getMyTransactions" -> handleGetMyTransactions(req);
@@ -580,11 +581,30 @@ public class ClientHandler implements Runnable {
         double increment = req.getDouble("stepPrice");
         double maxBid = req.getDouble("maxPrice");
 
+        Auction auction = auctionDAO.findById(sessionId);
+        if (auction == null) return fail("Không tìm thấy phiên.");
+        if (auction.getStatus() != AuctionStatus.RUNNING)
+            return fail("Phiên không còn hoạt động.");
+        if (maxBid <= auction.getCurrentPrice())
+            return fail("Giá tối đa phải cao hơn giá hiện tại.");
+
         User bidder = userDAO.findById(bidderId);
         String bidderName = bidder != null ? bidder.getName() : bidderId;
 
         AutoBidConfig config = new AutoBidConfig(bidderId, bidderName, increment, maxBid);
         AutoBidManager.getInstance().register(sessionId, config);
+
+        // Trigger ngay nếu bản thân không phải winner hiện tại
+        String currentWinner = auction.getCurrentWinner();
+        boolean isSelf = currentWinner != null
+                && (bidderName.equals(currentWinner) || bidderId.equals(currentWinner));
+        if (!isSelf) {
+            try {
+                triggerAutoBid(sessionId, currentWinner != null ? currentWinner : "");
+            } catch (Exception e) {
+                System.out.println("[AutoBid] Trigger khi register lỗi: " + e.getMessage());
+            }
+        }
 
         return success().put("message", "Đã bật auto-bid!").toString();
     }
@@ -612,6 +632,29 @@ public class ClientHandler implements Runnable {
         if (!auth.isOk()) return fail(auth.getErrorMessage());
         AutoBidManager.getInstance().unregister(req.getString("sessionId"), auth.getUserId());
         return success().toString();
+    }
+
+    private String handleGetAutoBidStatus(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "BIDDER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sessionId = req.getString("sessionId");
+        String bidderId = auth.getUserId();
+
+        AutoBidConfig config = AutoBidManager.getInstance().getConfigs(sessionId)
+                .stream()
+                .filter(c -> c.getBidderId().equals(bidderId))
+                .findFirst()
+                .orElse(null);
+
+        if (config == null)
+            return success().put("active", false).toString();
+
+        return success()
+                .put("active", true)
+                .put("increment", config.getIncrement())  // THÊM
+                .put("maxBid", config.getMaxBid())         // THÊM
+                .toString();
     }
 
     // ================================================================== //
@@ -778,8 +821,8 @@ public class ClientHandler implements Runnable {
     }
 
     private void triggerAutoBid(String sessionId, String lastWinnerId) {
-        // Lấy copy để tránh ConcurrentModificationException khi unregister trong loop
-        List<AutoBidConfig> autoBids = new ArrayList<>(AutoBidManager.getInstance().getConfigs(sessionId));
+        List<AutoBidConfig> autoBids = new ArrayList<>(
+                AutoBidManager.getInstance().getConfigs(sessionId));
         if (autoBids.isEmpty()) return;
 
         Auction auction = auctionDAO.findById(sessionId);
@@ -789,9 +832,16 @@ public class ClientHandler implements Runnable {
         for (AutoBidConfig cfg : autoBids) {
             if (cfg.getBidderId().equals(lastWinnerId)) continue;
 
+            // THÊM: kiểm tra lại trong AutoBidManager xem có còn active không
+            // (tránh trường hợp đã unregister nhưng copy vẫn còn)
+            boolean stillActive = AutoBidManager.getInstance()
+                    .getConfigs(sessionId).stream()
+                    .anyMatch(c -> c.getBidderId().equals(cfg.getBidderId()));
+            if (!stillActive) continue;
+
             double nextBid = auction.getCurrentPrice() + cfg.getIncrement();
             if (nextBid > cfg.getMaxBid()) {
-                System.out.println("[AutoBid] " + cfg.getBidderName() + " đã đạt maxBid, dừng.");
+                System.out.println("[AutoBid] " + cfg.getBidderName() + " đạt maxBid, dừng.");
                 AutoBidManager.getInstance().unregister(sessionId, cfg.getBidderId());
                 continue;
             }

@@ -188,6 +188,35 @@ public class AuctionRoomController extends BaseController {
                 break;
             }
             new Thread(() -> {
+                JSONObject res = ServerService.getAutoBidStatus(sessionId);
+                if (res == null || !res.getBoolean("success")) return;
+                boolean isAutoActive = res.optBoolean("active", false);
+                Platform.runLater(() -> {
+                    if (isAutoActive) {
+                        autoEnabled = true;
+                        lblAutoToggle.setText("ON");
+                        lblAutoToggle.setStyle("-fx-background-color: #22C55E; -fx-text-fill: white;"
+                                + "-fx-font-size: 11px; -fx-font-weight: bold;"
+                                + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+                        autoBuocGiaField.setDisable(false);
+                        autoMaxGiaField.setDisable(false);
+
+                        // Điền lại số cũ
+                        autoBuocGiaField.setText(String.valueOf((long) res.getDouble("increment")));
+                        autoMaxGiaField.setText(String.valueOf((long) res.getDouble("maxBid")));
+
+                        // Khoá manual
+                        manualEnabled = false;
+                        lblManualToggle.setText("OFF");
+                        lblManualToggle.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white;"
+                                + "-fx-font-size: 11px; -fx-font-weight: bold;"
+                                + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+                        manualBidField.setDisable(true);
+                        lblManualToggle.setDisable(true);
+                    }
+                });
+            }).start();
+            new Thread(() -> {
                 System.out.println("[AuctionRoom] Đang load history cho: " + sessionId);
                 JSONArray history = ServerService.getBidHistory(sessionId);
                 if (history == null) return;
