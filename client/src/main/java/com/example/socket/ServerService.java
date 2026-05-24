@@ -118,7 +118,7 @@ public class ServerService {
     }
 
     public static boolean updateItem(String itemId, String name, String description,
-                                     String price, String status) {
+                                     String price) {
         JSONObject req = req("updateItem");
         req.put("itemId", itemId);
         req.put("name", name);
@@ -129,7 +129,6 @@ public class ServerService {
         } catch (NumberFormatException e) {
             return false;
         }
-        req.put("status", status);
         return send(req).getBoolean("success");
     }
 
@@ -171,6 +170,7 @@ public class ServerService {
         return send(req).getBoolean("success");
     }
 
+
     public static JSONArray getAllSessions(String category) {
         JSONObject req = req("getAllSessions");
         req.put("category", category);
@@ -178,6 +178,30 @@ public class ServerService {
         if (!res.getBoolean("success")) return new JSONArray();
         return res.optJSONArray("sessions");
     }
+    public static boolean addItemWithImageAndAttributes(
+            String name,
+            String category,
+            String description,
+            double startPrice,
+            byte[] imageData,
+            String attr1,
+            String attr2) {
+
+        JSONObject req = new JSONObject();
+        req.put("action", "addItemWithImageAndAttributes");
+        req.put("token", getToken());
+        req.put("name", name);
+        req.put("category", category);
+        req.put("description", description);
+        req.put("startPrice", startPrice);
+        req.put("imageData", java.util.Base64.getEncoder().encodeToString(imageData));
+        req.put("attr1", attr1);
+        req.put("attr2", attr2);
+
+        JSONObject response = send(req);
+        return response.optBoolean("success", false);
+    }
+
 
 
     // ================================================================== //

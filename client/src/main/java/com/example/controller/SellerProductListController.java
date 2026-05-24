@@ -34,7 +34,6 @@ public class SellerProductListController extends com.example.controller.BaseCont
     private void loadProducts() {
         productGrid.getChildren().clear();
 
-        //Gọi thật thay vì mock
         org.json.JSONArray items = ServerService.getMyItems();
         if (items == null) return;
 
@@ -49,11 +48,19 @@ public class SellerProductListController extends com.example.controller.BaseCont
             String priceStr = String.format("%,.0fđ", price);
             String imageBase64 = item.optString("image", "");
 
-            productGrid.getChildren().add(buildMockCard(name, id, priceStr, status, category, description, imageBase64));
+
+            String attr1 = item.optString("attr1", "");
+            String attr2 = item.optString("attr2", "");
+
+
+            productGrid.getChildren().add(buildMockCard(name, id, priceStr, status, category,
+                    description, imageBase64, attr1, attr2));
         }
     }
 
-    private VBox buildMockCard(String ten, String id, String gia, String tinhTrang, String category, String description, String imageBase64) {
+    private VBox buildMockCard(String ten, String id, String gia, String tinhTrang,
+                               String category, String description, String imageBase64,
+                               String attr1, String attr2) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
@@ -66,19 +73,50 @@ public class SellerProductListController extends com.example.controller.BaseCont
         img.getStyleClass().add("product-card-image");
         img.setPrefHeight(160);
 
-        VBox info = new VBox(3);
+        VBox info = new VBox(4);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
                 new Label("Tên sản phẩm: " + ten),
                 new Label("Id sản phẩm: " + id),
                 new Label("Giá mở bán: " + gia),
-                new Label("Tình trạng: " + tinhTrang)
+                new Label("Tình trạng: " + tinhTrang),
+                new Label("Phân loại: " + category)
         );
+
+
+        if (!attr1.isEmpty() || !attr2.isEmpty()) {
+            VBox attrBox = new VBox(3);
+            attrBox.setStyle("-fx-padding: 8; -fx-border-color: #e0e0e0; -fx-border-radius: 5; " +
+                    "-fx-background-color: #f9f9f9; -fx-background-radius: 5;");
+
+            switch (category.toUpperCase()) {
+                case "FASHION" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  Size: " + attr2));
+                }
+                case "ART" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  Artist: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  Medium: " + attr2));
+                }
+                case "VEHICLE" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  Mileage: " + attr2 + " km"));
+                }
+                case "ELECTRONICS" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  Warranty: " + attr2 + " tháng"));
+                }
+            }
+
+            if (!attrBox.getChildren().isEmpty()) {
+                info.getChildren().add(attrBox);
+            }
+        }
 
         Hyperlink link = new Hyperlink("Xem chi tiết");
         link.getStyleClass().add("link-text");
         link.setStyle("-fx-text-fill: #0044CC;");
-        link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64));
+        link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64, attr1, attr2));
         info.getChildren().add(link);
 
         if (imageBase64 != null && !imageBase64.isEmpty()) {
@@ -100,15 +138,18 @@ public class SellerProductListController extends com.example.controller.BaseCont
         return card;
     }
 
-    private void openDetail(String id, String ten, String category, String gia, String moTa, String tinhTrang, String imageBase64) {
+    private void openDetail(String id, String ten, String category, String gia,
+                            String moTa, String tinhTrang, String imageBase64,
+                            String attr1, String attr2) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SellerProductDetail.fxml"));
             Parent root = loader.load();
-            com.example.controller.SellerProductDetailController ctrl = loader.getController();
+            SellerProductDetailController ctrl = loader.getController();
             ctrl.currentUsername = currentUsername;
             ctrl.currentRole = currentRole;
             ctrl.currentUserId = currentUserId;
-            ctrl.initData(id, ten, category, gia, moTa, tinhTrang, imageBase64);
+            // Truyền đầy đủ 9 tham số (có attr1, attr2)
+            ctrl.initData(id, ten, category, gia, moTa, tinhTrang, imageBase64, attr1, attr2);
             Stage stage = getStage(productGrid);
             stage.setScene(new Scene(root));
             stage.show();

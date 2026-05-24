@@ -2,8 +2,8 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;"
-      stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26"
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css"
+      xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.example.controller.SellerProductDetailController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
@@ -63,6 +63,10 @@
                     <RowConstraints/>
                 </rowConstraints>
             </GridPane>
+
+
+            <Label styleClass="detail-label" text="Product Attributes" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+            <VBox fx:id="attributesContainer" spacing="6" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
             <HBox style="-fx-padding: 8 0 0 140;">
                 <VBox>

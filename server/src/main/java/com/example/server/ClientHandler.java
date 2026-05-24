@@ -101,6 +101,7 @@ public class ClientHandler implements Runnable {
                 case "addItemWithImage" -> handleAddItemWithImage(req);
                 case "updateItemWithImage" -> handleUpdateItemWithImage(req);
                 case "updateSession" -> handleUpdateSession(req);
+                case "addItemWithImageAndAttributes" -> handleAddItemWithImageAndAttributes(req);
 
                 // Sessions
                 case "createSession" -> handleCreateSession(req);
@@ -218,11 +219,12 @@ public class ClientHandler implements Runnable {
         AuthResult auth = TokenGuard.checkRole(req, "SELLER");
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
-        String sellerId = auth.getUserId(); // lấy từ token, không cần client gửi
+        String sellerId = auth.getUserId();
         List<Item> items = itemDAO.findBySellerId(sellerId);
         JSONArray arr = new JSONArray();
+
         for (Item item : items) {
-            arr.put(new JSONObject()
+            JSONObject obj = new JSONObject()
                     .put("id", item.getId())
                     .put("name", item.getName())
                     .put("description", item.getDescription())
@@ -230,10 +232,91 @@ public class ClientHandler implements Runnable {
                     .put("status", item.getStatus().name())
                     .put("type", item.getClass().getSimpleName())
                     .put("sellerId", item.getSellerId())
-                    .put("image", item.getImage() != null ? item.getImage() : "")
-            );
+                    .put("image", item.getImage() != null ? item.getImage() : "");
+
+
+            if (item instanceof model.item.Fashion fashion) {
+                obj.put("attr1", fashion.getBrand() != null ? fashion.getBrand() : "");
+                obj.put("attr2", fashion.getSize() != null ? fashion.getSize() : "");
+                System.out.println("[Server] Fashion - Brand: " + fashion.getBrand() + ", Size: " + fashion.getSize());
+            } else if (item instanceof model.item.Art art) {
+                obj.put("attr1", art.getArtist() != null ? art.getArtist() : "");
+                obj.put("attr2", art.getMedium() != null ? art.getMedium() : "");
+                System.out.println("[Server] Art - Artist: " + art.getArtist() + ", Medium: " + art.getMedium());
+            } else if (item instanceof model.item.Vehicle vehicle) {
+                obj.put("attr1", vehicle.getBrand() != null ? vehicle.getBrand() : "");
+                obj.put("attr2", String.valueOf(vehicle.getMileage()));
+                System.out.println("[Server] Vehicle - Brand: " + vehicle.getBrand() + ", Mileage: " + vehicle.getMileage());
+            } else if (item instanceof model.item.Electronics electronics) {
+                obj.put("attr1", electronics.getBrand() != null ? electronics.getBrand() : "");
+                obj.put("attr2", String.valueOf(electronics.getWarrantyMonths()));
+                System.out.println("[Server] Electronics - Brand: " + electronics.getBrand() + ", Warranty: " + electronics.getWarrantyMonths());
+            } else {
+                obj.put("attr1", "");
+                obj.put("attr2", "");
+            }
+
+            arr.put(obj);
         }
+
         return success().put("items", arr).toString();
+    }
+    private String handleAddItemWithImageAndAttributes(JSONObject req) {
+        AuthResult auth = TokenGuard.checkRole(req, "SELLER");
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sellerId = auth.getUserId();
+        String name = req.getString("name");
+        String category = req.getString("category");
+        String description = req.getString("description");
+        double startPrice = req.getDouble("startPrice");
+        String imageData = req.optString("imageData", "");
+        String attr1 = req.optString("attr1", "");
+        String attr2 = req.optString("attr2", "");
+
+        try {
+            Item.ItemType type = Item.ItemType.valueOf(
+                    category.toUpperCase().replace(" ", "_").replace("Đ", "D")
+            );
+            String itemId = UUID.randomUUID().toString();
+            Item newItem = type.create(
+                    sellerId, name, itemId,
+                    description, startPrice,
+                    Item.ItemStatus.PENDING
+            );
+
+            // 🆕 SET ATTRIBUTES
+            if (newItem instanceof model.item.Fashion fashion) {
+                fashion.setBrand(attr1);
+                fashion.setSize(attr2);
+                System.out.println("[Server] Saved Fashion - Brand: " + attr1 + ", Size: " + attr2);
+            } else if (newItem instanceof model.item.Art art) {
+                art.setArtist(attr1);
+                art.setMedium(attr2);
+                System.out.println("[Server] Saved Art - Artist: " + attr1 + ", Medium: " + attr2);
+            } else if (newItem instanceof model.item.Vehicle vehicle) {
+                vehicle.setBrand(attr1);
+                try {
+                    vehicle.setMileage(Long.parseLong(attr2));
+                } catch (NumberFormatException e) {
+                    vehicle.setMileage(0);
+                }
+                System.out.println("[Server] Saved Vehicle - Brand: " + attr1 + ", Mileage: " + attr2);
+            } else if (newItem instanceof model.item.Electronics electronics) {
+                electronics.setBrand(attr1);
+                try {
+                    electronics.setWarrantyMonths(Integer.parseInt(attr2));
+                } catch (NumberFormatException e) {
+                    electronics.setWarrantyMonths(12);
+                }
+                System.out.println("[Server] Saved Electronics - Brand: " + attr1 + ", Warranty: " + attr2);
+            }
+
+            itemDAO.saveWithImage(newItem, imageData);
+            return success().toString();
+        } catch (Exception e) {
+            return fail("Không tạo được sản phẩm: " + e.getMessage());
+        }
     }
 
     private String handleAddItem(JSONObject req) {
@@ -339,16 +422,36 @@ public class ClientHandler implements Runnable {
 
         List<Item> items = itemDAO.findAll();
         JSONArray arr = new JSONArray();
+
         for (Item item : items) {
-            arr.put(new JSONObject()
+            JSONObject obj = new JSONObject()
                     .put("id", item.getId())
                     .put("name", item.getName())
                     .put("startPrice", item.getStartPrice())
                     .put("status", item.getStatus().name())
                     .put("sellerId", item.getSellerId())
                     .put("type", item.getClass().getSimpleName())
-                    .put("image", item.getImage() != null ? item.getImage() : "")
-            );
+                    .put("image", item.getImage() != null ? item.getImage() : "");
+
+
+            if (item instanceof model.item.Fashion fashion) {
+                obj.put("attr1", fashion.getBrand() != null ? fashion.getBrand() : "");
+                obj.put("attr2", fashion.getSize() != null ? fashion.getSize() : "");
+            } else if (item instanceof model.item.Art art) {
+                obj.put("attr1", art.getArtist() != null ? art.getArtist() : "");
+                obj.put("attr2", art.getMedium() != null ? art.getMedium() : "");
+            } else if (item instanceof model.item.Vehicle vehicle) {
+                obj.put("attr1", vehicle.getBrand() != null ? vehicle.getBrand() : "");
+                obj.put("attr2", String.valueOf(vehicle.getMileage()));
+            } else if (item instanceof model.item.Electronics electronics) {
+                obj.put("attr1", electronics.getBrand() != null ? electronics.getBrand() : "");
+                obj.put("attr2", String.valueOf(electronics.getWarrantyMonths()));
+            } else {
+                obj.put("attr1", "");
+                obj.put("attr2", "");
+            }
+
+            arr.put(obj);
         }
         return success().put("items", arr).toString();
     }
@@ -785,7 +888,7 @@ public class ClientHandler implements Runnable {
     // ================================================================== //
 
     private JSONObject auctionToJson(Auction a) {
-        return new JSONObject()
+        JSONObject obj = new JSONObject()
                 .put("id", a.getAuctionId())
                 .put("itemId", a.getItem().getId())
                 .put("itemName", a.getItem().getName())
@@ -799,10 +902,28 @@ public class ClientHandler implements Runnable {
                 .put("endTime", a.getEndTime().toString())
                 .put("status", a.getStatus().name())
                 .put("category", a.getItem().getClass().getSimpleName())
-                .put("id", a.getId())
-                .put("itemImage", a.getItem().getImage() != null ? a.getItem().getImage() : "")
                 .put("currentWinner", a.getCurrentWinner() != null ? a.getCurrentWinner() : "");
 
+
+        Item item = a.getItem();
+        if (item instanceof model.item.Fashion fashion) {
+            obj.put("attr1", fashion.getBrand() != null ? fashion.getBrand() : "");
+            obj.put("attr2", fashion.getSize() != null ? fashion.getSize() : "");
+        } else if (item instanceof model.item.Art art) {
+            obj.put("attr1", art.getArtist() != null ? art.getArtist() : "");
+            obj.put("attr2", art.getMedium() != null ? art.getMedium() : "");
+        } else if (item instanceof model.item.Vehicle vehicle) {
+            obj.put("attr1", vehicle.getBrand() != null ? vehicle.getBrand() : "");
+            obj.put("attr2", String.valueOf(vehicle.getMileage()));
+        } else if (item instanceof model.item.Electronics electronics) {
+            obj.put("attr1", electronics.getBrand() != null ? electronics.getBrand() : "");
+            obj.put("attr2", String.valueOf(electronics.getWarrantyMonths()));
+        } else {
+            obj.put("attr1", "");
+            obj.put("attr2", "");
+        }
+
+        return obj;
     }
 
     private JSONArray txToJson(List<BidTransaction> list, boolean includeAuction) {

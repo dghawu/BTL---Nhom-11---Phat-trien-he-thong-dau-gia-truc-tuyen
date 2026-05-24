@@ -3,9 +3,10 @@
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import java.lang.*?>
-<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css"
-      xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+
+<?import java.lang.String?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;"
+      stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26"
       fx:controller="com.example.controller.SellerCentreController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
@@ -33,54 +34,57 @@
             <Label maxWidth="Infinity" styleClass="detail-header" text="Detail"/>
             <Separator/>
 
-            <GridPane hgap="20" style="-fx-padding: 20 20 0 20;" vgap="14">
-                <columnConstraints>
-                    <ColumnConstraints minWidth="120" prefWidth="140"/>
-                    <ColumnConstraints hgrow="ALWAYS" minWidth="300"/>
-                </columnConstraints>
-                <Label styleClass="detail-label" text="Product's name" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <TextField fx:id="tenField" maxWidth="Infinity" styleClass="text-field-underline"
-                           GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-                <Label styleClass="detail-label" text="Category" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <ComboBox fx:id="phanLoaiBox" maxWidth="Infinity" promptText="Select category"
-                          styleClass="combo-box-rounded" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="ELECTRONICS"/>
-                            <String fx:value="VEHICLE"/>
-                            <String fx:value="FASHION"/>
-                            <String fx:value="ART"/>
-                            <String fx:value="ETC"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent;">
+                <VBox spacing="20" style="-fx-padding: 20 30 20 30;">
+                    <!-- Row 0: Product's name -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Product's name"/>
+                        <TextField fx:id="tenField" styleClass="text-field-underline" prefHeight="40"/>
+                    </VBox>
 
-                <Label styleClass="detail-label" text="Description" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <TextField fx:id="moTaField" maxWidth="Infinity" styleClass="text-field-underline"
-                           GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    <!-- Row 1: Category -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Category"/>
+                        <ComboBox fx:id="phanLoaiBox" promptText="Select category" styleClass="combo-box-rounded" prefHeight="40">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="ELECTRONICS"/>
+                                    <String fx:value="VEHICLE"/>
+                                    <String fx:value="FASHION"/>
+                                    <String fx:value="ART"/>
+                                    <String fx:value="ETC"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
 
-                <Label styleClass="detail-label" text="Starting price" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <TextField fx:id="giaField" maxWidth="Infinity" styleClass="text-field-underline"
-                           GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                    <!-- Row 2: Category Attributes Container -->
+                    <VBox fx:id="categoryAttributesContainer" spacing="15"/>
 
-                <Label styleClass="detail-label" text="Image" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                <rowConstraints>
-                    <RowConstraints/>
-                    <RowConstraints/>
-                    <RowConstraints/>
-                    <RowConstraints/>
-                    <RowConstraints/>
-                </rowConstraints>
-            </GridPane>
+                    <!-- Row 3: Description -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Description"/>
+                        <TextField fx:id="moTaField" styleClass="text-field-underline" prefHeight="40"/>
+                    </VBox>
 
-            <HBox style="-fx-padding: 10 20 0 160;">
-                <Pane fx:id="imagePane" onMouseClicked="#handleChooseImage" prefHeight="220" prefWidth="240"
-                      styleClass="image-placeholder"/>
-            </HBox>
+                    <!-- Row 4: Starting price -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Starting price"/>
+                        <TextField fx:id="giaField" styleClass="text-field-underline" prefHeight="40"/>
+                    </VBox>
 
-            <Region VBox.vgrow="ALWAYS"/>
-            <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 0;">
+                    <!-- Row 5: Image -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Image"/>
+                        <Pane fx:id="imagePane" onMouseClicked="#handleChooseImage" prefHeight="200" prefWidth="200"
+                              styleClass="image-placeholder"/>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- Buttons - giữ cố định ở dưới cùng -->
+            <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 20;">
                 <Button onAction="#handleEdit" styleClass="btn-secondary" text="EDIT"/>
                 <Button onAction="#handleSave" styleClass="btn-primary" text="SAVE"/>
             </HBox>

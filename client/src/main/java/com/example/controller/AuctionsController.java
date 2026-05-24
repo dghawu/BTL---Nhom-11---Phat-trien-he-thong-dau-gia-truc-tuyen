@@ -93,27 +93,27 @@ public class AuctionsController extends com.example.controller.BaseController {
 
     @FXML
     private void handleFilterDienTu() {
-        setFilter("DIEN_TU", btnDienTu);
+        setFilter("ELECTRONICS", btnDienTu);
     }
 
     @FXML
     private void handleFilterPhuongTien() {
-        setFilter("PHUONG_TIEN", btnPhuongTien);
+        setFilter("VEHICLE", btnPhuongTien);
     }
 
     @FXML
     private void handleFilterThoiTrang() {
-        setFilter("THOI_TRANG", btnThoiTrang);
+        setFilter("FASHION", btnThoiTrang);
     }
 
     @FXML
     private void handleFilterNgheThuat() {
-        setFilter("NGHE_THUAT", btnNgheThuat);
+        setFilter("ART", btnNgheThuat);
     }
 
     @FXML
     private void handleFilterMucKhac() {
-        setFilter("MUC_KHAC", btnMucKhac);
+        setFilter("ETC", btnMucKhac);
     }
 
     private void setFilter(String filter, Button activeBtn) {

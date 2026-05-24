@@ -3,10 +3,11 @@ package com.example.controller;
 import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -27,10 +28,14 @@ public class SellerCentreController extends com.example.controller.BaseControlle
     private TextField giaField;
     @FXML
     private Pane imagePane;
+    @FXML
+    private VBox categoryAttributesContainer;
 
     // Lưu dữ liệu ảnh hiện tại
     private String currentImagePath = null;
     private byte[] imageData = null;
+    private TextField categoryAttr1;
+    private TextField categoryAttr2;
 
     // ------------------------------------------------------------------ //
     //  Nav
@@ -56,6 +61,113 @@ public class SellerCentreController extends com.example.controller.BaseControlle
     // ------------------------------------------------------------------ //
     //  Sidebar
     // ------------------------------------------------------------------ //
+    @FXML
+    public void initialize() {
+        // Lắng nghe khi user chọn category
+        if (phanLoaiBox != null) {
+            phanLoaiBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+                updateCategoryFields(newVal);  // Gọi hàm hiển thị attributes
+            });
+        }
+    }
+    private void updateCategoryFields(String category) {
+        // Xoá các field cũ
+        if (categoryAttributesContainer != null) {
+            categoryAttributesContainer.getChildren().clear();
+        }
+        categoryAttr1 = null;
+        categoryAttr2 = null;
+
+        if (category == null || category.isEmpty()) return;
+
+        // Tạo HBox chứa 2 cột
+        HBox row = new HBox(20);
+        row.setStyle("-fx-padding: 10 0 5 0;");
+
+        // Cột 1
+        VBox col1 = new VBox(8);
+        col1.setStyle("-fx-pref-width: 250;");
+        HBox.setHgrow(col1, Priority.ALWAYS);
+
+        // Cột 2
+        VBox col2 = new VBox(8);
+        col2.setStyle("-fx-pref-width: 250;");
+        HBox.setHgrow(col2, Priority.ALWAYS);
+
+        switch (category.toUpperCase()) {
+            case "FASHION" -> {
+                Label brandLabel = new Label("Brand");
+                brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+                categoryAttr1 = new TextField();
+                categoryAttr1.setPromptText("Nhập thương hiệu (VD: Nike, Adidas)");
+                categoryAttr1.setPrefHeight(38);
+
+                Label sizeLabel = new Label("Size");
+                sizeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+                categoryAttr2 = new TextField();
+                categoryAttr2.setPromptText("Nhập kích cỡ (VD: S, M, L, XL)");
+                categoryAttr2.setPrefHeight(38);
+
+                col1.getChildren().addAll(brandLabel, categoryAttr1);
+                col2.getChildren().addAll(sizeLabel, categoryAttr2);
+            }
+            case "ART" -> {
+                Label artistLabel = new Label("Artist");
+                artistLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+                categoryAttr1 = new TextField();
+                categoryAttr1.setPromptText("Nhập tên tác giả");
+                categoryAttr1.setPrefHeight(38);
+
+                Label mediumLabel = new Label("Medium (Chất liệu)");
+                mediumLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+                categoryAttr2 = new TextField();
+                categoryAttr2.setPromptText("VD: Sơn dầu, Màu nước, Điêu khắc");
+                categoryAttr2.setPrefHeight(38);
+
+                col1.getChildren().addAll(artistLabel, categoryAttr1);
+                col2.getChildren().addAll(mediumLabel, categoryAttr2);
+            }
+            case "VEHICLE" -> {
+                Label brandLabel = new Label("Brand");
+                brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+                categoryAttr1 = new TextField();
+                categoryAttr1.setPromptText("Nhập thương hiệu xe (VD: Toyota, Honda)");
+                categoryAttr1.setPrefHeight(38);
+
+                Label mileageLabel = new Label("Mileage (km)");
+                mileageLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+                categoryAttr2 = new TextField();
+                categoryAttr2.setPromptText("Nhập số km đã đi (VD: 50000)");
+                categoryAttr2.setPrefHeight(38);
+
+                col1.getChildren().addAll(brandLabel, categoryAttr1);
+                col2.getChildren().addAll(mileageLabel, categoryAttr2);
+            }
+            case "ELECTRONICS" -> {
+                Label brandLabel = new Label("Brand");
+                brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+                categoryAttr1 = new TextField();
+                categoryAttr1.setPromptText("Nhập thương hiệu (VD: Apple, Samsung)");
+                categoryAttr1.setPrefHeight(38);
+
+                Label warrantyLabel = new Label("Warranty (months)");
+                warrantyLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+                categoryAttr2 = new TextField();
+                categoryAttr2.setPromptText("Nhập số tháng bảo hành (VD: 12)");
+                categoryAttr2.setPrefHeight(38);
+
+                col1.getChildren().addAll(brandLabel, categoryAttr1);
+                col2.getChildren().addAll(warrantyLabel, categoryAttr2);
+            }
+            default -> {
+                return;
+            }
+        }
+
+        row.getChildren().addAll(col1, col2);
+        categoryAttributesContainer.getChildren().add(row);
+    }
+
     @FXML
     private void handleThemSanPham() { /* đã ở đây */ }
 
@@ -149,9 +261,11 @@ public class SellerCentreController extends com.example.controller.BaseControlle
             showNotification(getStage(tenField), "GIÁ KHÔNG HỢP LỆ!");
             return;
         }
+        String attr1 = categoryAttr1 != null ? categoryAttr1.getText().trim() : "";
+        String attr2 = categoryAttr2 != null ? categoryAttr2.getText().trim() : "";
 
         // Gọi ServerService với image data
-        boolean ok = ServerService.addItemWithImage(ten, phanLoai, moTa, gia, imageData);
+        boolean ok = ServerService.addItemWithImageAndAttributes(ten, phanLoai, moTa, gia, imageData, attr1, attr2);
 
         if (ok) {
             showNotification(getStage(tenField), "THÊM SẢN PHẨM THÀNH CÔNG!");
@@ -169,5 +283,11 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         imageData = null;
         currentImagePath = null;
         imagePane.getChildren().clear();
+
+        if (categoryAttributesContainer != null) {
+            categoryAttributesContainer.getChildren().clear();
+        }
+        categoryAttr1 = null;
+        categoryAttr2 = null;
     }
 }

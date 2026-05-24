@@ -1,8 +1,7 @@
 package model.item;
 
 public class Electronics extends Item {
-
-
+    private String brand;
     private int warrantyMonths;
 
 
@@ -15,8 +14,9 @@ public class Electronics extends Item {
 
     private Electronics(String id, String sellerId, String name,
                         String description, double startingPrice,
-                        Item.ItemStatus status, int warrantyMonths) {
+                        Item.ItemStatus status, String brand, int warrantyMonths) {
         super(id, sellerId, name, description, startingPrice, status);
+        this.brand = brand;
         this.warrantyMonths = warrantyMonths;
     }
 
@@ -32,14 +32,14 @@ public class Electronics extends Item {
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
                            Item.ItemStatus status) {
-        return new Electronics(id, sellerId, name, description, startingPrice, status, 12);
+        return new Electronics(id, sellerId, name, description, startingPrice, status, null,  12);
     }
 
 
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
                            Item.ItemStatus status, int warrantyMonths) {
-        return new Electronics(id, sellerId, name, description, startingPrice, status, warrantyMonths);
+        return new Electronics(id, sellerId, name, description, startingPrice, status, brand, warrantyMonths);
     }
 
 
@@ -52,9 +52,15 @@ public class Electronics extends Item {
         this.warrantyMonths = months;
     }
 
+    public String getBrand() {return brand;}
+
+    public void setBrand(String brand) {this.brand = brand;}
 
     @Override
     protected void printExtraInfo() {
+        if (brand != null && !brand.isEmpty()) {
+            System.out.printf("  Thương hiệu   : %s%n", brand);
+        }
         System.out.printf("  Bảo hành     : %d tháng%n", warrantyMonths);
     }
 }

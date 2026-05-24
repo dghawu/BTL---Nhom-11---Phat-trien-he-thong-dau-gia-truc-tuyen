@@ -35,11 +35,14 @@ public class SellerSessionListController extends com.example.controller.BaseCont
 
         for (int i = 0; i < sessions.length(); i++) {
             org.json.JSONObject s = sessions.getJSONObject(i);
-            sessionGrid.getChildren().add(buildCard(s));
+            // 🆕 Lấy attributes từ JSON
+            String attr1 = s.optString("attr1", "");
+            String attr2 = s.optString("attr2", "");
+            sessionGrid.getChildren().add(buildCard(s, attr1, attr2));
         }
     }
 
-    private VBox buildCard(org.json.JSONObject s) {
+    private VBox buildCard(org.json.JSONObject s, String attr1, String attr2) {
         String id = s.getString("id");
         String ten = s.getString("itemName");
         String startTime = s.getString("startTime");
@@ -60,7 +63,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         img.getStyleClass().add("product-card-image");
         img.setPrefHeight(160);
 
-        VBox info = new VBox(3);
+        VBox info = new VBox(4);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
                 new Label("Tên sản phẩm: " + ten),
@@ -70,9 +73,42 @@ public class SellerSessionListController extends com.example.controller.BaseCont
                 new Label("Phân loại: " + category)
         );
 
+        // 🆕 Thêm attributes vào card
+        if (!attr1.isEmpty() || !attr2.isEmpty()) {
+            VBox attrBox = new VBox(3);
+            attrBox.setStyle("-fx-padding: 8; -fx-border-color: #e0e0e0; -fx-border-radius: 5; " +
+                    "-fx-background-color: #f9f9f9; -fx-background-radius: 5;");
+
+            switch (category.toUpperCase()) {
+                case "FASHION" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("   Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("   Size: " + attr2));
+                }
+                case "ART" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("   Artist: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("   Medium: " + attr2));
+                }
+                case "VEHICLE" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("   Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("   Mileage: " + attr2 + " km"));
+                }
+                case "ELECTRONICS" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("   Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("   Warranty: " + attr2 + " tháng"));
+                }
+                default -> {
+                    // ETC hoặc category khác không có attributes đặc biệt
+                }
+            }
+
+            if (!attrBox.getChildren().isEmpty()) {
+                info.getChildren().add(attrBox);
+            }
+        }
+
         Hyperlink link = new Hyperlink("Xem chi tiết");
         link.getStyleClass().add("link-text");
-        link.setOnAction(e -> openDetail(s));
+        link.setOnAction(e -> openDetail(s, attr1, attr2));
         info.getChildren().add(link);
 
         if (imageBase64 != null && !imageBase64.isEmpty()) {
@@ -94,7 +130,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         return card;
     }
 
-    private void openDetail(org.json.JSONObject s) {
+    private void openDetail(org.json.JSONObject s, String attr1, String attr2) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SellerSessionDetail.fxml"));
             Parent root = loader.load();
@@ -110,7 +146,10 @@ public class SellerSessionListController extends com.example.controller.BaseCont
                     String.format("%,.0fđ", s.getDouble("startPrice")),
                     String.format("%,.0f", s.optDouble("stepPrice", 0)),
                     s.getString("status"),
-                    s.optString("itemImage", "")
+                    s.optString("itemImage", ""),
+                    s.optString("category", ""),
+                    attr1,
+                    attr2
             );
             getStage(sessionGrid).setScene(new Scene(root));
         } catch (Exception e) {

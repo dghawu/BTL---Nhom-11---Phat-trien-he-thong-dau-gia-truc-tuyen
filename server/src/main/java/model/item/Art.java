@@ -48,7 +48,7 @@ public class Art extends Item {
 
     @Override
     protected void printExtraInfo() {
-        System.out.printf("  Nghệ sĩ      : %s%n", artist);
+        System.out.printf("  Tác giả      : %s%n", artist);
         System.out.printf("  Chất liệu    : %s%n", medium);
     }
 }

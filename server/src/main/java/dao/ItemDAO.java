@@ -1,5 +1,6 @@
 package dao;
 
+import model.item.*;
 import model.item.Item;
 
 import java.sql.*;
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ItemDAO - đã sửa cho MySQL (đổi INSERT OR IGNORE → INSERT IGNORE).
+ * ItemDAO - đã sửa cho MySQL, hỗ trợ attributes cho Fashion, Art, Vehicle, Electronics
  */
 public class ItemDAO {
 
@@ -20,7 +21,6 @@ public class ItemDAO {
     // ── INSERT ─────────────────────────────────────────────────────
 
     public void save(Item item) {
-        // Sửa: INSERT IGNORE thay vì INSERT OR IGNORE (MySQL syntax)
         String sql = "INSERT IGNORE INTO items " +
                 "(id, seller_id, name, description, starting_price, status, type, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -35,6 +35,9 @@ public class ItemDAO {
             ps.setString(8, item.getCreatedAt().toString());
             ps.executeUpdate();
             System.out.println("[ItemDAO] Lưu item: " + item.getName());
+
+            // Lưu attributes
+            saveAttributes(item);
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi save: " + e.getMessage());
         }
@@ -56,8 +59,127 @@ public class ItemDAO {
             ps.setString(9, item.getCreatedAt().toString());
             ps.executeUpdate();
             System.out.println("[ItemDAO] Lưu item with image: " + item.getName());
+
+            // Lưu attributes
+            saveAttributes(item);
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi saveWithImage: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Lưu attributes vào bảng riêng theo loại item
+     */
+    private void saveAttributes(Item item) {
+        if (item instanceof Fashion fashion) {
+            String sql = "INSERT IGNORE INTO fashion (id, item_id, brand, size) VALUES (UUID(), ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, item.getId());
+                ps.setString(2, fashion.getBrand());
+                ps.setString(3, fashion.getSize());
+                ps.executeUpdate();
+                System.out.println("[ItemDAO]  Saved Fashion: " + fashion.getBrand() + " - " + fashion.getSize());
+            } catch (SQLException e) {
+                System.out.println("[ItemDAO] Lỗi save Fashion attributes: " + e.getMessage());
+            }
+        }
+        else if (item instanceof Art art) {
+            String sql = "INSERT IGNORE INTO art (id, item_id, artist, medium) VALUES (UUID(), ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, item.getId());
+                ps.setString(2, art.getArtist());
+                ps.setString(3, art.getMedium());
+                ps.executeUpdate();
+                System.out.println("[ItemDAO]  Saved Art: " + art.getArtist() + " - " + art.getMedium());
+            } catch (SQLException e) {
+                System.out.println("[ItemDAO] Lỗi save Art attributes: " + e.getMessage());
+            }
+        }
+        else if (item instanceof Vehicle vehicle) {
+            String sql = "INSERT IGNORE INTO vehicle (id, item_id, brand, mileage) VALUES (UUID(), ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, item.getId());
+                ps.setString(2, vehicle.getBrand());
+                ps.setLong(3, vehicle.getMileage());
+                ps.executeUpdate();
+                System.out.println("[ItemDAO]  Saved Vehicle: " + vehicle.getBrand() + " - " + vehicle.getMileage());
+            } catch (SQLException e) {
+                System.out.println("[ItemDAO] Lỗi save Vehicle attributes: " + e.getMessage());
+            }
+        }
+        else if (item instanceof Electronics electronics) {
+            String sql = "INSERT IGNORE INTO electronics (id, item_id, brand, warranty_months) VALUES (UUID(), ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, item.getId());
+                ps.setString(2, electronics.getBrand());
+                ps.setInt(3, electronics.getWarrantyMonths());
+                ps.executeUpdate();
+                System.out.println("[ItemDAO] Saved Electronics: " + electronics.getBrand() + " - " + electronics.getWarrantyMonths());
+            } catch (SQLException e) {
+                System.out.println("[ItemDAO] Lỗi save Electronics attributes: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Load attributes từ bảng riêng vào item
+     */
+    private void loadAttributes(Item item) {
+        if (item instanceof Fashion fashion) {
+            String sql = "SELECT brand, size FROM fashion WHERE item_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, item.getId());
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    fashion.setBrand(rs.getString("brand"));
+                    fashion.setSize(rs.getString("size"));
+                    System.out.println("[ItemDAO]  Loaded Fashion: " + fashion.getBrand() + " - " + fashion.getSize());
+                }
+            } catch (SQLException e) {
+                System.out.println("[ItemDAO] Lỗi load Fashion attributes: " + e.getMessage());
+            }
+        }
+        else if (item instanceof Art art) {
+            String sql = "SELECT artist, medium FROM art WHERE item_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, item.getId());
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    art.setArtist(rs.getString("artist"));
+                    art.setMedium(rs.getString("medium"));
+                    System.out.println("[ItemDAO]  Loaded Art: " + art.getArtist() + " - " + art.getMedium());
+                }
+            } catch (SQLException e) {
+                System.out.println("[ItemDAO] Lỗi load Art attributes: " + e.getMessage());
+            }
+        }
+        else if (item instanceof Vehicle vehicle) {
+            String sql = "SELECT brand, mileage FROM vehicle WHERE item_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, item.getId());
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    vehicle.setBrand(rs.getString("brand"));
+                    vehicle.setMileage(rs.getLong("mileage"));
+                    System.out.println("[ItemDAO]  Loaded Vehicle: " + vehicle.getBrand() + " - " + vehicle.getMileage());
+                }
+            } catch (SQLException e) {
+                System.out.println("[ItemDAO] Lỗi load Vehicle attributes: " + e.getMessage());
+            }
+        }
+        else if (item instanceof Electronics electronics) {
+            String sql = "SELECT brand, warranty_months FROM electronics WHERE item_id = ?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, item.getId());
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    electronics.setBrand(rs.getString("brand"));
+                    electronics.setWarrantyMonths(rs.getInt("warranty_months"));
+                    System.out.println("[ItemDAO]  Loaded Electronics: " + electronics.getBrand() + " - " + electronics.getWarrantyMonths());
+                }
+            } catch (SQLException e) {
+                System.out.println("[ItemDAO] Lỗi load Electronics attributes: " + e.getMessage());
+            }
         }
     }
 
@@ -68,7 +190,11 @@ public class ItemDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, id);
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return mapToItem(rs);
+            if (rs.next()) {
+                Item item = mapToItem(rs);
+                loadAttributes(item);  // Load attributes
+                return item;
+            }
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi findById: " + e.getMessage());
         }
@@ -81,7 +207,11 @@ public class ItemDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, sellerId);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) list.add(mapToItem(rs));
+            while (rs.next()) {
+                Item item = mapToItem(rs);
+                loadAttributes(item);  // Load attributes
+                list.add(item);
+            }
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi findBySellerId: " + e.getMessage());
         }
@@ -93,7 +223,11 @@ public class ItemDAO {
         String sql = "SELECT * FROM items";
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) list.add(mapToItem(rs));
+            while (rs.next()) {
+                Item item = mapToItem(rs);
+                loadAttributes(item);  // Load attributes
+                list.add(item);
+            }
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi findAll: " + e.getMessage());
         }
@@ -106,11 +240,29 @@ public class ItemDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, type.toUpperCase());
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) list.add(mapToItem(rs));
+            while (rs.next()) {
+                Item item = mapToItem(rs);
+                loadAttributes(item);  // Load attributes
+                list.add(item);
+            }
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi findByType: " + e.getMessage());
         }
         return list;
+    }
+
+    public String getImageByItemId(String itemId) {
+        String sql = "SELECT image FROM items WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, itemId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("image");
+            }
+        } catch (SQLException e) {
+            System.out.println("[ItemDAO] Lỗi getImageByItemId: " + e.getMessage());
+        }
+        return null;
     }
 
     // ── UPDATE ─────────────────────────────────────────────────────
@@ -121,6 +273,7 @@ public class ItemDAO {
             ps.setString(1, newStatus);
             ps.setString(2, itemId);
             ps.executeUpdate();
+            System.out.println("[ItemDAO] Updated status for item: " + itemId + " -> " + newStatus);
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi updateStatus: " + e.getMessage());
         }
@@ -168,6 +321,7 @@ public class ItemDAO {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, itemId);
             ps.executeUpdate();
+            System.out.println("[ItemDAO] Deleted item: " + itemId);
         } catch (SQLException e) {
             System.out.println("[ItemDAO] Lỗi delete: " + e.getMessage());
         }

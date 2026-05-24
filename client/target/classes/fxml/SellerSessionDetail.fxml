@@ -62,6 +62,12 @@
                 </rowConstraints>
             </GridPane>
 
+
+            <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 16 0 8 0;"
+                   text="Product Details" />
+            <VBox fx:id="attributesContainer"
+                  style="-fx-padding: 10; -fx-border-color: #f0f0f0; -fx-border-radius: 3; -fx-background-color: #fafafa;"/>
+
             <HBox style="-fx-padding: 0 0 0 0;">
                 <Pane fx:id="imgPane" prefHeight="160" prefWidth="180" styleClass="image-placeholder"/>
             </HBox>

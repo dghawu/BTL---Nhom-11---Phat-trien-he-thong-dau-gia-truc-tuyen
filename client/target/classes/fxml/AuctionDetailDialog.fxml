@@ -76,6 +76,11 @@
                     <RowConstraints/>
                 </rowConstraints>
             </GridPane>
+
+
+            <Label style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-padding: 8 0 0 0;" text="Product Attributes"/>
+            <VBox fx:id="attributesContainer"
+                  style="-fx-padding: 8; -fx-border-color: #f0f0f0; -fx-border-radius: 3; -fx-background-color: #fafafa;"/>
         </VBox>
 
         <!-- Right: image -->

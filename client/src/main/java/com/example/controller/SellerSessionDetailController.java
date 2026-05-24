@@ -5,7 +5,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 /**
  * SellerSessionDetailController - SellerSessionDetail.fxml
@@ -29,17 +31,24 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
     private Label lblTrangThai;
     @FXML
     private Pane imgPane;
+    @FXML
+    private VBox attributesContainer;
 
     // TextFields cho edit mode
     private TextField txtThoiDong;
     private TextField txtBuocGia;
+    private TextField txtAttr1;
+    private TextField txtAttr2;
 
     private boolean isEditMode = false;
     private String currentSessionId;
+    private String currentCategory;
+    private String attr1Value = "";
+    private String attr2Value = "";
     private byte[] newImageData = null;
 
     /**
-     * Init data với tất cả thông tin cần thiết
+     * Init data với tất cả thông tin cần thiết (có attributes)
      */
     public void initData(
             String sessionId,
@@ -49,9 +58,15 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
             String gia,
             String buocGia,
             String trangThai,
-            String imageDataBase64
+            String imageDataBase64,
+            String category,
+            String attr1,
+            String attr2
     ) {
         this.currentSessionId = sessionId;
+        this.currentCategory = category;
+        this.attr1Value = attr1 != null ? attr1 : "";
+        this.attr2Value = attr2 != null ? attr2 : "";
 
         lblSessionId.setText(sessionId != null && !sessionId.isEmpty() ? sessionId : "---");
         lblTenSP.setText(tenSP);
@@ -60,6 +75,9 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
         lblGiaKhoiDiem.setText(gia);
         lblBuocGia.setText(buocGia != null && !buocGia.isEmpty() ? buocGia : "---");
         lblTrangThai.setText(trangThai);
+
+        // Hiển thị attributes
+        displayAttributes();
 
         // Load image từ base64
         if (imageDataBase64 != null && !imageDataBase64.isEmpty()) {
@@ -78,6 +96,49 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
                 imgPane.getChildren().clear();
             }
         }
+    }
+
+    /**
+     * Hiển thị attributes dựa vào category
+     */
+    private void displayAttributes() {
+        if (attributesContainer == null) return;
+        attributesContainer.getChildren().clear();
+
+        if (currentCategory == null || currentCategory.isEmpty()) return;
+
+        switch (currentCategory.toUpperCase()) {
+            case "FASHION" -> {
+                addAttributeRow("Brand", attr1Value);
+                addAttributeRow("Size", attr2Value);
+            }
+            case "ART" -> {
+                addAttributeRow("Artist", attr1Value);
+                addAttributeRow("Medium", attr2Value);
+            }
+            case "VEHICLE" -> {
+                addAttributeRow("Brand", attr1Value);
+                addAttributeRow("Mileage (km)", attr2Value);
+            }
+            case "ELECTRONICS" -> {
+                addAttributeRow("Brand", attr1Value);
+                addAttributeRow("Warranty (months)", attr2Value);
+            }
+        }
+    }
+
+    /**
+     * Thêm một dòng attribute vào container
+     */
+    private void addAttributeRow(String label, String value) {
+        HBox row = new HBox(10);
+        row.setStyle("-fx-padding: 4 0;");
+        Label keyLabel = new Label(label + ":");
+        keyLabel.setStyle("-fx-font-weight: bold; -fx-min-width: 120; -fx-font-size: 13px;");
+        Label valueLabel = new Label(value != null && !value.isEmpty() ? value : "N/A");
+        valueLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #333;");
+        row.getChildren().addAll(keyLabel, valueLabel);
+        attributesContainer.getChildren().add(row);
     }
 
     @FXML
@@ -145,6 +206,38 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
 
         lblBuocGia.setGraphic(txtBuocGia);
         lblBuocGia.setText("");
+
+        // Bật edit mode cho attributes
+        enableAttributesEditMode();
+    }
+
+    /**
+     * Bật edit mode cho attributes
+     */
+    private void enableAttributesEditMode() {
+        if (attributesContainer == null || attributesContainer.getChildren().isEmpty()) return;
+
+        for (javafx.scene.Node node : attributesContainer.getChildren()) {
+            if (node instanceof HBox hbox && hbox.getChildren().size() >= 2) {
+                Label keyLabel = (Label) hbox.getChildren().get(0);
+                String key = keyLabel.getText().replace(":", "");
+                javafx.scene.Node valueNode = hbox.getChildren().get(1);
+
+                if (valueNode instanceof Label valueLabel) {
+                    String currentValue = valueLabel.getText();
+                    TextField txtField = new TextField(currentValue.equals("N/A") ? "" : currentValue);
+                    txtField.setStyle("-fx-padding: 5px; -fx-font-size: 13px;");
+                    hbox.getChildren().set(1, txtField);
+
+                    if (key.equals("Brand") || key.equals("Artist")) {
+                        txtAttr1 = txtField;
+                    } else if (key.equals("Size") || key.equals("Medium") ||
+                            key.equals("Mileage (km)") || key.equals("Warranty (months)")) {
+                        txtAttr2 = txtField;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -156,6 +249,13 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
 
         lblBuocGia.setGraphic(null);
         lblBuocGia.setText(txtBuocGia != null ? txtBuocGia.getText() : "---");
+
+        // Lưu giá trị attributes nếu có thay đổi
+        if (txtAttr1 != null) attr1Value = txtAttr1.getText();
+        if (txtAttr2 != null) attr2Value = txtAttr2.getText();
+
+        // Hiển thị lại attributes dưới dạng label
+        displayAttributes();
     }
 
     /**
@@ -212,6 +312,11 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
                     // Cập nhật UI
                     lblThoiGianDong.setText(newEndTime);
                     lblBuocGia.setText(newStepPriceStr);
+
+                    // Cập nhật attributes nếu có thay đổi
+                    if (txtAttr1 != null) attr1Value = txtAttr1.getText();
+                    if (txtAttr2 != null) attr2Value = txtAttr2.getText();
+                    displayAttributes();
 
                     disableEditMode();
                     isEditMode = false;

@@ -6,7 +6,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -33,6 +35,8 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
     @FXML
     private Label lblTinhTrang;
     @FXML
+    private VBox attributesContainer;
+    @FXML
     private Pane imgPane;
     @FXML
     private javafx.scene.control.Button btnChooseImage;
@@ -41,23 +45,38 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
     private TextField txtTen;
     private TextField txtGia;
     private TextField txtMoTa;
-    private TextField txtTinhTrang;
     private String currentImageBase64 = "";
 
     private boolean isEditMode = false;
     private String currentId;
     private byte[] newImageData = null;
 
-    public void initData(String id, String ten, String phanLoai, String gia, String moTa, String tinhTrang, String imageBase64) {
+    private String currentCategory;
+    private String currentAttr1;
+    private String currentAttr2;
+    private TextField txtAttr1;
+    private TextField txtAttr2;
+
+
+    public void initData(String id, String ten, String phanLoai, String gia, String moTa,
+                         String tinhTrang, String imageBase64, String attr1, String attr2) {
         this.currentId = id;
         this.currentImageBase64 = imageBase64 != null ? imageBase64 : "";
+
+
+        this.currentCategory = phanLoai;
+        this.currentAttr1 = attr1 != null ? attr1 : "";
+        this.currentAttr2 = attr2 != null ? attr2 : "";
+
         lblId.setText(id);
         lblTen.setText(ten);
         lblPhanLoai.setText(phanLoai != null && !phanLoai.isEmpty() ? phanLoai : "N/A");
         lblGia.setText(gia);
         lblMoTa.setText(moTa != null && !moTa.isEmpty() ? moTa : "Chưa có mô tả");
         lblTinhTrang.setText(tinhTrang);
+
         displayCurrentImage();
+        displayAttributes();  // Bây giờ currentCategory, currentAttr1, currentAttr2 đã có giá trị
     }
 
     @FXML
@@ -116,13 +135,11 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         txtTen = new TextField(lblTen.getText());
         txtGia = new TextField(lblGia.getText());
         txtMoTa = new TextField(lblMoTa.getText());
-        txtTinhTrang = new TextField(lblTinhTrang.getText());
 
         // Set style cho TextFields
         txtTen.setStyle("-fx-font-size: 14px; -fx-padding: 5px;");
         txtGia.setStyle("-fx-font-size: 14px; -fx-padding: 5px;");
         txtMoTa.setStyle("-fx-font-size: 14px; -fx-padding: 5px;");
-        txtTinhTrang.setStyle("-fx-font-size: 14px; -fx-padding: 5px;");
 
         // Thay thế Labels bằng TextFields
         lblTen.setGraphic(txtTen);
@@ -134,8 +151,32 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         lblMoTa.setGraphic(txtMoTa);
         lblMoTa.setText("");
 
-        lblTinhTrang.setGraphic(txtTinhTrang);
-        lblTinhTrang.setText("");
+        enableAttributesEditMode();
+    }
+    private void enableAttributesEditMode() {
+        if (attributesContainer == null || attributesContainer.getChildren().isEmpty()) return;
+
+        for (javafx.scene.Node node : attributesContainer.getChildren()) {
+            if (node instanceof HBox hbox && hbox.getChildren().size() >= 2) {
+                Label keyLabel = (Label) hbox.getChildren().get(0);
+                String key = keyLabel.getText().replace(":", "");
+                javafx.scene.Node valueNode = hbox.getChildren().get(1);
+
+                if (valueNode instanceof Label valueLabel) {
+                    String currentValue = valueLabel.getText();
+                    TextField txtField = new TextField(currentValue.equals("N/A") ? "" : currentValue);
+                    txtField.setStyle("-fx-padding: 5px; -fx-font-size: 13px;");
+                    hbox.getChildren().set(1, txtField);
+
+                    if (key.equals("Brand") || key.equals("Artist")) {
+                        txtAttr1 = txtField;
+                    } else if (key.equals("Size") || key.equals("Medium") ||
+                            key.equals("Mileage (km)") || key.equals("Warranty (months)")) {
+                        txtAttr2 = txtField;
+                    }
+                }
+            }
+        }
     }
 
     private void disableEditMode() {
@@ -149,8 +190,9 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         lblMoTa.setGraphic(null);
         lblMoTa.setText(txtMoTa != null ? txtMoTa.getText() : "");
 
-        lblTinhTrang.setGraphic(null);
-        lblTinhTrang.setText(txtTinhTrang != null ? txtTinhTrang.getText() : "");
+        if (txtAttr1 != null) currentAttr1 = txtAttr1.getText();
+        if (txtAttr2 != null) currentAttr2 = txtAttr2.getText();
+        displayAttributes();
     }
 
     private void displayCurrentImage() {
@@ -172,6 +214,42 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
             imgPane.getChildren().clear();
         }
     }
+    private void displayAttributes() {
+        if (attributesContainer == null) return;
+        attributesContainer.getChildren().clear();
+
+        if (currentCategory == null || currentCategory.isEmpty()) return;
+
+        switch (currentCategory.toUpperCase()) {
+            case "FASHION" -> {
+                addAttributeRow("Brand", currentAttr1);
+                addAttributeRow("Size", currentAttr2);
+            }
+            case "ART" -> {
+                addAttributeRow("Artist", currentAttr1);
+                addAttributeRow("Medium", currentAttr2);
+            }
+            case "VEHICLE" -> {
+                addAttributeRow("Brand", currentAttr1);
+                addAttributeRow("Mileage (km)", currentAttr2);
+            }
+            case "ELECTRONICS" -> {
+                addAttributeRow("Brand", currentAttr1);
+                addAttributeRow("Warranty (months)", currentAttr2);
+            }
+        }
+    }
+    private void addAttributeRow(String label, String value) {
+        HBox row = new HBox(10);
+        row.setStyle("-fx-padding: 4 0;");
+        Label keyLabel = new Label(label + ":");
+        keyLabel.setStyle("-fx-font-weight: bold; -fx-min-width: 120; -fx-font-size: 13px;");
+        Label valueLabel = new Label(value != null && !value.isEmpty() ? value : "N/A");
+        valueLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #333;");
+        row.getChildren().addAll(keyLabel, valueLabel);
+        attributesContainer.getChildren().add(row);
+    }
+
 
     /**
      * Cho phép chọn ảnh sản phẩm mới trong edit mode
@@ -212,10 +290,9 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
             String tenMoi = txtTen.getText().trim();
             String giaMoi = txtGia.getText().trim();
             String moTaMoi = txtMoTa.getText().trim();
-            String tinhTrangMoi = txtTinhTrang.getText().trim();
 
             // Kiểm tra dữ liệu không để trống
-            if (tenMoi.isEmpty() || giaMoi.isEmpty() || tinhTrangMoi.isEmpty()) {
+            if (tenMoi.isEmpty() || giaMoi.isEmpty()) {
                 showNotification(getStage(lblTen), "Vui lòng điền đầy đủ thông tin!");
                 return;
             }
@@ -234,7 +311,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
                             currentImageBase64 = java.util.Base64.getEncoder().encodeToString(newImageData);
                         }
                     } else {
-                        ok = ServerService.updateItem(currentId, tenMoi, moTaMoi, giaMoi, tinhTrangMoi);
+                        ok = ServerService.updateItem(currentId, tenMoi, moTaMoi, giaMoi);
                     }
                 }
 
@@ -243,7 +320,10 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
                     lblTen.setText(tenMoi);
                     lblGia.setText(giaMoi);
                     lblMoTa.setText(moTaMoi);
-                    lblTinhTrang.setText(tinhTrangMoi);
+
+                    if (txtAttr1 != null) currentAttr1 = txtAttr1.getText();
+                    if (txtAttr2 != null) currentAttr2 = txtAttr2.getText();
+                    displayAttributes();
 
                     disableEditMode();
                     isEditMode = false;
