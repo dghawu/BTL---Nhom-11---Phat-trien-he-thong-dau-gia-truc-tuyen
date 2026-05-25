@@ -2,15 +2,17 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css"
-      xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;"
+      stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26"
       fx:controller="com.example.controller.AdminProductDetailController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
         <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS"/>
         <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Admin centre" HBox.hgrow="ALWAYS"/>
-        <Button maxWidth="Infinity" onAction="#handleUserReport" styleClass="nav-tab" text="User's report" HBox.hgrow="ALWAYS"/>
-        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleUserReport" styleClass="nav-tab" text="User's report"
+                HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings"
+                HBox.hgrow="ALWAYS"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
@@ -36,30 +38,35 @@
                     <ColumnConstraints hgrow="ALWAYS"/>
                 </columnConstraints>
 
-                <Label styleClass="detail-label" text="Name"        GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <Label fx:id="lblTen"            text="— — — — —"  GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Label styleClass="detail-label" text="Name" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label fx:id="lblTen" text="— — — — —" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-                <Label styleClass="detail-label" text="ID"          GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                <Label fx:id="lblId"             text="— — — — —"  GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label styleClass="detail-label" text="ID" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label fx:id="lblId" text="— — — — —" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-                <Label styleClass="detail-label" text="Category"    GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                <Label fx:id="lblLoai"           text="— — — — —"  GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label styleClass="detail-label" text="Category" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label fx:id="lblLoai" text="— — — — —" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
                 <Label styleClass="detail-label" text="Starting price" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                <Label fx:id="lblGia"            text="— — — — —"  GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label fx:id="lblGia" text="— — — — —" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-                <Label styleClass="detail-label" text="Seller"      GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                <Label fx:id="lblSeller"         text="— — — — —"  GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Label styleClass="detail-label" text="Seller" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <Label fx:id="lblSeller" text="— — — — —" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
                 <Label styleClass="detail-label" text="Description" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                <Label fx:id="lblMoTa"           text="— — — — —"  GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <Label fx:id="lblMoTa" text="— — — — —" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
 
-                <Label styleClass="detail-label" text="Status"      GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                <Label fx:id="lblTrangThai"      text="— — — — —"  GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                <Label styleClass="detail-label" text="Status" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                <Label fx:id="lblTrangThai" text="— — — — —" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
                 <rowConstraints>
-                    <RowConstraints/><RowConstraints/><RowConstraints/><RowConstraints/>
-                    <RowConstraints/><RowConstraints/><RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
                 </rowConstraints>
             </GridPane>
 
@@ -67,8 +74,10 @@
 
             <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 0;">
                 <Button onAction="#handleBackToAdmin" styleClass="btn-secondary" text="← Back"/>
-                <Button fx:id="btnReject" onAction="#handleReject" styleClass="btn-danger"  text="REJECT"  visible="false" managed="false"/>
-                <Button fx:id="btnApprove" onAction="#handleApprove" styleClass="btn-success" text="APPROVE" visible="false" managed="false"/>
+                <Button fx:id="btnReject" onAction="#handleReject" styleClass="btn-danger" text="REJECT" visible="false"
+                        managed="false"/>
+                <Button fx:id="btnApprove" onAction="#handleApprove" styleClass="btn-success" text="APPROVE"
+                        visible="false" managed="false"/>
             </HBox>
         </VBox>
     </HBox>

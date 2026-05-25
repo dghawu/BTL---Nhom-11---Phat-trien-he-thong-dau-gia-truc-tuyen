@@ -7,6 +7,11 @@ import model.auction.Auction;
 import model.enums.AuctionStatus;
 import service.AuctionTimer;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 /**
  * ServerMain - khởi động cả 2 server:
  * - SocketServer  (port 8888): API request/response (login, bid, ...)
@@ -50,6 +55,20 @@ public class ServerMain {
             // Nếu đã hết giờ → schedule() sẽ đóng ngay + update DB
             // Nếu chưa hết giờ → schedule() lên lịch timer bình thường
             AuctionTimer.getInstance().schedule(a);
+            if (a.getStatus() == AuctionStatus.APPROVED) {
+                long delay = ChronoUnit.SECONDS.between(LocalDateTime.now(), a.getStartTime());
+                if (delay <= 0) {
+                    auctionDAO.updateStatus(a.getAuctionId(), AuctionStatus.RUNNING);
+                    a.setStatus(AuctionStatus.RUNNING);
+                    AuctionTimer.getInstance().schedule(a);
+                } else {
+                    // schedule chuyển RUNNING khi đến giờ
+                    Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+                        AuctionTimer.getInstance().schedule(a);
+                        auctionDAO.updateStatus(a.getAuctionId(), AuctionStatus.RUNNING);
+                    }, delay, TimeUnit.SECONDS);
+                }
+            }
         }
     }
 }

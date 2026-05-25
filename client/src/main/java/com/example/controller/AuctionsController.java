@@ -247,17 +247,17 @@ public class AuctionsController extends com.example.controller.BaseController {
     }
 
     public void handleJoinAuction(String sessionId, String productName) {
-        if (!"BIDDER".equalsIgnoreCase(currentRole)) {
+        // Seller được vào xem nhưng không đặt giá
+        // Không phải BIDDER cũng không phải SELLER → chặn
+        if (!"BIDDER".equalsIgnoreCase(currentRole) && !"SELLER".equalsIgnoreCase(currentRole)) {
             showNotification(getStage(auctionGrid),
                     "BẠN PHẢI ĐĂNG NHẬP VỚI VAI TRÒ BIDDER\nMỚI CÓ THỂ THAM GIA ĐẤU GIÁ");
             return;
         }
-        // Truyền sessionId vào AuctionRoom
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionRoom.fxml"));
             Parent root = loader.load();
             AuctionRoomController ctrl = loader.getController();
-            // Truyền thông tin base
             ctrl.currentUsername = this.currentUsername;
             ctrl.currentUserId = this.currentUserId;
             ctrl.currentRole = this.currentRole;

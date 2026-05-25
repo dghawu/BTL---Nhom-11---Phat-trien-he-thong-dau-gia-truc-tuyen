@@ -121,6 +121,16 @@ public class AuctionRoomController extends BaseController {
         // 1. Load thông tin phiên ban đầu
         initChart();
         loadSessionInfo();
+        // Nếu là Seller → ẩn/disable toàn bộ phần đặt giá
+        if ("SELLER".equalsIgnoreCase(currentRole)) {
+            manualBidField.setDisable(true);
+            autoBuocGiaField.setDisable(true);
+            autoMaxGiaField.setDisable(true);
+            lblManualToggle.setDisable(true);
+            lblAutoToggle.setDisable(true);
+            // Đổi text nút submit để rõ ràng
+            manualBidField.setPromptText("Bạn là Seller, không thể đặt giá");
+        }
 
         // 2. Join Push Server để nhận realtime
         BidSocketClient.getInstance().joinSession(
@@ -349,7 +359,22 @@ public class AuctionRoomController extends BaseController {
 
     @FXML
     private void handleManualBid() {
+        if ("SELLER".equalsIgnoreCase(currentRole)) {
+            showNotification(getStage(bidHistoryBox),
+                    "BẠN LÀ SELLER!\nKHÔNG THỂ ĐẶT GIÁ TRONG PHIÊN CỦA MÌNH.");
+            return;
+        }
+
         if (!manualEnabled) return;
+
+        //không cho đặt nếu đang là current winner
+        if (currentUsername != null && currentUsername.equals(
+                lblNguoiGiuGia.getText().replace("Current winner: ", "").trim())) {
+            showNotification(getStage(bidHistoryBox),
+                    "BẠN ĐANG LÀ NGƯỜI DẪN ĐẦU!\nKHÔNG THỂ TỰ ĐẶT GIÁ LẠI.");
+            return;
+        }
+
 
         String input = manualBidField.getText().trim();
         if (input.isEmpty()) return;

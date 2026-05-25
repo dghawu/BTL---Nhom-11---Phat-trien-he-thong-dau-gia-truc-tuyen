@@ -590,7 +590,28 @@ public class ClientHandler implements Runnable {
         if (auction == null) return fail("Không tìm thấy phiên.");
         if (auction.getStatus() != AuctionStatus.PENDING)
             return fail("Chỉ duyệt được phiên PENDING.");
-        auctionDAO.updateStatus(sessionId, AuctionStatus.RUNNING);
+
+        auctionDAO.updateStatus(sessionId, AuctionStatus.APPROVED); // ← THÊM VÀO SAU ĐÂY
+
+        long delaySeconds = java.time.temporal.ChronoUnit.SECONDS.between(
+                LocalDateTime.now(), auction.getStartTime());
+        if (delaySeconds <= 0) {
+            auctionDAO.updateStatus(sessionId, AuctionStatus.RUNNING);
+            auction.setStatus(AuctionStatus.RUNNING);
+            service.AuctionTimer.getInstance().schedule(auction);
+        } else {
+            java.util.concurrent.Executors.newSingleThreadScheduledExecutor()
+                    .schedule(() -> {
+                        Auction a = auctionDAO.findById(sessionId);
+                        if (a != null && a.getStatus() == AuctionStatus.APPROVED) {
+                            auctionDAO.updateStatus(sessionId, AuctionStatus.RUNNING);
+                            a.setStatus(AuctionStatus.RUNNING);
+                            service.AuctionTimer.getInstance().schedule(a);
+                            System.out.println("[Session] Phiên " + sessionId + " bắt đầu!");
+                        }
+                    }, delaySeconds, java.util.concurrent.TimeUnit.SECONDS);
+        }
+
         System.out.println("[Admin] Duyệt phiên: " + sessionId);
         return success().put("message", "Đã duyệt phiên đấu giá.").toString();
     }
@@ -635,6 +656,16 @@ public class ClientHandler implements Runnable {
         // Tạo bid và set tên
         BidTransaction bid = new BidTransaction(bidderId, sessionId, bidAmount);
         bid.setBidderName(bidderName);
+
+        if (bidderName.equals(auction.getCurrentWinner())) {
+            return fail("Bạn đang là người dẫn đầu, không thể tự đặt giá lại.");
+        }
+
+        try {
+            auction.handleNewBid(bid);
+        } catch (Exception e) {
+            return fail(e.getMessage());
+        }
 
         // Gọi auction.placeBid() để anti-snipe + validate chạy
         try {
