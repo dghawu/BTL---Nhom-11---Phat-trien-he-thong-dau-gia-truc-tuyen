@@ -9,8 +9,9 @@ import model.user.Bidder;
 import model.user.Seller;
 import model.user.User;
 
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class UserService {
@@ -19,7 +20,7 @@ public class UserService {
     private final List<User> users;
 
     private UserService() {
-        users = new ArrayList<>();
+        users = new CopyOnWriteArrayList<>();
     }
 
     public static UserService getInstance() {
@@ -36,7 +37,7 @@ public class UserService {
     /**
      * @throws DuplicateUsernameException nếu tên đã tồn tại
      */
-    public Bidder registerBidder(String id, String name, String password) {
+    public synchronized Bidder registerBidder(String id, String name, String password) {
         checkDuplicateName(name);
         Bidder bidder = new Bidder(id, name, password);
         users.add(bidder);
@@ -47,7 +48,7 @@ public class UserService {
     /**
      * @throws DuplicateUsernameException nếu tên đã tồn tại
      */
-    public Seller registerSeller(String id, String name, String password) {
+    public synchronized Seller registerSeller(String id, String name, String password) {
         checkDuplicateName(name);
         Seller seller = new Seller(id, name, password);
         users.add(seller);
@@ -55,7 +56,7 @@ public class UserService {
         return seller;
     }
 
-    public Admin registerAdmin(String id, String name, String password) {
+    public synchronized Admin registerAdmin(String id, String name, String password) {
         checkDuplicateName(name);
         Admin admin = new Admin(id, name, password);
         users.add(admin);
@@ -143,7 +144,7 @@ public class UserService {
 
     // ── Private helpers ───────────────────────────────────────────
 
-    private void checkDuplicateName(String name) {
+    private synchronized void checkDuplicateName(String name) {
         boolean exists = users.stream().anyMatch(u -> u.getName().equals(name));
         if (exists) throw new DuplicateUsernameException(name);
     }

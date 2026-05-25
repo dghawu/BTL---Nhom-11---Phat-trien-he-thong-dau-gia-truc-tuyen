@@ -83,7 +83,6 @@ class AuctionTimerTest {
     }
 
     // ── Test 3: Lên lịch lại ──────────────────────────────────────
-    @Disabled
     @Test
     @Order(3)
     @DisplayName("Reschedule: Lên lịch lại khi thời gian được gia hạn")

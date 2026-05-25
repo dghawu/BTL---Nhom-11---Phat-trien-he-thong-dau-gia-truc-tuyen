@@ -13,11 +13,10 @@ import service.AuctionTimer;
 import service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -66,7 +65,6 @@ class ConcurrencyTest {
     // ════════════════════════════════════════════════════════════════
     // TEST 1: 50 Bidder đặt giá đồng thời trên 1 phiên
     // ════════════════════════════════════════════════════════════════
-    @Disabled
     @Test
     @Order(1)
     @DisplayName("50 bidder đặt giá cùng lúc → Giá cuối hợp lệ, không race condition")
@@ -78,7 +76,7 @@ class ConcurrencyTest {
 
         AtomicInteger successCount = new AtomicInteger(0);  // số lần đặt thành công
         AtomicInteger failCount = new AtomicInteger(0);  // số lần thất bại (hợp lệ)
-        List<String> errors = Collections.synchronizedList(new ArrayList<>());
+        List<String> errors = new CopyOnWriteArrayList<>();
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS);
 
@@ -132,7 +130,6 @@ class ConcurrencyTest {
     // ════════════════════════════════════════════════════════════════
     // TEST 2: 50 User đăng ký cùng lúc → Không trùng ID, không corrupt
     // ════════════════════════════════════════════════════════════════
-    @Disabled
     @Test
     @Order(2)
     @DisplayName("50 user đăng ký đồng thời → Không trùng ID, không mất dữ liệu")
@@ -146,7 +143,7 @@ class ConcurrencyTest {
         Set<String> registeredIds = ConcurrentHashMap.newKeySet();
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger dupCount = new AtomicInteger(0);
-        List<String> errors = Collections.synchronizedList(new ArrayList<>());
+        List<String> errors = new CopyOnWriteArrayList<>();
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS);
 
@@ -190,7 +187,6 @@ class ConcurrencyTest {
     // ════════════════════════════════════════════════════════════════
     // TEST 3: Race condition — bid và closeAuction xảy ra đồng thời
     // ════════════════════════════════════════════════════════════════
-    @Disabled
     @Test
     @Order(3)
     @DisplayName("Race condition: bid + closeAuction cùng lúc → Không corrupt dữ liệu")
@@ -201,7 +197,7 @@ class ConcurrencyTest {
         CountDownLatch doneLatch = new CountDownLatch(NUM_USERS + 1); // +1 cho closeAuction thread
 
         AtomicInteger bidAfterClose = new AtomicInteger(0); // bid sau khi phiên đóng
-        List<String> errors = Collections.synchronizedList(new ArrayList<>());
+        List<String> errors = new CopyOnWriteArrayList<>();
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS + 1);
 
@@ -262,7 +258,6 @@ class ConcurrencyTest {
     // ════════════════════════════════════════════════════════════════
     // TEST 4: 50 bidder trên 5 phiên song song — tải đúng như production
     // ════════════════════════════════════════════════════════════════
-    @Disabled
     @Test
     @Order(4)
     @DisplayName("50 bidder phân bổ vào 5 phiên song song → Mỗi phiên hoạt động độc lập")
@@ -281,7 +276,7 @@ class ConcurrencyTest {
         CountDownLatch doneLatch = new CountDownLatch(NUM_USERS);
 
         AtomicInteger totalSuccess = new AtomicInteger(0);
-        List<String> errors = Collections.synchronizedList(new ArrayList<>());
+        List<String> errors = new CopyOnWriteArrayList<>();
 
         ExecutorService pool = Executors.newFixedThreadPool(NUM_USERS);
 
@@ -333,7 +328,6 @@ class ConcurrencyTest {
     // ════════════════════════════════════════════════════════════════
     // TEST 5: Đo throughput — hệ thống xử lý được bao nhiêu bid/giây
     // ════════════════════════════════════════════════════════════════
-    @Disabled
     @Test
     @Order(5)
     @DisplayName("Throughput: Đo tốc độ xử lý bid của hệ thống")

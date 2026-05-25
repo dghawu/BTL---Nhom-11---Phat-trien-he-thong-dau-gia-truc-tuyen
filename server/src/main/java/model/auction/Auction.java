@@ -9,8 +9,9 @@ import observer.Subject;
 import service.AuctionTimer;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Auction extends Entity implements Subject {
 
@@ -39,8 +40,8 @@ public class Auction extends Entity implements Subject {
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = AuctionStatus.PENDING;
-        this.bidHistory = new ArrayList<>();
-        this.observers = new ArrayList<>();
+        this.bidHistory = new CopyOnWriteArrayList<>();
+        this.observers = new CopyOnWriteArrayList<>();
     }
 
     @Override
