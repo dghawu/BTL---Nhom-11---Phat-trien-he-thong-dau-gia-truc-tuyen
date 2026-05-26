@@ -567,6 +567,9 @@ public class ClientHandler implements Runnable {
 
         Item item = itemDAO.findById(itemId);
         if (item == null) return fail("Không tìm thấy sản phẩm.");
+        if (item.getStatus() == Item.ItemStatus.SOLD)
+            return fail("Sản phẩm này đã được bán, không thể tạo phiên mới.");
+
 
         Auction auction = new Auction(
                 UUID.randomUUID().toString(),

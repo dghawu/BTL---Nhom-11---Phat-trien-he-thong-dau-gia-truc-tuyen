@@ -79,6 +79,18 @@ public class AuctionTimer {
             try {
                 AuctionDAO dao = getAuctionDAO();
                 dao.updateStatus(auctionId, AuctionStatus.FINISHED);
+                // Cập nhật trạng thái sản phẩm theo phiên
+                try {
+                    Auction fresh = dao.findById(auctionId);
+                    if (fresh != null) {
+                        String newItemStatus = fresh.getCurrentWinner() != null
+                                && !fresh.getCurrentWinner().isEmpty()
+                                ? "SOLD" : "APPROVED"; // có winner → SOLD, không → trả về APPROVED để tạo phiên mới
+                        new dao.ItemDAO().updateStatus(fresh.getItem().getId(), newItemStatus);
+                    }
+                } catch (Exception e) {
+                    System.out.println("[AuctionTimer] Lỗi update item status: " + e.getMessage());
+                }
                 AutoBidManager.getInstance().clear(auctionId);
                 Auction fresh = dao.findById(auctionId);
                 String winner = fresh != null ? fresh.getCurrentWinner() : auction.getCurrentWinner();
@@ -107,6 +119,18 @@ public class AuctionTimer {
                 try {
                     AuctionDAO dao = getAuctionDAO();
                     dao.updateStatus(auctionId, AuctionStatus.FINISHED);
+                    // Cập nhật trạng thái sản phẩm theo phiên
+                    try {
+                        Auction fresh = dao.findById(auctionId);
+                        if (fresh != null) {
+                            String newItemStatus = fresh.getCurrentWinner() != null
+                                    && !fresh.getCurrentWinner().isEmpty()
+                                    ? "SOLD" : "APPROVED"; // có winner → SOLD, không → trả về APPROVED để tạo phiên mới
+                            new dao.ItemDAO().updateStatus(fresh.getItem().getId(), newItemStatus);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("[AuctionTimer] Lỗi update item status: " + e.getMessage());
+                    }
                     AutoBidManager.getInstance().clear(auctionId);
                     Auction fresh = dao.findById(auctionId);
                     String winner = fresh != null ? fresh.getCurrentWinner() : auction.getCurrentWinner();
