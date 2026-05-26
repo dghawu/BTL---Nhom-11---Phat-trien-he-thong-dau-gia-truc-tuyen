@@ -8,7 +8,6 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
@@ -65,7 +64,6 @@
                     <TextField fx:id="buocGiaField" maxWidth="Infinity" promptText="Bid increment" styleClass="text-field-rounded" />
                     <TextArea fx:id="moTaArea" editable="false" maxWidth="Infinity" prefRowCount="5" promptText="Starting price + Descriptions&#10;&#10;After selecting a product&#10;-&gt;the system will automatically fill in the descriptions here." styleClass="text-area-rounded" wrapText="true" />
                 </VBox>
-                <Pane fx:id="imgPreviewPane" minWidth="200" prefHeight="240" prefWidth="240" styleClass="image-placeholder" />
             </HBox>
 
             <Region VBox.vgrow="ALWAYS" />
