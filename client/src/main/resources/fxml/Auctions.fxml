@@ -1,53 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;"
-      stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26"
-      fx:controller="com.example.controller.AuctionsController">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.AuctionsController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
-        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS"/>
-        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Auctions" HBox.hgrow="ALWAYS"/>
-        <Button fx:id="middleTabBtn" maxWidth="Infinity" onAction="#handleMiddleTab" styleClass="nav-tab"
-                text="Seller centre" HBox.hgrow="ALWAYS"/>
-        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings"
-                HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Auctions" HBox.hgrow="ALWAYS" />
+        <Button fx:id="middleTabBtn" maxWidth="Infinity" onAction="#handleMiddleTab" styleClass="nav-tab" text="Bidder centre" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS" />
     </HBox>
 
     <!-- Category filter bar -->
-    <HBox style="-fx-padding: 0; -fx-border-color: transparent transparent #DDDDDD transparent;
-                      -fx-border-width: 0 0 1px 0; -fx-background-color: #FAFAFA;">
-        <Button fx:id="btnTatCa" onAction="#handleFilterTatCa"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS"
-                style="-fx-background-color: #F5E9A0;
-                -fx-font-weight: bold; -fx-font-size: 15px;
-                -fx-padding: 14 22 14 22; -fx-background-radius: 0;
-                -fx-cursor: hand;" text="All"/>
-        <Button fx:id="btnDienTu" onAction="#handleFilterDienTu"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS"
-                style="-fx-background-color: transparent;
-                -fx-font-size: 15px; -fx-padding: 14 22 14 22;
-                -fx-background-radius: 0; -fx-cursor: hand;" text="Electronics"/>
-        <Button fx:id="btnPhuongTien" onAction="#handleFilterPhuongTien"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;"
-                text="Vehicles"/>
-        <Button fx:id="btnThoiTrang" onAction="#handleFilterThoiTrang"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;"
-                text="Fashion"/>
-        <Button fx:id="btnNgheThuat" onAction="#handleFilterNgheThuat"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;"
-                text="Art"/>
-        <Button fx:id="btnMucKhac" onAction="#handleFilterMucKhac"
-                maxWidth="Infinity" HBox.hgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;"
-                text="Others"/>
+    <HBox style="-fx-padding: 0; -fx-border-color: transparent transparent #DDDDDD transparent;                       -fx-border-width: 0 0 1px 0; -fx-background-color: #FAFAFA;">
+        <Button fx:id="btnTatCa" maxWidth="Infinity" onAction="#handleFilterTatCa" style="-fx-background-color: #F5E9A0;                 -fx-font-weight: bold; -fx-font-size: 15px;                 -fx-padding: 14 22 14 22; -fx-background-radius: 0;                 -fx-cursor: hand;" text="All" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnDienTu" maxWidth="Infinity" onAction="#handleFilterDienTu" style="-fx-background-color: transparent;                 -fx-font-size: 15px; -fx-padding: 14 22 14 22;                 -fx-background-radius: 0; -fx-cursor: hand;" text="Electronics" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnPhuongTien" maxWidth="Infinity" onAction="#handleFilterPhuongTien" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Vehicles" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnThoiTrang" maxWidth="Infinity" onAction="#handleFilterThoiTrang" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Fashion" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnNgheThuat" maxWidth="Infinity" onAction="#handleFilterNgheThuat" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Art" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnMucKhac" maxWidth="Infinity" onAction="#handleFilterMucKhac" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Others" HBox.hgrow="ALWAYS" />
     </HBox>
 
     <ScrollPane fitToWidth="true" style="-fx-background-color: #FFFFFF; -fx-padding: 0;" VBox.vgrow="ALWAYS">
-        <FlowPane fx:id="auctionGrid" hgap="24" style="-fx-padding: 24; -fx-background-color: #FFFFFF;" vgap="24"/>
+        <FlowPane fx:id="auctionGrid" hgap="24" style="-fx-padding: 24; -fx-background-color: #FFFFFF;" vgap="24" />
     </ScrollPane>
 </VBox>
