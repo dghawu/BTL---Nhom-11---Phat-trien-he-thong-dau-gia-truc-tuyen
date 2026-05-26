@@ -92,9 +92,53 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
         JSONObject item = itemCache.get(itemId);
 
         if (item != null) {
-            // Auto fill descriptions từ product description
+            // Lấy dữ liệu từ item
             String desc = item.optString("description", "");
-            moTaArea.setText(desc != null && !desc.isEmpty() ? desc : "");
+            double startPrice = item.optDouble("startPrice", 0);
+            String type = item.optString("type", "");
+            String attr1 = item.optString("attr1", "");
+            String attr2 = item.optString("attr2", "");
+
+
+            StringBuilder content = new StringBuilder();
+
+            // 1. Starting price
+            content.append("* STARTING PRICE: ").append(String.format("%,.0f đ", startPrice)).append("\n\n");
+
+            // 2. Description
+            content.append("* DESCRIPTION:\n").append(desc != null && !desc.isEmpty() ? desc : "Chưa có mô tả").append("\n\n");
+
+            // 3. Attributes (nếu có)
+            if (!attr1.isEmpty() || !attr2.isEmpty()) {
+                content.append("* ATTRIBUTES:\n");
+                switch (type.toUpperCase()) {
+                    case "FASHION" -> {
+                        content.append("   Brand: ").append(attr1.isEmpty() ? "N/A" : attr1).append("\n");
+                        content.append("   Size: ").append(attr2.isEmpty() ? "N/A" : attr2);
+                    }
+                    case "ART" -> {
+                        content.append("   Artist: ").append(attr1.isEmpty() ? "N/A" : attr1).append("\n");
+                        content.append("   Medium: ").append(attr2.isEmpty() ? "N/A" : attr2);
+                    }
+                    case "VEHICLE" -> {
+                        content.append("   Brand: ").append(attr1.isEmpty() ? "N/A" : attr1).append("\n");
+                        content.append("   Mileage: ").append(attr2.isEmpty() ? "N/A" : attr2).append(" km");
+                    }
+                    case "ELECTRONICS" -> {
+                        content.append("   Brand: ").append(attr1.isEmpty() ? "N/A" : attr1).append("\n");
+                        content.append("   Warranty: ").append(attr2.isEmpty() ? "N/A" : attr2).append(" tháng");
+                    }
+                    default -> {
+                        content.append("   Không có thuộc tính đặc biệt");
+                    }
+                }
+            }
+
+            // Set nội dung vào TextArea
+            moTaArea.setText(content.toString());
+
+            // Bước giá field (vẫn giữ promptText)
+            buocGiaField.setPromptText("Bid Increment");
 
             // Auto hiển thị ảnh sản phẩm
             String imageData = item.optString("image", "");
