@@ -673,13 +673,6 @@ public class ClientHandler implements Runnable {
             return fail(e.getMessage());
         }
 
-        // Gọi auction.placeBid() để anti-snipe + validate chạy
-        try {
-            auction.handleNewBid(bid);
-        } catch (Exception e) {
-            return fail(e.getMessage());
-        }
-
         // Lưu DB sau khi placeBid thành công
         bidDAO.save(bid);
         auctionDAO.updateBid(sessionId, auction.getCurrentPrice(), bidderName);
