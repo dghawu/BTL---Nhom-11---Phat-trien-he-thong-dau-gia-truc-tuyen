@@ -109,6 +109,7 @@ public class ClientHandler implements Runnable {
                 case "getMySessions" -> handleGetMySessions(req);
                 case "approveSession" -> handleApproveSession(req);
                 case "rejectSession" -> handleRejectSession(req);
+                case "cancelAuction" -> handleCancelAuction(req);
 
                 // Bidding
                 case "placeBid" -> handlePlaceBid(req);
@@ -634,6 +635,53 @@ public class ClientHandler implements Runnable {
         itemDAO.updateStatus(auction.getItem().getId(), "APPROVED");
         System.out.println("[Admin] Từ chối phiên: " + sessionId);
         return success().put("message", "Đã từ chối phiên đấu giá.").toString();
+    }
+
+    private String handleCancelAuction(JSONObject req) {
+
+        AuthResult auth = TokenGuard.checkRole(req, "SELLER");
+
+        if (!auth.isOk()) {
+            return fail(auth.getErrorMessage());
+        }
+
+        String sellerId = auth.getUserId();
+        String auctionId = req.getString("auctionId");
+
+        Auction auction = auctionDAO.findById(auctionId);
+
+        if (auction == null) {
+            return fail("Không tìm thấy phiên đấu giá.");
+        }
+
+        // kiểm tra đúng seller
+        if (!sellerId.equals(auction.getItem().getSellerId())) {
+            return fail("Bạn không có quyền hủy phiên này.");
+        }
+
+        AuctionStatus st = auction.getStatus();
+
+        if (st == AuctionStatus.FINISHED
+                || st == AuctionStatus.PAID
+                || st == AuctionStatus.CANCELED) {
+
+            return fail("Phiên này không thể hủy.");
+        }
+
+        // update status
+        auctionDAO.updateStatus(auctionId, AuctionStatus.CANCELED);
+
+        // trả item về APPROVED
+        itemDAO.updateStatus(auction.getItem().getId(), "APPROVED");
+
+        // hủy timer nếu đang chạy
+        service.AuctionTimer.getInstance().cancelTask(auctionId);
+
+        System.out.println("[Seller] Hủy phiên: " + auctionId);
+
+        return success()
+                .put("message", "Đã hủy phiên đấu giá.")
+                .toString();
     }
 
     // ================================================================== //

@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
@@ -44,6 +45,8 @@ public class AuctionRoomController extends BaseController {
     private Label lblMoTa;
     @FXML
     private Pane imgPane;
+    @FXML
+    private VBox attributesContainer;
 
     // Middle: bid history
     @FXML
@@ -94,6 +97,9 @@ public class AuctionRoomController extends BaseController {
     private double stepPrice = 0;
     private java.time.LocalDateTime endDateTime;
     private javafx.animation.Timeline countdownTimer;
+    private String currentCategory;
+    private String currentAttr1;
+    private String currentAttr2;
 
     private static final DateTimeFormatter DT_DISPLAY =
             DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy");
@@ -164,6 +170,12 @@ public class AuctionRoomController extends BaseController {
                 lblGiaMoBan.setText("Starting price: " + String.format("%,.0f đ", s.getDouble("startPrice")));
                 lblTinhTrang.setText("Status: " + s.getString("status"));
                 lblMoTa.setText("Description: " + s.optString("description", ""));
+
+                currentCategory = s.optString("category", "");
+                currentAttr1 = s.optString("attr1", "");
+                currentAttr2 = s.optString("attr2", "");
+
+                displayAttributes();
 
                 String imageBase64 = s.optString("itemImage", "");
                 if (!imageBase64.isEmpty()) {
@@ -250,6 +262,53 @@ public class AuctionRoomController extends BaseController {
                 });
             }).start();
         });
+    }
+    private void displayAttributes() {
+        if (attributesContainer == null) {
+            // Nếu chưa có container trong FXML, tạo mới
+            attributesContainer = new VBox(6);
+            attributesContainer.setStyle("-fx-padding: 8; -fx-border-color: #e0e0e0; -fx-border-radius: 5; " +
+                    "-fx-background-color: #f9f9f9; -fx-background-radius: 5;");
+            // Tìm vị trí để thêm vào (ví dụ sau lblMoTa)
+            VBox leftInfoBox = (VBox) lblMoTa.getParent();
+            if (leftInfoBox != null) {
+                leftInfoBox.getChildren().add(attributesContainer);
+            }
+        }
+
+        attributesContainer.getChildren().clear();
+
+        if (currentCategory == null || currentCategory.isEmpty()) return;
+
+        switch (currentCategory.toUpperCase()) {
+            case "FASHION" -> {
+                addAttributeRow("Brand", currentAttr1);
+                addAttributeRow("Size", currentAttr2);
+            }
+            case "ART" -> {
+                addAttributeRow("Artist", currentAttr1);
+                addAttributeRow("Medium", currentAttr2);
+            }
+            case "VEHICLE" -> {
+                addAttributeRow("Brand", currentAttr1);
+                addAttributeRow("Mileage (km)", currentAttr2);
+            }
+            case "ELECTRONICS" -> {
+                addAttributeRow("Brand", currentAttr1);
+                addAttributeRow("Warranty (months)", currentAttr2);
+            }
+        }
+    }
+
+    private void addAttributeRow(String label, String value) {
+        HBox row = new HBox(10);
+        row.setStyle("-fx-padding: 4 0;");
+        Label keyLabel = new Label(label + ":");
+        keyLabel.setStyle("-fx-font-weight: bold; -fx-min-width: 100; -fx-font-size: 12px;");
+        Label valueLabel = new Label(value != null && !value.isEmpty() ? value : "N/A");
+        valueLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #333;");
+        row.getChildren().addAll(keyLabel, valueLabel);
+        attributesContainer.getChildren().add(row);
     }
 
     // ------------------------------------------------------------------ //

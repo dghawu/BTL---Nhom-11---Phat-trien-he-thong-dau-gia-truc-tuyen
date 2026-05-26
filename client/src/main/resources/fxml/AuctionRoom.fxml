@@ -41,6 +41,8 @@
                 <Label fx:id="lblGiaMoBan" style="-fx-font-size: 13px;" text="Starting price:" />
                 <Label fx:id="lblTinhTrang" style="-fx-font-size: 13px;" text="Status:" />
                 <Label fx:id="lblMoTa" style="-fx-font-size: 13px;" text="Description:" wrapText="true" />
+                <VBox fx:id="attributesContainer" spacing="6" style="-fx-padding: 8 0 0 0;">
+                </VBox>
             </VBox>
         </VBox>
 

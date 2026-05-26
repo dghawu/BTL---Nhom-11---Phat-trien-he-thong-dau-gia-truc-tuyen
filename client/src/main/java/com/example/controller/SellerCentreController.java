@@ -253,6 +253,56 @@ public class SellerCentreController extends com.example.controller.BaseControlle
             showNotification(getStage(tenField), "VUI LÒNG CHỌN ẢNH SẢN PHẨM!");
             return;
         }
+        String attr1 = categoryAttr1 != null ? categoryAttr1.getText().trim() : "";
+        String attr2 = categoryAttr2 != null ? categoryAttr2.getText().trim() : "";
+
+        switch (phanLoai.toUpperCase()) {
+            case "FASHION" -> {
+                if (attr1.isEmpty()) {
+                    showNotification(getStage(tenField), "VUI LÒNG NHẬP BRAND!");
+                    return;
+                }
+                if (attr2.isEmpty()) {
+                    showNotification(getStage(tenField), "VUI LÒNG NHẬP SIZE!");
+                    return;
+                }
+            }
+            case "ART" -> {
+                if (attr1.isEmpty()) {
+                    showNotification(getStage(tenField), "VUI LÒNG NHẬP ARTIST!");
+                    return;
+                }
+                if (attr2.isEmpty()) {
+                    showNotification(getStage(tenField), "VUI LÒNG NHẬP MEDIUM!");
+                    return;
+                }
+            }
+            case "VEHICLE" -> {
+                if (attr1.isEmpty()) {
+                    showNotification(getStage(tenField), "VUI LÒNG NHẬP BRAND!");
+                    return;
+                }
+                if (attr2.isEmpty()) {
+                    showNotification(getStage(tenField), "VUI LÒNG NHẬP MILEAGE!");
+                    return;
+                }
+            }
+            case "ELECTRONICS" -> {
+                if (attr1.isEmpty()) {
+                    showNotification(getStage(tenField), "VUI LÒNG NHẬP BRAND!");
+                    return;
+                }
+                if (attr2.isEmpty()) {
+                    showNotification(getStage(tenField), "VUI LÒNG NHẬP WARRANTY MONTHS!");
+                    return;
+                }
+            }
+            case "ETC" -> {
+                // ETC không yêu cầu attributes
+            }
+            default -> {
+            }
+        }
 
         double gia;
         try {
@@ -261,8 +311,6 @@ public class SellerCentreController extends com.example.controller.BaseControlle
             showNotification(getStage(tenField), "GIÁ KHÔNG HỢP LỆ!");
             return;
         }
-        String attr1 = categoryAttr1 != null ? categoryAttr1.getText().trim() : "";
-        String attr2 = categoryAttr2 != null ? categoryAttr2.getText().trim() : "";
 
         // Gọi ServerService với image data
         boolean ok = ServerService.addItemWithImageAndAttributes(ten, phanLoai, moTa, gia, imageData, attr1, attr2);
