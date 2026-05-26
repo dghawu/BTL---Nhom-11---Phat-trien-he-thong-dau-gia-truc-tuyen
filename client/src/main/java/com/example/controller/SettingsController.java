@@ -38,7 +38,6 @@ public class SettingsController extends BaseController {
             accountTitleLabel.setText("Your account @" + currentUsername);
             displayUsername.setText(currentUsername);
             displayRole.setText(currentRole);
-            displayTimeCreate.setText("-- / -- / ----");
         }
     }
 
