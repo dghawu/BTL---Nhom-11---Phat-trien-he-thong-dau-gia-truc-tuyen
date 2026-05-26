@@ -106,7 +106,12 @@ public abstract class Item extends Entity implements ItemFactory {
     }
 
     public enum ItemStatus {
-        PENDING, APPROVED, REJECTED, IN_AUCTION, SOLD
+        PENDING,
+        APPROVED,
+        REJECTED,
+        IN_AUCTION,
+        SOLD,
+        CANCELED
     }
 
     public enum ItemType {

@@ -240,6 +240,14 @@ public class ServerService {
 
         return send(req).getBoolean("success");
     }
+    public static boolean cancelItem(String itemId) {
+
+        JSONObject req = req("cancelItem");
+
+        req.put("itemId", itemId);
+
+        return send(req).getBoolean("success");
+    }
 
     public static boolean updateSession(String sessionId, String endTime, double stepPrice) {
         JSONObject req = req("updateSession");

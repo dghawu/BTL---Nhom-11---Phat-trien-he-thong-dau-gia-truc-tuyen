@@ -11,6 +11,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
 
 /**
  * SellerProductListController - SellerProductList.fxml
@@ -117,7 +119,55 @@ public class SellerProductListController extends com.example.controller.BaseCont
         link.getStyleClass().add("link-text");
         link.setStyle("-fx-text-fill: #0044CC;");
         link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64, attr1, attr2));
-        info.getChildren().add(link);
+
+        Button cancelBtn = new Button("Hủy sản phẩm");
+
+        info.getChildren().addAll(link, cancelBtn);
+
+        cancelBtn.getStyleClass().add("btn-secondary");
+
+        cancelBtn.setOnAction(e -> {
+
+            String st = tinhTrang.toUpperCase();
+
+            if (st.equals("IN_AUCTION") || st.equals("SOLD")) {
+
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+
+                alert.setTitle("Không thể hủy");
+                alert.setHeaderText(null);
+                alert.setContentText("Sản phẩm này không thể hủy.");
+
+                alert.showAndWait();
+
+                return;
+            }
+
+            boolean ok = ServerService.cancelItem(id);
+
+            if (ok) {
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+                alert.setTitle("Thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Đã hủy sản phẩm.");
+
+                alert.showAndWait();
+
+                loadProducts();
+
+            } else {
+
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Hủy sản phẩm thất bại.");
+
+                alert.showAndWait();
+            }
+        });
 
         if (imageBase64 != null && !imageBase64.isEmpty()) {
             try {

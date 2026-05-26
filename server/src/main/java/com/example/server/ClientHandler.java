@@ -102,6 +102,7 @@ public class ClientHandler implements Runnable {
                 case "updateItemWithImage" -> handleUpdateItemWithImage(req);
                 case "updateSession" -> handleUpdateSession(req);
                 case "addItemWithImageAndAttributes" -> handleAddItemWithImageAndAttributes(req);
+                case "cancelItem" -> handleCancelItem(req);
 
                 // Sessions
                 case "createSession" -> handleCreateSession(req);
@@ -681,6 +682,36 @@ public class ClientHandler implements Runnable {
 
         return success()
                 .put("message", "Đã hủy phiên đấu giá.")
+                .toString();
+    }
+    private String handleCancelItem(JSONObject req) {
+
+        AuthResult auth = TokenGuard.checkRole(req, "SELLER");
+
+        if (!auth.isOk()) return fail(auth.getErrorMessage());
+
+        String sellerId = auth.getUserId();
+        String itemId = req.getString("itemId");
+
+        Item item = itemDAO.findById(itemId);
+
+        if (item == null)
+            return fail("Không tìm thấy sản phẩm.");
+
+        if (!sellerId.equals(item.getSellerId()))
+            return fail("Bạn không có quyền hủy sản phẩm này.");
+
+        // Không cho hủy nếu đang đấu giá hoặc đã bán
+        if (item.getStatus() == Item.ItemStatus.IN_AUCTION
+                || item.getStatus() == Item.ItemStatus.SOLD) {
+
+            return fail("Không thể hủy sản phẩm này.");
+        }
+
+        itemDAO.updateStatus(itemId, "CANCELED");
+
+        return success()
+                .put("message", "Đã hủy sản phẩm.")
                 .toString();
     }
 
