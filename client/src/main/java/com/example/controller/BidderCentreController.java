@@ -90,58 +90,34 @@ public class BidderCentreController extends com.example.controller.BaseControlle
     //  Data
     // ------------------------------------------------------------------ //
     private void loadGiaoDich() {
-        giaoDichTable.getItems().clear();
-        // TODO: List<Transaction> txList = ServerService.getMyTransactions(currentUsername);
-        // Dùng custom TableCell để hiển thị nút THANH TOÁN khi tình trạng "Chưa thanh toán"
+        // Cấu hình cột
+        colMa.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                ((org.json.JSONObject) c.getValue()).optString("id", "").substring(0, Math.min(8,
+                        ((org.json.JSONObject) c.getValue()).optString("id", "").length())) + "..."));
+        colPhien.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                ((org.json.JSONObject) c.getValue()).optString("auctionId", "").substring(0, Math.min(8,
+                        ((org.json.JSONObject) c.getValue()).optString("auctionId", "").length())) + "..."));
+        colSanPham.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                ((org.json.JSONObject) c.getValue()).optString("itemName", "")));
+        colThoiGian.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                ((org.json.JSONObject) c.getValue()).optString("timestamp", "").replace("T", " ")));
+        colTinhTrang.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(
+                ((org.json.JSONObject) c.getValue()).optString("status", "")));
+        colBaoCao.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty("Báo cáo"));
 
-        // Cấu hình cột Tình trạng: hiển thị button nếu chưa thanh toán
-        colTinhTrang.setCellFactory(col -> new TableCell<>() {
-            private final Button btnThanhToan = new Button("THANH TOÁN");
-
-            {
-                btnThanhToan.getStyleClass().add("btn-primary");
-                btnThanhToan.setOnAction(e -> {
-                    Object item = getTableView().getItems().get(getIndex());
-                    handleThanhToan(item);
-                });
-            }
-
-            @Override
-            protected void updateItem(String status, boolean empty) {
-                super.updateItem(status, empty);
-                if (empty || status == null) {
-                    setGraphic(null);
-                    setText(null);
-                    return;
+        // Load data
+        new Thread(() -> {
+            org.json.JSONArray txList = com.example.socket.ServerService.getMyTransactions();
+            if (txList == null) return;
+            javafx.application.Platform.runLater(() -> {
+                javafx.collections.ObservableList<Object> items =
+                        javafx.collections.FXCollections.observableArrayList();
+                for (int i = 0; i < txList.length(); i++) {
+                    items.add(txList.getJSONObject(i));
                 }
-                if (status.contains("Chưa thanh toán")) {
-                    VBox box = new VBox(4);
-                    box.getChildren().addAll(new Label(status), btnThanhToan);
-                    setGraphic(box);
-                    setText(null);
-                } else {
-                    setText(status);
-                    setGraphic(null);
-                }
-            }
-        });
-
-        // Cột Báo cáo: link text
-        colBaoCao.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String val, boolean empty) {
-                super.updateItem(val, empty);
-                if (empty || val == null) {
-                    setGraphic(null);
-                    return;
-                }
-                Label lbl = new Label(val);
-                lbl.setStyle("-fx-text-fill: #888888; -fx-font-size: 12px; -fx-cursor: hand;");
-                lbl.setOnMouseClicked(e -> handleBaoCao(getIndex()));
-                setGraphic(lbl);
-                setText(null);
-            }
-        });
+                giaoDichTable.setItems(items);
+            });
+        }).start();
     }
 
     private void loadWonProducts() {
