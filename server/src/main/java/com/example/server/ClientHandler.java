@@ -594,7 +594,8 @@ public class ClientHandler implements Runnable {
         if (auction.getStatus() != AuctionStatus.PENDING)
             return fail("Chỉ duyệt được phiên PENDING.");
 
-        auctionDAO.updateStatus(sessionId, AuctionStatus.APPROVED); // ← THÊM VÀO SAU ĐÂY
+        auctionDAO.updateStatus(sessionId, AuctionStatus.APPROVED);
+        itemDAO.updateStatus(auction.getItem().getId(), "IN_AUCTION");
 
         long delaySeconds = java.time.temporal.ChronoUnit.SECONDS.between(
                 LocalDateTime.now(), auction.getStartTime());
@@ -629,6 +630,7 @@ public class ClientHandler implements Runnable {
         if (auction.getStatus() != AuctionStatus.PENDING)
             return fail("Chỉ từ chối được phiên PENDING.");
         auctionDAO.updateStatus(sessionId, AuctionStatus.CANCELED);
+        itemDAO.updateStatus(auction.getItem().getId(), "APPROVED");
         System.out.println("[Admin] Từ chối phiên: " + sessionId);
         return success().put("message", "Đã từ chối phiên đấu giá.").toString();
     }
@@ -850,6 +852,7 @@ public class ClientHandler implements Runnable {
                     Auction a = auctionDAO.findById(sessionId);
                     if (a != null && a.getStatus() == AuctionStatus.PAYING) {
                         auctionDAO.updateStatus(sessionId, AuctionStatus.CANCELED);
+                        itemDAO.updateStatus(a.getItem().getId(), "APPROVED");
                         System.out.println("[Pay] Phiên " + sessionId + " hết 24h, tự hủy.");
                     }
                 }, delayHours, java.util.concurrent.TimeUnit.HOURS);
@@ -868,6 +871,7 @@ public class ClientHandler implements Runnable {
             return fail("Phiên không ở trạng thái chờ thanh toán.");
 
         auctionDAO.updateStatus(sessionId, AuctionStatus.PAID);
+        itemDAO.updateStatus(auction.getItem().getId(), "SOLD");
         return success().put("message", "Thanh toán thành công!").toString();
     }
 
