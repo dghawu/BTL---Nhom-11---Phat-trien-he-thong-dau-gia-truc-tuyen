@@ -667,7 +667,6 @@ public class ClientHandler implements Runnable {
             return fail("Bạn đang là người dẫn đầu, không thể tự đặt giá lại.");
         }
 
-        // Gọi auction.placeBid() để anti-snipe + validate chạy
         try {
             auction.handleNewBid(bid);
         } catch (Exception e) {
