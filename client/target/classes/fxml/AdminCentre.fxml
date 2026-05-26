@@ -35,6 +35,7 @@
                     <TableColumn fx:id="colTen" prefWidth="180" text="Name"/>
                     <TableColumn fx:id="colThongTin" prefWidth="300" text="Other informations"/>
                     <TableColumn fx:id="colExtra" prefWidth="200" text="....."/>
+                    <TableColumn fx:id="colExtra2"    text="Extra2"     prefWidth="150"/>
                     <TableColumn fx:id="colTrangThai" prefWidth="160" text="Status" visible="false"/>
                 </columns>
                 <placeholder>

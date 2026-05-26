@@ -430,6 +430,7 @@ public class ClientHandler implements Runnable {
                     .put("startPrice", item.getStartPrice())
                     .put("status", item.getStatus().name())
                     .put("sellerId", item.getSellerId())
+                    .put("sellerName", item.getSellerName() != null ? item.getSellerName() : item.getSellerId())
                     .put("type", item.getClass().getSimpleName())
                     .put("image", item.getImage() != null ? item.getImage() : "");
 
@@ -933,6 +934,9 @@ public class ClientHandler implements Runnable {
                 .put("itemImage", a.getItem().getImage() != null ? a.getItem().getImage() : "")
                 .put("description", a.getItem().getDescription())
                 .put("sellerId", a.getItem().getSellerId())
+                .put("sellerName", a.getItem().getSellerName() != null
+                        ? a.getItem().getSellerName()
+                        : a.getItem().getSellerId())
                 .put("startPrice", a.getStartPrice())
                 .put("currentPrice", a.getCurrentPrice())
                 .put("stepPrice", a.getMinIncrement())

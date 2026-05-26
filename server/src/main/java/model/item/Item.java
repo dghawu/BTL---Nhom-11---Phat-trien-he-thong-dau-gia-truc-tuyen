@@ -6,6 +6,7 @@ import model.entity.Entity;
 public abstract class Item extends Entity implements ItemFactory {
 
     private String sellerId;
+    private String sellerName;
     private String name;
     private String description;
     private double startPrice;
@@ -35,8 +36,16 @@ public abstract class Item extends Entity implements ItemFactory {
         return sellerId;
     }
 
+    public String getSellerName() {
+        return sellerName;
+    }
+
     public void setSellerId(String sellerId) {
         this.sellerId = sellerId;
+    }
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
     }
 
     public String getName() {

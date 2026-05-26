@@ -54,6 +54,8 @@ public class AdminCentreController extends BaseController {
     @FXML
     private TableColumn<JSONObject, String> colExtra;
     @FXML
+    private TableColumn<JSONObject, String> colExtra2;
+    @FXML
     private TableColumn<JSONObject, String> colTrangThai;
 
     // ── Action buttons ────────────────────────────────────────────────
@@ -166,7 +168,7 @@ public class AdminCentreController extends BaseController {
                 {"ID sản phẩm", product.optString("id", "")},
                 {"Loại sản phẩm", product.optString("type", "")},
                 {"Giá khởi điểm", String.format("%,.0f đ", product.optDouble("startPrice", 0))},
-                {"Seller", product.optString("sellerId", "")},
+                {"Seller", product.optString("sellerName", product.optString("sellerId", ""))},
                 {"Trạng thái", product.optString("status", "")},
         };
 
@@ -279,6 +281,7 @@ public class AdminCentreController extends BaseController {
         String[][] rows = {
                 {"Sản phẩm", session.optString("itemName")},
                 {"ID phiên", session.optString("id")},
+                {"Người bán", session.optString("sellerName", session.optString("sellerId", "—"))},
                 {"Trạng thái", session.optString("status")},
                 {"Giá khởi điểm", String.format("%,.0f đ", session.optDouble("startPrice", 0))},
                 {"Bước giá", String.format("%,.0f đ", session.optDouble("stepPrice", 0))},
@@ -437,13 +440,17 @@ public class AdminCentreController extends BaseController {
     private void loadSanPham() {
         colId.setCellValueFactory(c -> str(truncate(c.getValue().optString("id"), 10)));
         colTen.setCellValueFactory(c -> str(c.getValue().optString("name")));
-        colThongTin.setCellValueFactory(c -> {
-            JSONObject o = c.getValue();
-            return str(o.optString("type") + "  |  "
-                    + String.format("%,.0f đ", o.optDouble("startPrice", 0)));
-        });
-        colExtra.setCellValueFactory(c -> str(truncate(c.getValue().optString("sellerId"), 10)));
+        colThongTin.setCellValueFactory(c -> str(c.getValue().optString("type")));  // Loại
+        colExtra.setCellValueFactory(c ->                                            // Giá khởi điểm
+                str(String.format("%,.0f đ", c.getValue().optDouble("startPrice", 0))));
+        colExtra2.setCellValueFactory(c ->                                           // Seller
+                str(c.getValue().optString("sellerName", c.getValue().optString("sellerId"))));
         colTrangThai.setCellValueFactory(c -> str(c.getValue().optString("status")));
+
+        colThongTin.setText("Loại");
+        colExtra.setText("Giá khởi điểm");
+        colExtra2.setText("Seller");
+        colExtra2.setVisible(true);
 
         colImage.setCellValueFactory(c -> {
             String imageBase64 = c.getValue().optString("image", "");
@@ -461,16 +468,36 @@ public class AdminCentreController extends BaseController {
                 str(c.getValue().optString("itemName")));
         colThongTin.setCellValueFactory(c -> {
             JSONObject o = c.getValue();
-            return str(o.optString("startTime", "").replace("T", " ")
-                    + "  →  "
-                    + o.optString("endTime", "").replace("T", " "));
+            String start = o.optString("startTime", "").replace("T", " ");
+            String end = o.optString("endTime", "").replace("T", " ");
+            return str("Mở: " + start + "\nĐóng: " + end);
+        });
+        colThongTin.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setText(null);
+                else { setText(item); setWrapText(true); }
+            }
         });
         colExtra.setCellValueFactory(c -> {
             JSONObject o = c.getValue();
-            return str(String.format("%,.0f đ", o.optDouble("startPrice", 0))
-                    + "  |  "
-                    + String.format("%,.0f đ", o.optDouble("stepPrice", 0)));
+            return str("Giá khởi điểm: " + String.format("%,.0f đ", o.optDouble("startPrice", 0))
+                    + "\nBước giá: " + String.format("%,.0f đ", o.optDouble("stepPrice", 0)));
         });
+        colExtra.setText("Giá");
+        colExtra.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setText(null);
+                else { setText(item); setWrapText(true); }
+            }
+        });
+        colExtra2.setCellValueFactory(c ->
+                str(c.getValue().optString("sellerName", c.getValue().optString("sellerId"))));
+        colExtra2.setText("Seller");
+        colExtra2.setVisible(true);
         colTrangThai.setCellValueFactory(c ->
                 str(c.getValue().optString("status")));
 

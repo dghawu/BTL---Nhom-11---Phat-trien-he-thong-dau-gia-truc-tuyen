@@ -348,6 +348,24 @@ public class ItemDAO {
         Item.ItemType type = Item.ItemType.valueOf(typeStr);
         Item item = type.create(sellerId, name, id, description, startPrice, status);
         item.setImage(image);
+
+        try {
+            String sellerName = rs.getString("seller_name");
+            item.setSellerName(sellerName);
+        } catch (SQLException ignored) {
+            // fallback: query riêng
+            try {
+                PreparedStatement ps2 = conn.prepareStatement(
+                        "SELECT name FROM users WHERE id = ?");
+                ps2.setString(1, sellerId);
+                ResultSet rs2 = ps2.executeQuery();
+                if (rs2.next()) item.setSellerName(rs2.getString("name"));
+                ps2.close();
+            } catch (SQLException e2) {
+                item.setSellerName(sellerId); // fallback cuối
+            }
+        }
+
         return item;
     }
 }
