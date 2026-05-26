@@ -4,6 +4,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -107,9 +109,48 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         }
 
         Hyperlink link = new Hyperlink("Xem chi tiết");
-        link.getStyleClass().add("link-text");
         link.setOnAction(e -> openDetail(s, attr1, attr2));
-        info.getChildren().add(link);
+        link.getStyleClass().add("link-text");
+        Button cancelBtn = new Button("Hủy phiên");
+        cancelBtn.getStyleClass().add("btn-secondary");
+
+        cancelBtn.setOnAction(e -> {
+
+            String st = status.toUpperCase();
+
+            if (st.equals("FINISHED")
+                    || st.equals("PAID")
+                    || st.equals("CANCELED")) {
+
+                showAlert(
+                        javafx.scene.control.Alert.AlertType.WARNING,
+                        "Không thể hủy",
+                        "Phiên này không thể hủy."
+                );
+                return;
+            }
+
+            boolean ok = com.example.socket.ServerService.cancelAuction(id);
+
+            if (ok) {
+
+                showAlert(
+                        javafx.scene.control.Alert.AlertType.INFORMATION,
+                        "Thành công",
+                        "Đã hủy phiên đấu giá."
+                );
+
+                loadSessions();
+
+            } else {
+
+                showAlert(
+                        javafx.scene.control.Alert.AlertType.ERROR,
+                        "Lỗi",
+                        "Hủy phiên thất bại."
+                );
+            }
+        });
 
         if (imageBase64 != null && !imageBase64.isEmpty()) {
             try {
@@ -126,8 +167,21 @@ public class SellerSessionListController extends com.example.controller.BaseCont
             }
         }
 
+        info.getChildren().addAll(link, cancelBtn);
+
         card.getChildren().addAll(title, img, info);
         return card;
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String message) {
+
+        Alert alert = new Alert(type);
+
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        alert.showAndWait();
     }
 
     private void openDetail(org.json.JSONObject s, String attr1, String attr2) {

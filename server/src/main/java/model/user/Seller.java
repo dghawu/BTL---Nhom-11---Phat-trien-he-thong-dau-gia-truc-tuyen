@@ -9,6 +9,7 @@ import service.AuctionTimer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import dao.AuctionDAO;
 
 public class Seller extends User {
     private List<Item> myItems;
@@ -80,14 +81,38 @@ public class Seller extends User {
      * @throws AuctionCancelNotAllowedException nếu phiên đang RUNNING hoặc FINISHED
      */
     public void cancelAuction(String auctionId) {
-        Auction a = findMyAuction(auctionId);
-        if (a.getStatus() == AuctionStatus.RUNNING
-                || a.getStatus() == AuctionStatus.FINISHED) {
-            throw new AuctionCancelNotAllowedException(auctionId, a.getStatus());
+
+        for (Auction a : myAuctions) {
+
+            if (a.getAuctionId().equals(auctionId)) {
+
+                // Không cho hủy nếu đã kết thúc hoặc đã thanh toán
+                if (a.getStatus() == AuctionStatus.FINISHED
+                        || a.getStatus() == AuctionStatus.PAID) {
+
+                    System.out.println("Không thể hủy phiên đã kết thúc!");
+                    return;
+                }
+
+                // Đổi trạng thái
+                a.setStatus(AuctionStatus.CANCELED);
+
+                // Update database
+                new AuctionDAO().updateStatus(
+                        auctionId,
+                        AuctionStatus.CANCELED
+                );
+
+                // Dừng timer
+                AuctionTimer.getInstance().cancelTask(auctionId);
+
+                System.out.println("Đã hủy phiên: " + auctionId);
+
+                return;
+            }
         }
-        a.setStatus(AuctionStatus.CANCELED);
-        AuctionTimer.getInstance().cancelTask(auctionId);
-        System.out.println("Đã hủy phiên: " + auctionId);
+
+        System.out.println("Không tìm thấy phiên.");
     }
 
     public void viewMyAuctions() {

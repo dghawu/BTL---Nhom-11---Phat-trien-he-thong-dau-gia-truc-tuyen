@@ -232,6 +232,15 @@ public class ServerService {
         return send(req("rejectSession").put("sessionId", sessionId)).getBoolean("success");
     }
 
+    public static boolean cancelAuction(String auctionId) {
+
+        JSONObject req = req("cancelAuction");
+
+        req.put("auctionId", auctionId);
+
+        return send(req).getBoolean("success");
+    }
+
     public static boolean updateSession(String sessionId, String endTime, double stepPrice) {
         JSONObject req = req("updateSession");
         req.put("sessionId", sessionId);

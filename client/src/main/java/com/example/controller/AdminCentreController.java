@@ -91,8 +91,8 @@ public class AdminCentreController extends BaseController {
         setActiveTab(btnNguoiDung);
 
         colId.setText("ID");
-        colTen.setText("Tên đăng nhập");
-        colThongTin.setText("Vai trò");
+        colTen.setText("User Name");
+        colThongTin.setText("Role");
         colExtra.setText("");
         colTrangThai.setVisible(false);
         colImage.setVisible(false);
@@ -108,11 +108,11 @@ public class AdminCentreController extends BaseController {
         setActiveTab(btnSanPham);
 
         colId.setText("ID");
-        colTen.setText("Tên sản phẩm");
-        colThongTin.setText("Loại  |  Giá khởi điểm");
+        colTen.setText("Product's Name");
+        colThongTin.setText("Category  |  Starting Price");
         colExtra.setText("Seller");
         colTrangThai.setVisible(true);
-        colTrangThai.setText("Trạng thái");
+        colTrangThai.setText("Status");
         colImage.setVisible(true);
 
         showButtons(false, false, true, true);
@@ -223,11 +223,11 @@ public class AdminCentreController extends BaseController {
         setActiveTab(btnPhien);
 
         colId.setText("ID");
-        colTen.setText("Sản phẩm");
-        colThongTin.setText("Thời gian mở → Đóng");
-        colExtra.setText("Giá khởi điểm  |  Bước giá");
+        colTen.setText("Product");
+        colThongTin.setText("Opening Time → Closing Time");
+        colExtra.setText("Starting Price  |  Bid Increment");
         colTrangThai.setVisible(true);
-        colTrangThai.setText("Trạng thái");
+        colTrangThai.setText("Status");
         colImage.setVisible(true);
 
         showButtons(false, false, false, false);
@@ -345,11 +345,11 @@ public class AdminCentreController extends BaseController {
         setActiveTab(btnGiaoDich);
 
         colId.setText("ID");
-        colTen.setText("Sản phẩm");
-        colThongTin.setText("Người đặt");
-        colExtra.setText("Số tiền");
+        colTen.setText("Product");
+        colThongTin.setText("Bidder");
+        colExtra.setText("Amount");
         colTrangThai.setVisible(true);
-        colTrangThai.setText("Thời gian");
+        colTrangThai.setText("Time");
         colImage.setVisible(true);
 
         showButtons(false, false, false, false);
