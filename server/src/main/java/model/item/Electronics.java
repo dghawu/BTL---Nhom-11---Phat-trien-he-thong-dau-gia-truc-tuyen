@@ -32,7 +32,7 @@ public class Electronics extends Item {
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
                            Item.ItemStatus status) {
-        return new Electronics(id, sellerId, name, description, startingPrice, status, null,  12);
+        return new Electronics(id, sellerId, name, description, startingPrice, status, null,  0);
     }
 
 
