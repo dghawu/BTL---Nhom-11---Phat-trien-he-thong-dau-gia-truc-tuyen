@@ -9,6 +9,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.SellerCentreController">
@@ -78,6 +79,7 @@
                     <!-- Row 5: Image -->
                     <VBox spacing="8">
                         <Label styleClass="detail-label" text="Image" />
+                        <Pane fx:id="imagePane" onMouseClicked="#handleChooseImage" prefHeight="200" prefWidth="200" style="-fx-background-color: #FFFFFF;" />
                     </VBox>
                 </VBox>
             </ScrollPane>
