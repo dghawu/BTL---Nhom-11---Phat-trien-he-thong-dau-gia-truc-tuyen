@@ -89,9 +89,7 @@ public class Seller extends User {
                 // Không cho hủy nếu đã kết thúc hoặc đã thanh toán
                 if (a.getStatus() == AuctionStatus.FINISHED
                         || a.getStatus() == AuctionStatus.PAID) {
-
-                    System.out.println("Không thể hủy phiên đã kết thúc!");
-                    return;
+                    throw new AuctionCancelNotAllowedException(auctionId, a.getStatus());
                 }
 
                 // Đổi trạng thái
@@ -112,7 +110,7 @@ public class Seller extends User {
             }
         }
 
-        System.out.println("Không tìm thấy phiên.");
+        throw new AuctionNotFoundException(auctionId);
     }
 
     public void viewMyAuctions() {

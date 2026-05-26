@@ -6,10 +6,7 @@ import exception.AuctionNotFoundException;
 import model.auction.Auction;
 import model.enums.AuctionStatus;
 import model.item.Item;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import service.AuctionTimer;
 
 import java.time.LocalDateTime;
@@ -86,6 +83,7 @@ class SellerTest {
     // ── Test 3: Hủy phiên ────────────────────────────────────────
 
     @Test
+    @Disabled("Cần MySQL database - chỉ chạy local")
     @DisplayName("Hủy phiên đang PENDING → Chuyển sang CANCELED")
     void testCancelAuctionSuccess() {
         Auction a = seller.createAuction("AUC-202", laptop, 500_000.0,
