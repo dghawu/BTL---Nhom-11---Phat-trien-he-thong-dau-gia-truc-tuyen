@@ -82,11 +82,14 @@ public class AuctionTimer {
                 // Cập nhật trạng thái sản phẩm theo phiên
                 try {
                     Auction fresh = dao.findById(auctionId);
-                    if (fresh != null) {
-                        String newItemStatus = fresh.getCurrentWinner() != null
-                                && !fresh.getCurrentWinner().isEmpty()
-                                ? "SOLD" : "APPROVED"; // có winner → SOLD, không → trả về APPROVED để tạo phiên mới
-                        new dao.ItemDAO().updateStatus(fresh.getItem().getId(), newItemStatus);
+                    if (fresh.getCurrentWinner() != null && !fresh.getCurrentWinner().isEmpty()) {
+                        // Có winner → giữ FINISHED, item giữ IN_AUCTION chờ thanh toán
+                        new dao.ItemDAO().updateStatus(fresh.getItem().getId(), "IN_AUCTION");
+                    } else {
+                        // Không có winner → phiên về CANCELED, item về APPROVED
+                        dao.updateStatus(auctionId, AuctionStatus.CANCELED);
+                        new dao.ItemDAO().updateStatus(fresh.getItem().getId(), "APPROVED");
+                        System.out.println("[AuctionTimer] Phiên " + auctionId + " không có người thắng, chuyển CANCELED.");
                     }
                 } catch (Exception e) {
                     System.out.println("[AuctionTimer] Lỗi update item status: " + e.getMessage());
@@ -122,11 +125,14 @@ public class AuctionTimer {
                     // Cập nhật trạng thái sản phẩm theo phiên
                     try {
                         Auction fresh = dao.findById(auctionId);
-                        if (fresh != null) {
-                            String newItemStatus = fresh.getCurrentWinner() != null
-                                    && !fresh.getCurrentWinner().isEmpty()
-                                    ? "SOLD" : "APPROVED"; // có winner → SOLD, không → trả về APPROVED để tạo phiên mới
-                            new dao.ItemDAO().updateStatus(fresh.getItem().getId(), newItemStatus);
+                        if (fresh.getCurrentWinner() != null && !fresh.getCurrentWinner().isEmpty()) {
+                            // Có winner → giữ FINISHED, item giữ IN_AUCTION chờ thanh toán
+                            new dao.ItemDAO().updateStatus(fresh.getItem().getId(), "IN_AUCTION");
+                        } else {
+                            // Không có winner → phiên về CANCELED, item về APPROVED
+                            dao.updateStatus(auctionId, AuctionStatus.CANCELED);
+                            new dao.ItemDAO().updateStatus(fresh.getItem().getId(), "APPROVED");
+                            System.out.println("[AuctionTimer] Phiên " + auctionId + " không có người thắng, chuyển CANCELED.");
                         }
                     } catch (Exception e) {
                         System.out.println("[AuctionTimer] Lỗi update item status: " + e.getMessage());
