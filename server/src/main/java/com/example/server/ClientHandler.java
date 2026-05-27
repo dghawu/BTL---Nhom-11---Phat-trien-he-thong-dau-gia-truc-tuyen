@@ -25,6 +25,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ClientHandler — xử lý request/response trên port 8888.
@@ -40,6 +43,14 @@ public class ClientHandler implements Runnable {
     // Format thời gian client gửi lên: "2025-05-15T20:00"
     private static final DateTimeFormatter DT_FMT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+    // Executor dùng chung để delay auto-bid 1 giây giữa các lượt đặt giá
+    private static final ScheduledExecutorService AUTO_BID_SCHEDULER =
+            Executors.newScheduledThreadPool(4);
+
+    // Delay (ms) giữa 2 lần auto-bid liên tiếp
+    private static final long AUTO_BID_DELAY_MS = 1000;
+
     private final Socket clientSocket;
     private final UserDAO userDAO = new UserDAO();
     private final ItemDAO itemDAO = new ItemDAO();
@@ -1067,8 +1078,7 @@ public class ClientHandler implements Runnable {
         for (AutoBidConfig cfg : autoBids) {
             if (cfg.getBidderId().equals(lastWinnerId)) continue;
 
-            // THÊM: kiểm tra lại trong AutoBidManager xem có còn active không
-            // (tránh trường hợp đã unregister nhưng copy vẫn còn)
+            // Kiểm tra lại trong AutoBidManager xem có còn active không
             boolean stillActive = AutoBidManager.getInstance()
                     .getConfigs(sessionId).stream()
                     .anyMatch(c -> c.getBidderId().equals(cfg.getBidderId()));
@@ -1099,7 +1109,15 @@ public class ClientHandler implements Runnable {
                     broadcaster.broadcast(msg);
                 }
                 System.out.println("[AutoBid] " + cfg.getBidderName() + " tự đặt " + nextBid);
-                triggerAutoBid(sessionId, cfg.getBidderId());
+
+                // Delay 1 giây trước khi kích hoạt vòng auto-bid tiếp theo,
+                // giúp cả 2 user đều nhìn thấy từng lượt đặt giá rõ ràng
+                final String nextLastWinnerId = cfg.getBidderId();
+                AUTO_BID_SCHEDULER.schedule(
+                        () -> triggerAutoBid(sessionId, nextLastWinnerId),
+                        AUTO_BID_DELAY_MS,
+                        TimeUnit.MILLISECONDS
+                );
                 return;
             } catch (Exception e) {
                 System.out.println("[AutoBid] Lỗi: " + e.getMessage());
