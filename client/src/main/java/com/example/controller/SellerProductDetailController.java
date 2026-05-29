@@ -72,7 +72,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         lblTen.setText(ten);
         lblPhanLoai.setText(phanLoai != null && !phanLoai.isEmpty() ? phanLoai : "N/A");
         lblGia.setText(gia);
-        lblMoTa.setText(moTa != null && !moTa.isEmpty() ? moTa : "Chưa có mô tả");
+        lblMoTa.setText(moTa != null && !moTa.isEmpty() ? moTa : "No description available.");
         lblTinhTrang.setText(tinhTrang);
 
         displayCurrentImage();
@@ -207,7 +207,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
                 iv.setPreserveRatio(true);
                 imgPane.getChildren().setAll(iv);
             } catch (Exception e) {
-                System.err.println("[SellerProductDetailController] Lỗi decode image: " + e.getMessage());
+                System.err.println("[SellerProductDetailController] Image decode error: " + e.getMessage());
                 imgPane.getChildren().clear();
             }
         } else {
@@ -257,7 +257,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
     @FXML
     private void handleChooseNewImage() {
         FileChooser fc = new FileChooser();
-        fc.setTitle("Chọn ảnh sản phẩm mới");
+        fc.setTitle("Select a new product image");
         fc.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
@@ -277,7 +277,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
 
             } catch (Exception e) {
                 e.printStackTrace();
-                showNotification(getStage(lblTen), "Lỗi: Không thể đọc file ảnh!");
+                showNotification(getStage(lblTen), "Error: Unable to read image file!");
                 newImageData = null;
             }
         }
@@ -293,7 +293,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
 
             // Kiểm tra dữ liệu không để trống
             if (tenMoi.isEmpty() || giaMoi.isEmpty()) {
-                showNotification(getStage(lblTen), "Vui lòng điền đầy đủ thông tin!");
+                showNotification(getStage(lblTen), "Please fill in all required information!");
                 return;
             }
 
@@ -329,12 +329,12 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
                     isEditMode = false;
                     newImageData = null;
                     btnChooseImage.setVisible(false);
-                    showNotification(getStage(lblTen), "Cập nhật sản phẩm thành công!");
+                    showNotification(getStage(lblTen), "Product updated successfully!");
                 } else {
-                    showNotification(getStage(lblTen), "Cập nhật thất bại!");
+                    showNotification(getStage(lblTen), "Update failed!");
                 }
             } catch (Exception e) {
-                showNotification(getStage(lblTen), "Lỗi: " + e.getMessage());
+                showNotification(getStage(lblTen), "Error: " + e.getMessage());
                 e.printStackTrace();
             }
         }

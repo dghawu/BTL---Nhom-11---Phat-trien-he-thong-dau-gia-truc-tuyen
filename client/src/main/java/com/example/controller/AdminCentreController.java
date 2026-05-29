@@ -76,7 +76,7 @@ public class AdminCentreController extends BaseController {
 
     @FXML
     public void initialize() {
-        dataTable.setPlaceholder(new Label("Không có dữ liệu."));
+        dataTable.setPlaceholder(new Label("No data available."));
         dataTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         Platform.runLater(this::handleShowNguoiDung);
     }
@@ -108,8 +108,8 @@ public class AdminCentreController extends BaseController {
         setActiveTab(btnSanPham);
 
         colId.setText("ID");
-        colTen.setText("Product's Name");
-        colThongTin.setText("Category  |  Starting Price");
+        colTen.setText("Product name");
+        colThongTin.setText("Category  |  Starting price");
         colExtra.setText("Seller");
         colTrangThai.setVisible(true);
         colTrangThai.setText("Status");
@@ -132,7 +132,7 @@ public class AdminCentreController extends BaseController {
      */
     private void showProductDetail(JSONObject product) {
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Chi tiết sản phẩm");
+        dialog.setTitle("Product details");
         dialog.initOwner(getStage(dataTable));
 
         GridPane grid = new GridPane();
@@ -155,11 +155,11 @@ public class AdminCentreController extends BaseController {
                 iv.setPreserveRatio(true);
                 imageBox.getChildren().add(iv);
             } catch (Exception e) {
-                System.err.println("[AdminCentre] Lỗi decode image: " + e.getMessage());
-                imageBox.getChildren().add(new Label("Không thể load ảnh"));
+                System.err.println("[AdminCentre] Image decode error: " + e.getMessage());
+                imageBox.getChildren().add(new Label("Unable to load image"));
             }
         } else {
-            imageBox.getChildren().add(new Label("Không có ảnh"));
+            imageBox.getChildren().add(new Label("No image available"));
         }
         grid.add(imageBox, 0, 0, 2, 1);
 
@@ -196,7 +196,7 @@ public class AdminCentreController extends BaseController {
                         boolean ok = ServerService.approveItem(id);
                         Platform.runLater(() -> {
                             showNotification(getStage(dataTable),
-                                    ok ? "Đã duyệt sản phẩm!" : "Duyệt thất bại!");
+                                    ok ? "Auction approved!" : "Approval failed!");
                             if (ok) loadSanPham();
                         });
                     }).start();
@@ -205,7 +205,7 @@ public class AdminCentreController extends BaseController {
                         boolean ok = ServerService.rejectItem(id);
                         Platform.runLater(() -> {
                             showNotification(getStage(dataTable),
-                                    ok ? "Đã từ chối sản phẩm!" : "Thao tác thất bại!");
+                                    ok ? "Product rejected!" : "Operation failed!");
                             if (ok) loadSanPham();
                         });
                     }).start();
@@ -225,7 +225,7 @@ public class AdminCentreController extends BaseController {
         colId.setText("ID");
         colTen.setText("Product");
         colThongTin.setText("Opening Time → Closing Time");
-        colExtra.setText("Starting Price  |  Bid Increment");
+        colExtra.setText("Starting price  |  Bid increment");
         colTrangThai.setVisible(true);
         colTrangThai.setText("Status");
         colImage.setVisible(true);
@@ -247,7 +247,7 @@ public class AdminCentreController extends BaseController {
      */
     private void showSessionDetail(JSONObject session) {
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Chi tiết phiên đấu giá");
+        dialog.setTitle("Auction details");
         dialog.initOwner(getStage(dataTable));
 
         GridPane grid = new GridPane();
@@ -270,25 +270,25 @@ public class AdminCentreController extends BaseController {
                 iv.setPreserveRatio(true);
                 imageBox.getChildren().add(iv);
             } catch (Exception e) {
-                System.err.println("[AdminCentre] Lỗi decode image: " + e.getMessage());
-                imageBox.getChildren().add(new Label("Không thể load ảnh"));
+                System.err.println("[AdminCentre] Image decode error: " + e.getMessage());
+                imageBox.getChildren().add(new Label("Unable to load image"));
             }
         } else {
-            imageBox.getChildren().add(new Label("Không có ảnh"));
+            imageBox.getChildren().add(new Label("No image available"));
         }
         grid.add(imageBox, 0, 0, 2, 1);
 
         String[][] rows = {
-                {"Sản phẩm", session.optString("itemName")},
-                {"ID phiên", session.optString("id")},
-                {"Người bán", session.optString("sellerName", session.optString("sellerId", "—"))},
-                {"Trạng thái", session.optString("status")},
-                {"Giá khởi điểm", String.format("%,.0f đ", session.optDouble("startPrice", 0))},
-                {"Bước giá", String.format("%,.0f đ", session.optDouble("stepPrice", 0))},
-                {"Giá hiện tại", String.format("%,.0f đ", session.optDouble("currentPrice", 0))},
-                {"Thời gian mở", session.optString("startTime", "").replace("T", " ")},
-                {"Thời gian đóng", session.optString("endTime", "").replace("T", " ")},
-                {"Người thắng", session.optString("currentWinner", "—")},
+                {"Product", session.optString("itemName")},
+                {"Session id", session.optString("id")},
+                {"Seller", session.optString("sellerName", session.optString("sellerId", "—"))},
+                {"Status", session.optString("status")},
+                {"Starting price", String.format("%,.0f đ", session.optDouble("startPrice", 0))},
+                {"Bid increment", String.format("%,.0f đ", session.optDouble("stepPrice", 0))},
+                {"Current price", String.format("%,.0f đ", session.optDouble("currentPrice", 0))},
+                {"Opening time", session.optString("startTime", "").replace("T", " ")},
+                {"Closing time", session.optString("endTime", "").replace("T", " ")},
+                {"Winner", session.optString("currentWinner", "—")},
         };
 
         for (int i = 0; i < rows.length; i++) {
@@ -318,7 +318,7 @@ public class AdminCentreController extends BaseController {
                         boolean ok = ServerService.approveSession(id);
                         Platform.runLater(() -> {
                             showNotification(getStage(dataTable),
-                                    ok ? "Đã duyệt phiên!" : "Duyệt thất bại!");
+                                    ok ? "Auction approved!" : "Approval failed!");
                             if (ok) loadPhien();
                         });
                     }).start();
@@ -327,7 +327,7 @@ public class AdminCentreController extends BaseController {
                         boolean ok = ServerService.rejectSession(id);
                         Platform.runLater(() -> {
                             showNotification(getStage(dataTable),
-                                    ok ? "Đã từ chối phiên!" : "Thao tác thất bại!");
+                                    ok ? "Auction rejected!" : "Operation failed!");
                             if (ok) loadPhien();
                         });
                     }).start();
@@ -365,12 +365,12 @@ public class AdminCentreController extends BaseController {
     private void handleBan() {
         JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showNotification(getStage(dataTable), "Vui lòng chọn người dùng!");
+            showNotification(getStage(dataTable), "Please select a user!");
             return;
         }
         boolean ok = ServerService.banUser(selected.optString("id"));
         showNotification(getStage(dataTable),
-                ok ? "Đã khóa người dùng!" : "Thao tác thất bại!");
+                ok ? "User locked!" : "Operation failed!");
         if (ok) loadNguoiDung();
     }
 
@@ -378,12 +378,12 @@ public class AdminCentreController extends BaseController {
     private void handleMakeAdmin() {
         JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showNotification(getStage(dataTable), "Vui lòng chọn người dùng!");
+            showNotification(getStage(dataTable), "Please select a user!");
             return;
         }
         boolean ok = ServerService.makeAdmin(selected.optString("id"));
         showNotification(getStage(dataTable),
-                ok ? "Đã cấp quyền ADMIN!" : "Thao tác thất bại!");
+                ok ? "ADMIN role granted!" : "Operation failed!");
         if (ok) loadNguoiDung();
     }
 
@@ -391,15 +391,15 @@ public class AdminCentreController extends BaseController {
     private void handleEdit() {
         JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showNotification(getStage(dataTable), "Vui lòng chọn một mục!");
+            showNotification(getStage(dataTable), "Please select an item!");
             return;
         }
         switch (currentTab) {
             case "PHIEN" -> {
                 boolean ok = ServerService.approveSession(selected.optString("id"));
                 showNotification(getStage(dataTable),
-                        ok ? "Đã duyệt phiên: " + selected.optString("itemName")
-                                : "Duyệt thất bại — chỉ duyệt được phiên PENDING.");
+                        ok ? "Auction approved: " + selected.optString("itemName")
+                                : "Approval failed — only PENDING auctions can be approved.");
                 if (ok) loadPhien();
             }
         }
@@ -409,15 +409,15 @@ public class AdminCentreController extends BaseController {
     private void handleSave() {
         JSONObject selected = dataTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showNotification(getStage(dataTable), "Vui lòng chọn một mục!");
+            showNotification(getStage(dataTable), "Please select an item!");
             return;
         }
         switch (currentTab) {
             case "PHIEN" -> {
                 boolean ok = ServerService.rejectSession(selected.optString("id"));
                 showNotification(getStage(dataTable),
-                        ok ? "Đã từ chối phiên: " + selected.optString("itemName")
-                                : "Thao tác thất bại.");
+                        ok ? "Auction rejected: " + selected.optString("itemName")
+                                : "Operation failed.");
                 if (ok) loadPhien();
             }
         }
@@ -447,8 +447,8 @@ public class AdminCentreController extends BaseController {
                 str(c.getValue().optString("sellerName", c.getValue().optString("sellerId"))));
         colTrangThai.setCellValueFactory(c -> str(c.getValue().optString("status")));
 
-        colThongTin.setText("Loại");
-        colExtra.setText("Giá khởi điểm");
+        colThongTin.setText("Category");
+        colExtra.setText("Starting price");
         colExtra2.setText("Seller");
         colExtra2.setVisible(true);
 
@@ -470,7 +470,7 @@ public class AdminCentreController extends BaseController {
             JSONObject o = c.getValue();
             String start = o.optString("startTime", "").replace("T", " ");
             String end = o.optString("endTime", "").replace("T", " ");
-            return str("Mở: " + start + "\nĐóng: " + end);
+            return str("Open: " + start + "\nClose: " + end);
         });
         colThongTin.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -482,10 +482,10 @@ public class AdminCentreController extends BaseController {
         });
         colExtra.setCellValueFactory(c -> {
             JSONObject o = c.getValue();
-            return str("Giá khởi điểm: " + String.format("%,.0f đ", o.optDouble("startPrice", 0))
-                    + "\nBước giá: " + String.format("%,.0f đ", o.optDouble("stepPrice", 0)));
+            return str("Starting price: " + String.format("%,.0f đ", o.optDouble("startPrice", 0))
+                    + "\nBid increment: " + String.format("%,.0f đ", o.optDouble("stepPrice", 0)));
         });
-        colExtra.setText("Giá");
+        colExtra.setText("Price");
         colExtra.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -548,7 +548,7 @@ public class AdminCentreController extends BaseController {
                 iv.setPreserveRatio(true);
                 imgBox.getChildren().add(iv);
             } catch (Exception e) {
-                System.err.println("[AdminCentre] Lỗi decode image: " + e.getMessage());
+                System.err.println("[AdminCentre] Image decode error: " + e.getMessage());
                 imgBox.getChildren().add(new Label("—"));
             }
         } else {

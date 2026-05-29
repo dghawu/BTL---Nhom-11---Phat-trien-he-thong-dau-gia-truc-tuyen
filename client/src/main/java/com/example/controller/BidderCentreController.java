@@ -171,32 +171,32 @@ public class BidderCentreController extends com.example.controller.BaseControlle
         VBox info = new VBox(4);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
-                new Label("Sản phẩm: " + ten),
-                new Label("Giá thắng: " + String.format("%,.0f đ", finalPrice)),
-                new Label("Trạng thái: " + status)
+                new Label("Product: " + ten),
+                new Label("Winning bid: " + String.format("%,.0f đ", finalPrice)),
+                new Label("Status: " + status)
         );
 
         // Nút theo trạng thái
         if ("FINISHED".equals(status)) {
-            Button btnConfirm = new Button("XÁC NHẬN THẮNG");
+            Button btnConfirm = new Button("CONFIRM WIN");
             btnConfirm.getStyleClass().add("btn-primary");
             btnConfirm.setMaxWidth(Double.MAX_VALUE);
             btnConfirm.setOnAction(e -> {
                 boolean ok = com.example.socket.ServerService.confirmWin(sessionId);
                 if (ok) {
-                    showNotification(getStage(contentStack), "Đã xác nhận! Bạn có 24h để thanh toán.");
+                    showNotification(getStage(contentStack), "Confirmed! You have 24 hours to make the payment..");
                     loadWonProducts();
                 }
             });
             info.getChildren().add(btnConfirm);
         } else if ("PAYING".equals(status)) {
-            Button btnPay = new Button("THANH TOÁN");
+            Button btnPay = new Button("PAYMENT");
             btnPay.getStyleClass().add("btn-primary");
             btnPay.setMaxWidth(Double.MAX_VALUE);
             btnPay.setOnAction(e -> showPayDialog(sessionId, finalPrice));
             info.getChildren().add(btnPay);
         } else if ("PAID".equals(status)) {
-            Label lbl = new Label("✅ Đã thanh toán");
+            Label lbl = new Label("✅ Paid");
             lbl.setStyle("-fx-text-fill: #22C55E; -fx-font-weight: bold;");
             info.getChildren().add(lbl);
         }
@@ -208,22 +208,22 @@ public class BidderCentreController extends com.example.controller.BaseControlle
     private void showPayDialog(String sessionId, double amount) {
         javafx.stage.Stage dialog = new javafx.stage.Stage();
         dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-        dialog.setTitle("Thanh toán");
+        dialog.setTitle("Payment");
 
         javafx.scene.control.TextField tfAmount = new javafx.scene.control.TextField();
-        tfAmount.setPromptText("Nhập số tiền: " + String.format("%,.0f đ", amount));
+        tfAmount.setPromptText("Enter amount: " + String.format("%,.0f đ", amount));
 
-        javafx.scene.control.Button btnOk = new javafx.scene.control.Button("THANH TOÁN");
+        javafx.scene.control.Button btnOk = new javafx.scene.control.Button("PAYMENT");
         btnOk.setStyle("-fx-background-color: #111; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20;");
         btnOk.setOnAction(e -> {
             boolean ok = com.example.socket.ServerService.pay(sessionId, amount);
             dialog.close();
-            showNotification(getStage(contentStack), ok ? "THANH TOÁN THÀNH CÔNG!" : "THANH TOÁN THẤT BẠI!");
+            showNotification(getStage(contentStack), ok ? "PAYMENT SUCCESSFUL!" : "PAYMENT FAILED!");
             if (ok) loadWonProducts();
         });
 
         javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(12,
-                new javafx.scene.control.Label("Số tiền cần thanh toán: " + String.format("%,.0f đ", amount)),
+                new javafx.scene.control.Label("Amount to pay: " + String.format("%,.0f đ", amount)),
                 tfAmount, btnOk);
         layout.setStyle("-fx-padding: 24; -fx-alignment: center;");
         dialog.setScene(new javafx.scene.Scene(layout, 320, 160));
@@ -235,13 +235,13 @@ public class BidderCentreController extends com.example.controller.BaseControlle
     // ------------------------------------------------------------------ //
     private void handleThanhToan(Object transaction) {
         // TODO: ServerService.processPayment(transactionId)
-        showNotification(getStage(contentStack), "THANH TOÁN THÀNH CÔNG!");
+        showNotification(getStage(contentStack), "PAYMENT SUCCESSFUL!");
         loadGiaoDich();
     }
 
     private void handleBaoCao(int index) {
         // TODO: mở dialog báo cáo sự cố cho giao dịch tại index
-        showNotification(getStage(contentStack), "ĐÃ GỬI BÁO CÁO SỰ CỐ!");
+        showNotification(getStage(contentStack), "INCIDENT REPORT SUBMITTED!");
     }
 
     // ------------------------------------------------------------------ //

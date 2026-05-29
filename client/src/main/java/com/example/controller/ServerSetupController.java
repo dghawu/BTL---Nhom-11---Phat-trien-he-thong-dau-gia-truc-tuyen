@@ -122,7 +122,7 @@ public class ServerSetupController {
             pushHost = pushHostField.getText().trim();
 
             if (apiHost.isEmpty() || pushHost.isEmpty()) {
-                showError("Vui lòng nhập đầy đủ địa chỉ host.");
+                showError("Please enter the full host address.");
                 return;
             }
 
@@ -130,12 +130,12 @@ public class ServerSetupController {
                 apiPort  = Integer.parseInt(apiPortField.getText().trim());
                 pushPort = Integer.parseInt(pushPortField.getText().trim());
             } catch (NumberFormatException e) {
-                showError("Port phải là số nguyên (vd: 12345).");
+                showError("Port must be an integer (e.g., 12345).");
                 return;
             }
 
             if (apiPort <= 0 || apiPort > 65535 || pushPort <= 0 || pushPort > 65535) {
-                showError("Port phải nằm trong khoảng 1–65535.");
+                showError("Port must be in the range 1–65535");
                 return;
             }
         }
@@ -145,7 +145,7 @@ public class ServerSetupController {
 
         // Kết nối (chạy trên background thread để không đơ UI)
         setLoading(true);
-        showStatus("Đang kết nối...", "#333333");
+        showStatus("Connecting...", "#333333");
 
         final String fApiHost  = apiHost;
         final int    fApiPort  = apiPort;
@@ -158,7 +158,7 @@ public class ServerSetupController {
             Platform.runLater(() -> {
                 setLoading(false);
                 if (ok) {
-                    showStatus("✓ Kết nối thành công!", "#1A8A1A");
+                    showStatus("✓ “Connection successful!", "#1A8A1A");
                     // Chuyển sang Login sau 600ms
                     new Thread(() -> {
                         try { Thread.sleep(600); } catch (InterruptedException ignored) {}
@@ -167,8 +167,8 @@ public class ServerSetupController {
                         });
                     }).start();
                 } else {
-                    showStatus("✗ Không kết nối được " + fApiHost + ":" + fApiPort
-                            + ". Kiểm tra lại địa chỉ ngrok.", "#CC0000");
+                    showStatus("✗ Unable to connect " + fApiHost + ":" + fApiPort
+                            + ". Please check the ngrok address again.", "#CC0000");
                 }
             });
         }, "ServerSetup-Connect").start();

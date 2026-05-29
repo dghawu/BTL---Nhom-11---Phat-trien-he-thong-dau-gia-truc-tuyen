@@ -83,7 +83,7 @@ public class SettingsController extends BaseController {
         String pass = passwordForUsernameField.getText();
 
         if (newName.isEmpty() || pass.isEmpty()) {
-            showMsg("Vui lòng điền đầy đủ.", false);
+            showMsg("Please fill in all required fields", false);
             return;
         }
 
@@ -96,9 +96,9 @@ public class SettingsController extends BaseController {
             accountTitleLabel.setText("Your account @" + newName);
             newUsernameField.clear();
             passwordForUsernameField.clear();
-            showNotification(getStage(displayUsername), "ĐỔI TÊN THÀNH CÔNG!");
+            showNotification(getStage(displayUsername), "NAME CHANGED SUCCESSFULLY!");
         } else {
-            showMsg(result.message.isEmpty() ? "Đổi tên thất bại." : result.message, false);
+            showMsg(result.message.isEmpty() ? "Name change failed." : result.message, false);
         }
     }
 
@@ -111,11 +111,11 @@ public class SettingsController extends BaseController {
         String newPass = newPasswordField.getText();
 
         if (oldPass.isEmpty() || newPass.isEmpty()) {
-            showMsg("Vui lòng điền đầy đủ.", false);
+            showMsg("VPlease fill in all required fields.", false);
             return;
         }
         if (newPass.length() < 6) {
-            showMsg("Mật khẩu mới phải có ít nhất 6 ký tự.", false);
+            showMsg("The new password must be at least 6 characters long.", false);
             return;
         }
 
@@ -125,9 +125,9 @@ public class SettingsController extends BaseController {
         if (result.success) {
             oldPasswordField.clear();
             newPasswordField.clear();
-            showNotification(getStage(displayUsername), "ĐỔI MẬT KHẨU THÀNH CÔNG!");
+            showNotification(getStage(displayUsername), "PASSWORD CHANGED SUCCESSFULLY!");
         } else {
-            showMsg(result.message.isEmpty() ? "Đổi mật khẩu thất bại." : result.message, false);
+            showMsg(result.message.isEmpty() ? "Password change failed." : result.message, false);
         }
     }
 

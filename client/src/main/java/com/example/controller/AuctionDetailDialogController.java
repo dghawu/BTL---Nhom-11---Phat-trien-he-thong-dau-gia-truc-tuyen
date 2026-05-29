@@ -70,7 +70,7 @@ public class AuctionDetailDialogController extends com.example.controller.BaseCo
     @FXML
     private void handleAddToWatchList() {
         // TODO: ServerService.addToWatchList(...)
-        showNotification((Stage) lblTenSP.getScene().getWindow(), "ĐÃ THÊM VÀO WATCH LIST!");
+        showNotification((Stage) lblTenSP.getScene().getWindow(), "ADDED TO WATCHLIST!");
         handleClose();
     }
 }

@@ -21,7 +21,7 @@
                     <ColumnConstraints minWidth="140" prefWidth="160"/>
                     <ColumnConstraints hgrow="ALWAYS"/>
                 </columnConstraints>
-                <Label styleClass="detail-label" text="Product's name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label styleClass="detail-label" text="Product name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                 <Label fx:id="lblTenSP" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                 <Label styleClass="detail-label" text="Product id:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                 <Label fx:id="lblIdSP" GridPane.columnIndex="1" GridPane.rowIndex="1"/>

@@ -135,7 +135,7 @@ public class AuctionRoomController extends BaseController {
             lblManualToggle.setDisable(true);
             lblAutoToggle.setDisable(true);
             // Đổi text nút submit để rõ ràng
-            manualBidField.setPromptText("Bạn là Seller, không thể đặt giá");
+            manualBidField.setPromptText("You are a seller and cannot place a bid.");
         }
 
         // 2. Join Push Server để nhận realtime
@@ -165,7 +165,7 @@ public class AuctionRoomController extends BaseController {
                 lblGiaKhoiDiem.setText(String.format("%,.0f đ", s.getDouble("startPrice")));
                 lblBuocGia.setText(String.format("%,.0f đ", s.getDouble("stepPrice")));
                 lblGiaHienTai.setText(String.format("%,.0f đ", currentPrice));
-                lblTenSP.setText("Product's name: " + s.getString("itemName"));
+                lblTenSP.setText("Product name: " + s.getString("itemName"));
                 lblIdSP.setText("Product id: " + s.getString("itemId"));
                 lblGiaMoBan.setText("Starting price: " + String.format("%,.0f đ", s.getDouble("startPrice")));
                 lblTinhTrang.setText("Status: " + s.getString("status"));
@@ -347,14 +347,14 @@ public class AuctionRoomController extends BaseController {
             });
 
             case AUCTION_CLOSED -> Platform.runLater(() -> {
-                addBidEntry("Phiên kết thúc!");
+                addBidEntry("AUCTION ENDED");
                 if (!event.bidderName.isEmpty() && !"NO_WINNER".equals(event.bidderName)) {
                     showNotification(getStage(bidHistoryBox),
-                            "PHIÊN ĐẤU GIÁ KẾT THÚC!\nNgười thắng: " + event.bidderName
-                                    + "\nGiá cuối: " + String.format("%,.0f đ", event.price));
+                            "THE AUCTION HAS ENDED!\nWinner: " + event.bidderName
+                                    + "\nFinal Price: " + String.format("%,.0f đ", event.price));
                 } else {
                     showNotification(getStage(bidHistoryBox),
-                            "PHIÊN ĐẤU GIÁ KẾT THÚC!\nKhông có người thắng.");
+                            "THE AUCTION HAS ENDED!\nThere is no winner.");
                 }
                 // Vô hiệu hoá nút đặt giá
                 manualBidField.setDisable(true);
@@ -420,7 +420,7 @@ public class AuctionRoomController extends BaseController {
     private void handleManualBid() {
         if ("SELLER".equalsIgnoreCase(currentRole)) {
             showNotification(getStage(bidHistoryBox),
-                    "BẠN LÀ SELLER!\nKHÔNG THỂ ĐẶT GIÁ TRONG PHIÊN CỦA MÌNH.");
+                    "YOU ARE A SELLER!\nYOU CANNOT PLACE A BID IN YOUR OWN AUCTION.");
             return;
         }
 
@@ -430,7 +430,7 @@ public class AuctionRoomController extends BaseController {
         if (currentUsername != null && currentUsername.equals(
                 lblNguoiGiuGia.getText().replace("Current winner: ", "").trim())) {
             showNotification(getStage(bidHistoryBox),
-                    "BẠN ĐANG LÀ NGƯỜI DẪN ĐẦU!\nKHÔNG THỂ TỰ ĐẶT GIÁ LẠI.");
+                    "“YOU ARE CURRENTLY THE HIGHEST BIDDER!\nYOU CANNOT BID AGAIN");
             return;
         }
 
@@ -442,16 +442,16 @@ public class AuctionRoomController extends BaseController {
         try {
             bid = Double.parseDouble(input.replace(",", "").replace("đ", "").trim());
         } catch (NumberFormatException e) {
-            showNotification(getStage(bidHistoryBox), "GIÁ KHÔNG HỢP LỆ!");
+            showNotification(getStage(bidHistoryBox), "“INVALID BID PRICE!");
             return;
         }
 
         double minValidBid = currentPrice + stepPrice;
         if (bid < minValidBid) {
             showNotification(getStage(bidHistoryBox),
-                    "GIÁ ĐẶT PHẢI ÍT NHẤT " + String.format("%,.0f đ", minValidBid)
-                            + "\n(Giá hiện tại: " + String.format("%,.0f đ", currentPrice)
-                            + " + Bước giá: " + String.format("%,.0f đ", stepPrice) + ")");
+                    "THE BID PRICE MUST BE AT LEAST " + String.format("%,.0f đ", minValidBid)
+                            + "\n(Current Price: " + String.format("%,.0f đ", currentPrice)
+                            + " + Bid increment: " + String.format("%,.0f đ", stepPrice) + ")");
             return;
         }
 
@@ -463,7 +463,7 @@ public class AuctionRoomController extends BaseController {
             // Không cần update UI ở đây — BID_UPDATE sẽ đến qua push
             // và handleBidEvent() sẽ cập nhật
         } else {
-            showNotification(getStage(bidHistoryBox), "ĐẶT GIÁ THẤT BẠI! Vui lòng thử lại.");
+            showNotification(getStage(bidHistoryBox), "BID PLACEMENT FAILED! Please try again.");
         }
     }
 
@@ -501,7 +501,7 @@ public class AuctionRoomController extends BaseController {
         String buocGia = autoBuocGiaField.getText().trim();
         String maxGia = autoMaxGiaField.getText().trim();
         if (buocGia.isEmpty() || maxGia.isEmpty()) {
-            showNotification(getStage(bidHistoryBox), "VUI LÒNG NHẬP ĐẦY ĐỦ!");
+            showNotification(getStage(bidHistoryBox), "PLEASE FILL IN ALL FIELDS!");
             return;
         }
         boolean ok = ServerService.setAutoBid(
@@ -510,7 +510,7 @@ public class AuctionRoomController extends BaseController {
                 Double.parseDouble(maxGia)
         );
         if (ok) {
-            showNotification(getStage(bidHistoryBox), "ĐÃ BẬT ĐẤU GIÁ TỰ ĐỘNG!");
+            showNotification(getStage(bidHistoryBox), "AUTO BIDDING ENABLED!");
             // Khoá hẳn manual khi auto đang chạy
             manualEnabled = false;
             lblManualToggle.setText("OFF");
@@ -520,7 +520,7 @@ public class AuctionRoomController extends BaseController {
             manualBidField.setDisable(true);
             lblManualToggle.setDisable(true); // disable luôn nút toggle
         } else {
-            showNotification(getStage(bidHistoryBox), "CÀI ĐẶT TỰ ĐỘNG THẤT BẠI!");
+            showNotification(getStage(bidHistoryBox), "AUTO-BID SETUP FAILED!");
         }
     }
 
@@ -530,7 +530,7 @@ public class AuctionRoomController extends BaseController {
 
     @FXML
     private void handleReport() {
-        showNotification(getStage(bidHistoryBox), "ĐÃ GỬI BÁO CÁO SỰ CỐ!");
+        showNotification(getStage(bidHistoryBox), "REPORT SUBMITTED!");
     }
 
     // ------------------------------------------------------------------ //
@@ -599,7 +599,7 @@ public class AuctionRoomController extends BaseController {
                     java.time.Duration remaining = java.time.Duration.between(
                             java.time.LocalDateTime.now(), endDateTime);
                     if (remaining.isNegative() || remaining.isZero()) {
-                        lblThoiGianConLai.setText("Đã kết thúc");
+                        lblThoiGianConLai.setText("Ended");
                         lblThoiGianConLai.setStyle("-fx-font-size: 13px; -fx-text-fill: #CC0000; -fx-font-weight: bold;");
                         countdownTimer.stop();
                     } else {

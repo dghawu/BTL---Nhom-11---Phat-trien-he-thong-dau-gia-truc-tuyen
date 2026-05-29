@@ -30,9 +30,9 @@
         <!-- Info box -->
         <VBox style="-fx-background-color: #E8F4FD; -fx-padding: 20; -fx-background-radius: 10;
                      -fx-max-width: 380;" spacing="8">
-            <Label text="📡  Hướng dẫn kết nối ngrok"
+            <Label text="📡  Instructions for connecting ngrok"
                    style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #1565C0;"/>
-            <Label text="1. Chạy server (ServerMain.java)"
+            <Label text="1. Run server (ServerMain.java)"
                    style="-fx-font-size: 12px; -fx-text-fill: #333; -fx-wrap-text: true;"/>
             <Label text="2. Mở 2 terminal chạy ngrok:"
                    style="-fx-font-size: 12px; -fx-text-fill: #333;"/>
@@ -40,7 +40,7 @@
                    style="-fx-font-size: 12px; -fx-text-fill: #555; -fx-font-family: monospace;"/>
             <Label text="   ngrok tcp 8889  →  copy host + port Push"
                    style="-fx-font-size: 12px; -fx-text-fill: #555; -fx-font-family: monospace;"/>
-            <Label text="3. Dán vào ô bên phải và bấm Kết nối"
+            <Label text="3. Paste it into the field on the right and click Connect."
                    style="-fx-font-size: 12px; -fx-text-fill: #333;"/>
         </VBox>
     </VBox>
@@ -49,24 +49,24 @@
     <VBox HBox.hgrow="ALWAYS" alignment="TOP_LEFT" spacing="0"
           style="-fx-padding: 80 80 0 60;">
 
-        <Label text="Cài đặt kết nối Server"
+        <Label text="Server connection setup"
                style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: #222;"/>
 
         <Region prefHeight="8"/>
-        <Label text="Chọn chế độ kết nối phù hợp với môi trường của bạn"
+        <Label text="Choose the connection mode that matches your environment."
                style="-fx-font-size: 14px; -fx-text-fill: #666;"/>
 
         <Region prefHeight="30"/>
 
         <!-- Radio buttons -->
         <VBox spacing="12">
-            <RadioButton fx:id="localRadio" text="💻  Localhost — Server chạy trên cùng máy này"
+            <RadioButton fx:id="localRadio" text="💻  Localhost — The server is running on this same machine."
                          styleClass="radio-option"
                          style="-fx-font-size: 14px;"
                          onAction="#handleLocalMode">
                 <toggleGroup><ToggleGroup fx:id="modeGroup"/></toggleGroup>
             </RadioButton>
-            <RadioButton fx:id="ngrokRadio" text="🌐  Ngrok / Internet — Server chạy trên máy khác"
+            <RadioButton fx:id="ngrokRadio" text="🌐  Ngrok / Internet — The server is running on another machine."
                          styleClass="radio-option"
                          style="-fx-font-size: 14px;"
                          toggleGroup="$modeGroup"
@@ -126,7 +126,7 @@
         <Region prefHeight="16"/>
 
         <!-- Connect button -->
-        <Button fx:id="connectBtn" text="Kết nối →"
+        <Button fx:id="connectBtn" text="Connect →"
                 maxWidth="480" prefWidth="480" prefHeight="44"
                 onAction="#handleConnect"
                 styleClass="btn-primary"
@@ -134,7 +134,7 @@
 
         <Region prefHeight="16"/>
 
-        <Label text="Config được lưu tự động vào file server.properties"
+        <Label text="Configuration is automatically saved to the server.properties file."
                style="-fx-font-size: 11px; -fx-text-fill: #999; -fx-font-style: italic;"/>
 
     </VBox>

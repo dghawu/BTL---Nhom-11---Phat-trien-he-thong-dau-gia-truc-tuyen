@@ -98,69 +98,85 @@ public class SellerCentreController extends com.example.controller.BaseControlle
             case "FASHION" -> {
                 Label brandLabel = new Label("Brand");
                 brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+
                 categoryAttr1 = new TextField();
-                categoryAttr1.setPromptText("Nhập thương hiệu (VD: Nike, Adidas)");
+                categoryAttr1.setPromptText("Enter brand (e.g., Nike, Adidas)");
                 categoryAttr1.setPrefHeight(38);
+                styleRoundedField(categoryAttr1);
 
                 Label sizeLabel = new Label("Size");
                 sizeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+
                 categoryAttr2 = new TextField();
-                categoryAttr2.setPromptText("Nhập kích cỡ (VD: S, M, L, XL)");
+                categoryAttr2.setPromptText("Enter size (e.g., S, M, L, XL)");
                 categoryAttr2.setPrefHeight(38);
+                styleRoundedField(categoryAttr2);
 
                 col1.getChildren().addAll(brandLabel, categoryAttr1);
                 col2.getChildren().addAll(sizeLabel, categoryAttr2);
             }
+
             case "ART" -> {
                 Label artistLabel = new Label("Artist");
                 artistLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
-                categoryAttr1 = new TextField();
-                categoryAttr1.setPromptText("Nhập tên tác giả");
-                categoryAttr1.setPrefHeight(38);
 
-                Label mediumLabel = new Label("Medium (Chất liệu)");
+                categoryAttr1 = new TextField();
+                categoryAttr1.setPromptText("Enter author name");
+                categoryAttr1.setPrefHeight(38);
+                styleRoundedField(categoryAttr1);
+
+                Label mediumLabel = new Label("Medium (Material)");
                 mediumLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+
                 categoryAttr2 = new TextField();
-                categoryAttr2.setPromptText("VD: Sơn dầu, Màu nước, Điêu khắc");
+                categoryAttr2.setPromptText("e.g., Oil paint, Watercolor, Sculpture");
                 categoryAttr2.setPrefHeight(38);
+                styleRoundedField(categoryAttr2);
 
                 col1.getChildren().addAll(artistLabel, categoryAttr1);
                 col2.getChildren().addAll(mediumLabel, categoryAttr2);
             }
+
             case "VEHICLE" -> {
                 Label brandLabel = new Label("Brand");
                 brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+
                 categoryAttr1 = new TextField();
-                categoryAttr1.setPromptText("Nhập thương hiệu xe (VD: Toyota, Honda)");
+                categoryAttr1.setPromptText("Enter car brand (e.g., Toyota, Honda)");
                 categoryAttr1.setPrefHeight(38);
+                styleRoundedField(categoryAttr1);
 
                 Label mileageLabel = new Label("Mileage (km)");
                 mileageLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+
                 categoryAttr2 = new TextField();
-                categoryAttr2.setPromptText("Nhập số km đã đi (VD: 50000)");
+                categoryAttr2.setPromptText("Enter mileage (e.g., 50000 km)");
                 categoryAttr2.setPrefHeight(38);
+                styleRoundedField(categoryAttr2);
 
                 col1.getChildren().addAll(brandLabel, categoryAttr1);
                 col2.getChildren().addAll(mileageLabel, categoryAttr2);
             }
+
             case "ELECTRONICS" -> {
                 Label brandLabel = new Label("Brand");
                 brandLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+
                 categoryAttr1 = new TextField();
-                categoryAttr1.setPromptText("Nhập thương hiệu (VD: Apple, Samsung)");
+                categoryAttr1.setPromptText("Enter brand (e.g., Apple, Samsung)");
                 categoryAttr1.setPrefHeight(38);
+                styleRoundedField(categoryAttr1);
 
                 Label warrantyLabel = new Label("Warranty (months)");
                 warrantyLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #555;");
+
                 categoryAttr2 = new TextField();
-                categoryAttr2.setPromptText("Nhập số tháng bảo hành (VD: 12)");
+                categoryAttr2.setPromptText("Enter warranty period (months, e.g., 12)");
                 categoryAttr2.setPrefHeight(38);
+                styleRoundedField(categoryAttr2);
 
                 col1.getChildren().addAll(brandLabel, categoryAttr1);
                 col2.getChildren().addAll(warrantyLabel, categoryAttr2);
-            }
-            default -> {
-                return;
             }
         }
 
@@ -199,7 +215,7 @@ public class SellerCentreController extends com.example.controller.BaseControlle
     @FXML
     private void handleChooseImage() {
         FileChooser fc = new FileChooser();
-        fc.setTitle("Chọn ảnh sản phẩm");
+        fc.setTitle("Select product image");
         fc.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
@@ -221,7 +237,7 @@ public class SellerCentreController extends com.example.controller.BaseControlle
 
             } catch (Exception e) {
                 e.printStackTrace();
-                showNotification(getStage(imagePane), "Lỗi: Không thể đọc file ảnh!");
+                showNotification(getStage(imagePane), "Error: Unable to read image file!");
                 imageData = null;
                 currentImagePath = null;
             }
@@ -245,12 +261,12 @@ public class SellerCentreController extends com.example.controller.BaseControlle
 
         // Kiểm tra dữ liệu bắt buộc
         if (ten.isEmpty() || phanLoai == null || giaStr.isEmpty()) {
-            showNotification(getStage(tenField), "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!");
+            showNotification(getStage(tenField), "PLEASE FILL IN ALL REQUIRED INFORMATION!");
             return;
         }
 
         if (imageData == null) {
-            showNotification(getStage(tenField), "VUI LÒNG CHỌN ẢNH SẢN PHẨM!");
+            showNotification(getStage(tenField), "PLEASE SELECT A PRODUCT IMAGE!");
             return;
         }
         String attr1 = categoryAttr1 != null ? categoryAttr1.getText().trim() : "";
@@ -259,41 +275,41 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         switch (phanLoai.toUpperCase()) {
             case "FASHION" -> {
                 if (attr1.isEmpty()) {
-                    showNotification(getStage(tenField), "VUI LÒNG NHẬP BRAND!");
+                    showNotification(getStage(tenField), "PLEASE ENTER BRAND!");
                     return;
                 }
                 if (attr2.isEmpty()) {
-                    showNotification(getStage(tenField), "VUI LÒNG NHẬP SIZE!");
+                    showNotification(getStage(tenField), "PLEASE ENTER SIZE!");
                     return;
                 }
             }
             case "ART" -> {
                 if (attr1.isEmpty()) {
-                    showNotification(getStage(tenField), "VUI LÒNG NHẬP ARTIST!");
+                    showNotification(getStage(tenField), "PLEASE ENTER ARTIST!");
                     return;
                 }
                 if (attr2.isEmpty()) {
-                    showNotification(getStage(tenField), "VUI LÒNG NHẬP MEDIUM!");
+                    showNotification(getStage(tenField), "PLEASE ENTER MEDIUM!");
                     return;
                 }
             }
             case "VEHICLE" -> {
                 if (attr1.isEmpty()) {
-                    showNotification(getStage(tenField), "VUI LÒNG NHẬP BRAND!");
+                    showNotification(getStage(tenField), "PLEASE ENTER BRAND!");
                     return;
                 }
                 if (attr2.isEmpty()) {
-                    showNotification(getStage(tenField), "VUI LÒNG NHẬP MILEAGE!");
+                    showNotification(getStage(tenField), "PLEASE ENTER MILEAGE!");
                     return;
                 }
             }
             case "ELECTRONICS" -> {
                 if (attr1.isEmpty()) {
-                    showNotification(getStage(tenField), "VUI LÒNG NHẬP BRAND!");
+                    showNotification(getStage(tenField), "PLEASE ENTER BRAND!");
                     return;
                 }
                 if (attr2.isEmpty()) {
-                    showNotification(getStage(tenField), "VUI LÒNG NHẬP WARRANTY MONTHS!");
+                    showNotification(getStage(tenField), "PLEASE ENTER WARRANTY MONTHS!");
                     return;
                 }
             }
@@ -308,7 +324,7 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         try {
             gia = Double.parseDouble(giaStr.replace(",", "").replace(".", ""));
         } catch (NumberFormatException e) {
-            showNotification(getStage(tenField), "GIÁ KHÔNG HỢP LỆ!");
+            showNotification(getStage(tenField), "INVALID PRICE!");
             return;
         }
 
@@ -316,10 +332,10 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         boolean ok = ServerService.addItemWithImageAndAttributes(ten, phanLoai, moTa, gia, imageData, attr1, attr2);
 
         if (ok) {
-            showNotification(getStage(tenField), "THÊM SẢN PHẨM THÀNH CÔNG!");
+            showNotification(getStage(tenField), "PRODUCT ADDED SUCCESSFULLY!");
             clearForm();
         } else {
-            showNotification(getStage(tenField), "THÊM SẢN PHẨM THẤT BẠI!");
+            showNotification(getStage(tenField), "FAILED TO ADD PRODUCT!");
         }
     }
 
@@ -337,5 +353,24 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         }
         categoryAttr1 = null;
         categoryAttr2 = null;
+    }
+    private void styleRoundedField(TextField field) {
+        field.setStyle("""
+        -fx-background-color: white;
+        -fx-background-radius: 20px;
+        -fx-border-radius: 20px;
+        -fx-border-color: #D0D0D0;
+        -fx-border-width: 1.2px;
+
+        -fx-background-insets: 0;
+        -fx-border-insets: 0;
+
+        -fx-padding: 0 15 0 15;
+
+        -fx-focus-color: transparent;
+        -fx-faint-focus-color: transparent;
+
+        -fx-font-size: 14px;
+    """);
     }
 }

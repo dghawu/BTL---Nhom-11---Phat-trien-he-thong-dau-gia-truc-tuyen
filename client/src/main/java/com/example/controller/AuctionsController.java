@@ -162,7 +162,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
 
-        Label title = new Label("SẢN PHẨM " + ten.toUpperCase());
+        Label title = new Label("Product name" + ten.toUpperCase());
         title.getStyleClass().add("product-card-title");
         title.setMaxWidth(Double.MAX_VALUE);
 
@@ -173,28 +173,28 @@ public class AuctionsController extends com.example.controller.BaseController {
         VBox info = new VBox(3);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
-                new Label("Tên: " + ten),
-                new Label("Giá khởi điểm: " + gia),
-                new Label("Giá hiện tại: " + giaHT),
-                new Label("Bắt đầu: " + startTime),
-                new Label("Kết thúc: " + endTime),
-                new Label("Phân loại: " + category),
-                new Label("Trạng thái: " + status)
+                new Label("Name: " + ten),
+                new Label("Starting price: " + gia),
+                new Label("Current Price: " + giaHT),
+                new Label("Start: " + startTime),
+                new Label("End: " + endTime),
+                new Label("Category: " + category),
+                new Label("Status: " + status)
         );
 
-        Hyperlink linkDetail = new Hyperlink("Xem chi tiết");
+        Hyperlink linkDetail = new Hyperlink("View Details");
         linkDetail.setStyle("-fx-text-fill: #0044CC;");
         linkDetail.setOnAction(e -> openDetailDialog(s));
         info.getChildren().add(linkDetail);
 
-        Button btnJoin = new Button("THAM GIA ĐẤU GIÁ");
+        Button btnJoin = new Button("JOIN AUCTION");
         btnJoin.getStyleClass().add("btn-primary");
         btnJoin.setMaxWidth(Double.MAX_VALUE);
         VBox.setMargin(btnJoin, new javafx.geometry.Insets(8, 10, 10, 10));
         if ("RUNNING".equalsIgnoreCase(status)) {
             btnJoin.setOnAction(e -> handleJoinAuction(id, ten));
         } else {
-            btnJoin.setText("CHƯA ĐẾN GIỜ BẮT ĐẦU");
+            btnJoin.setText("IT’S NOT TIME TO START YET.");
             btnJoin.setDisable(true);
             btnJoin.setStyle("-fx-opacity: 0.5;");
         }
@@ -251,7 +251,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         // Không phải BIDDER cũng không phải SELLER → chặn
         if (!"BIDDER".equalsIgnoreCase(currentRole) && !"SELLER".equalsIgnoreCase(currentRole)) {
             showNotification(getStage(auctionGrid),
-                    "BẠN PHẢI ĐĂNG NHẬP VỚI VAI TRÒ BIDDER\nMỚI CÓ THỂ THAM GIA ĐẤU GIÁ");
+                    "YOU MUST LOG IN AS A BIDDER TO\nPARTICIPATE IN THE AUCTION.");
             return;
         }
         try {

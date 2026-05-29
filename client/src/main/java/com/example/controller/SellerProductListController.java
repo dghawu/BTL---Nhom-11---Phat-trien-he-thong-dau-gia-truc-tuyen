@@ -67,7 +67,7 @@ public class SellerProductListController extends com.example.controller.BaseCont
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
 
-        Label title = new Label("SẢN PHẨM " + ten.toUpperCase());
+        Label title = new Label("PRODUCT " + ten.toUpperCase());
         title.getStyleClass().add("product-card-title");
         title.setMaxWidth(Double.MAX_VALUE);
 
@@ -78,11 +78,11 @@ public class SellerProductListController extends com.example.controller.BaseCont
         VBox info = new VBox(4);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
-                new Label("Tên sản phẩm: " + ten),
-                new Label("Id sản phẩm: " + id),
-                new Label("Giá mở bán: " + gia),
-                new Label("Tình trạng: " + tinhTrang),
-                new Label("Phân loại: " + category)
+                new Label("Product name: " + ten),
+                new Label("Product id: " + id),
+                new Label("Starting price: " + gia),
+                new Label("Status: " + tinhTrang),
+                new Label("Category: " + category)
         );
 
 
@@ -115,16 +115,16 @@ public class SellerProductListController extends com.example.controller.BaseCont
             }
         }
 
-        Hyperlink link = new Hyperlink("Xem chi tiết");
+        Hyperlink link = new Hyperlink("View details");
         link.getStyleClass().add("link-text");
         link.setStyle("-fx-text-fill: #0044CC;");
         link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64, attr1, attr2));
 
-        Button cancelBtn = new Button("Hủy sản phẩm");
+        Button cancelBtn = new Button("Cancel product");
 
         info.getChildren().addAll(link, cancelBtn);
 
-        cancelBtn.getStyleClass().add("btn-secondary");
+        cancelBtn.getStyleClass().add("btn-danger");
 
         cancelBtn.setOnAction(e -> {
 
@@ -134,9 +134,9 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
                 Alert alert = new Alert(Alert.AlertType.WARNING);
 
-                alert.setTitle("Không thể hủy");
+                alert.setTitle("Unable to cancel");
                 alert.setHeaderText(null);
-                alert.setContentText("Sản phẩm này không thể hủy.");
+                alert.setContentText("This product cannot be cancelled.");
 
                 alert.showAndWait();
 
@@ -149,9 +149,9 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
 
-                alert.setTitle("Thành công");
+                alert.setTitle("Successfully");
                 alert.setHeaderText(null);
-                alert.setContentText("Đã hủy sản phẩm.");
+                alert.setContentText("Product cancelled.");
 
                 alert.showAndWait();
 
@@ -161,9 +161,9 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
                 Alert alert = new Alert(Alert.AlertType.ERROR);
 
-                alert.setTitle("Lỗi");
+                alert.setTitle("Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Hủy sản phẩm thất bại.");
+                alert.setContentText("This product has been cancelled.");
 
                 alert.showAndWait();
             }
@@ -180,7 +180,7 @@ public class SellerProductListController extends com.example.controller.BaseCont
                 imageView.setPreserveRatio(true);
                 img.getChildren().setAll(imageView);
             } catch (Exception e) {
-                System.err.println("[SellerProductListController] Lỗi decode image: " + e.getMessage());
+                System.err.println("[SellerProductListController] Image decode error: " + e.getMessage());
             }
         }
 

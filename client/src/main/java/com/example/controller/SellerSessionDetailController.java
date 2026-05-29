@@ -264,7 +264,7 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
     @FXML
     private void handleChooseNewImage() {
         javafx.stage.FileChooser fc = new javafx.stage.FileChooser();
-        fc.setTitle("Chọn ảnh phiên đấu giá mới");
+        fc.setTitle("Select a new auction image");
         fc.getExtensionFilters().add(
                 new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
         );
@@ -283,7 +283,7 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
 
             } catch (Exception e) {
                 e.printStackTrace();
-                showNotification(getStage(lblTenSP), "Lỗi: Không thể đọc file ảnh!");
+                showNotification(getStage(lblTenSP), "Error: Unable to read image file!");
                 newImageData = null;
             }
         }
@@ -296,7 +296,7 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
             String newStepPriceStr = txtBuocGia.getText().trim();
 
             if (newEndTime.isEmpty() || newStepPriceStr.isEmpty()) {
-                showNotification(getStage(lblTenSP), "Vui lòng điền đầy đủ thông tin!");
+                showNotification(getStage(lblTenSP), "Please fill in all required information!");
                 return;
             }
 
@@ -321,12 +321,12 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
                     disableEditMode();
                     isEditMode = false;
                     newImageData = null;
-                    showNotification(getStage(lblTenSP), "Cập nhật phiên thành công!");
+                    showNotification(getStage(lblTenSP), "Auction updated successfully!");
                 } else {
-                    showNotification(getStage(lblTenSP), "Cập nhật thất bại!");
+                    showNotification(getStage(lblTenSP), "Update failed!");
                 }
             } catch (NumberFormatException e) {
-                showNotification(getStage(lblTenSP), "Bước giá phải là số!");
+                showNotification(getStage(lblTenSP), "Bid increment must be a number!");
             }
         }
     }

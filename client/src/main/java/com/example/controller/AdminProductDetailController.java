@@ -46,7 +46,7 @@ public class AdminProductDetailController extends BaseController {
         lblLoai.setText(product.optString("type", "—"));
         lblGia.setText(String.format("%,.0f đ", product.optDouble("startPrice", 0)));
         lblSeller.setText(product.optString("sellerId", "—"));
-        lblMoTa.setText(product.optString("description", "Chưa có mô tả"));
+        lblMoTa.setText(product.optString("description", "No description available."));
         lblTrangThai.setText(product.optString("status", "—"));
 
         // Chỉ hiện APPROVE/REJECT khi sản phẩm đang PENDING
@@ -66,7 +66,7 @@ public class AdminProductDetailController extends BaseController {
             boolean ok = ServerService.approveItem(currentItemId);
             Platform.runLater(() -> {
                 showNotification(getStage(lblTen),
-                        ok ? "Đã duyệt sản phẩm!" : "Duyệt thất bại!");
+                        ok ? "Auction rejected!" : "Operation failed!");
                 if (ok) {
                     lblTrangThai.setText("APPROVED");
                     btnApprove.setVisible(false);
@@ -84,7 +84,7 @@ public class AdminProductDetailController extends BaseController {
             boolean ok = ServerService.rejectItem(currentItemId);
             Platform.runLater(() -> {
                 showNotification(getStage(lblTen),
-                        ok ? "Đã từ chối sản phẩm!" : "Thao tác thất bại!");
+                        ok ? "Product rejected!" : "Operation failed!");
                 if (ok) {
                     lblTrangThai.setText("REJECTED");
                     btnApprove.setVisible(false);
