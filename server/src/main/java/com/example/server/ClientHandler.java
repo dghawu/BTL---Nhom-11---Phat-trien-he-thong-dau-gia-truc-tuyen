@@ -756,12 +756,15 @@ public class ClientHandler implements Runnable {
         if (bidderName.equals(auction.getCurrentWinner())) {
             return fail("Bạn đang là người dẫn đầu, không thể tự đặt giá lại.");
         }
+        LocalDateTime endTimeBefore = auction.getEndTime();
 
         try {
             auction.handleNewBid(bid);
         } catch (Exception e) {
             return fail(e.getMessage());
         }
+        // Kiểm tra anti-snipe
+        boolean antiSniped = auction.getEndTime().isAfter(endTimeBefore);
 
         // Lưu DB sau khi placeBid thành công
         bidDAO.save(bid);
@@ -777,6 +780,15 @@ public class ClientHandler implements Runnable {
                     + ":" + bidderName
                     + ":" + auction.getEndTime();
             broadcaster.broadcast(msg);
+            if (antiSniped) {
+                long extendedMinutes = java.time.temporal.ChronoUnit.MINUTES.between(
+                        endTimeBefore, auction.getEndTime());
+                String snipeMsg = "ANTI_SNIPE|" + sessionId
+                        + "|" + bidderName
+                        + "|" + endTimeBefore
+                        + "|" + extendedMinutes;
+                broadcaster.broadcast(snipeMsg);
+            }
             System.out.println("[ClientHandler] Broadcast bid: " + msg);
         } else {
             System.out.println("[ClientHandler] Không có client nào đang watch phiên " + sessionId);
