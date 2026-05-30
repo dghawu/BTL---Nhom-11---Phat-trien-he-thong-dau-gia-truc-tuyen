@@ -126,9 +126,8 @@ public class AdminCentreController extends BaseController {
 
         loadSanPham();
     }
-
     /**
-     * Dialog duyệt sản phẩm với hình ảnh
+     * Dialog duyệt sản phẩm với hình ảnh và attributes
      */
     private void showProductDetail(JSONObject product) {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -163,21 +162,67 @@ public class AdminCentreController extends BaseController {
         }
         grid.add(imageBox, 0, 0, 2, 1);
 
+        // Lấy attributes từ product
+        String attr1 = product.optString("attr1", "");
+        String attr2 = product.optString("attr2", "");
+        String category = product.optString("type", "");
+
+        // Tạo VBox cho attributes
+        VBox attrBox = new VBox(5);
+        attrBox.setStyle("-fx-padding: 8; -fx-border-color: #e0e0e0; -fx-border-radius: 5; " +
+                "-fx-background-color: #f9f9f9; -fx-background-radius: 5;");
+
+        if (!attr1.isEmpty() || !attr2.isEmpty()) {
+            Label attrTitle = new Label("Product Attributes:");
+            attrTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+            attrBox.getChildren().add(attrTitle);
+
+            switch (category.toUpperCase()) {
+                case "FASHION" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • Size: " + attr2));
+                }
+                case "ART" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • Artist: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • Medium: " + attr2));
+                }
+                case "VEHICLE" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • Mileage: " + attr2 + " km"));
+                }
+                case "ELECTRONICS" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • Warranty: " + attr2 + " months"));
+                }
+                default -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • " + attr2));
+                }
+            }
+        }
+
         String[][] rows = {
-                {"Tên sản phẩm", product.optString("name", "")},
-                {"ID sản phẩm", product.optString("id", "")},
-                {"Loại sản phẩm", product.optString("type", "")},
-                {"Giá khởi điểm", String.format("%,.0f đ", product.optDouble("startPrice", 0))},
+                {"Product name", product.optString("name", "")},
+                {"Product ID", product.optString("id", "")},
+                {"Category", category},
+                {"Starting price", String.format("%,.0f đ", product.optDouble("startPrice", 0))},
                 {"Seller", product.optString("sellerName", product.optString("sellerId", ""))},
-                {"Trạng thái", product.optString("status", "")},
+                {"Status", product.optString("status", "")},
         };
 
+        int rowIndex = 1;
         for (int i = 0; i < rows.length; i++) {
             Label key = new Label(rows[i][0]);
             key.setStyle("-fx-font-weight: bold;");
             Label val = new Label(rows[i][1]);
-            grid.add(key, 0, i + 1);
-            grid.add(val, 1, i + 1);
+            grid.add(key, 0, rowIndex);
+            grid.add(val, 1, rowIndex);
+            rowIndex++;
+        }
+
+        // Thêm attributes nếu có
+        if (!attrBox.getChildren().isEmpty()) {
+            grid.add(attrBox, 0, rowIndex, 2, 1);
         }
 
         dialog.getDialogPane().setContent(grid);
@@ -186,7 +231,7 @@ public class AdminCentreController extends BaseController {
         if (isPending) {
             ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
             ButtonType rejectBtn = new ButtonType("✘ REJECT", ButtonBar.ButtonData.CANCEL_CLOSE);
-            ButtonType cancelBtn = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
             dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
 
             dialog.showAndWait().ifPresent(result -> {
@@ -196,7 +241,7 @@ public class AdminCentreController extends BaseController {
                         boolean ok = ServerService.approveItem(id);
                         Platform.runLater(() -> {
                             showNotification(getStage(dataTable),
-                                    ok ? "Auction approved!" : "Approval failed!");
+                                    ok ? "Product approved!" : "Approval failed!");
                             if (ok) loadSanPham();
                         });
                     }).start();
@@ -243,7 +288,7 @@ public class AdminCentreController extends BaseController {
     }
 
     /**
-     * Dialog duyệt phiên với hình ảnh
+     * Dialog duyệt phiên với hình ảnh và attributes
      */
     private void showSessionDetail(JSONObject session) {
         Dialog<ButtonType> dialog = new Dialog<>();
@@ -278,11 +323,50 @@ public class AdminCentreController extends BaseController {
         }
         grid.add(imageBox, 0, 0, 2, 1);
 
+        // Lấy attributes từ session
+        String attr1 = session.optString("attr1", "");
+        String attr2 = session.optString("attr2", "");
+        String category = session.optString("category", "");
+
+        // Tạo VBox cho attributes
+        VBox attrBox = new VBox(5);
+        attrBox.setStyle("-fx-padding: 8; -fx-border-color: #e0e0e0; -fx-border-radius: 5; " +
+                "-fx-background-color: #f9f9f9; -fx-background-radius: 5;");
+
+        if (!attr1.isEmpty() || !attr2.isEmpty()) {
+            Label attrTitle = new Label("Product Attributes:");
+            attrTitle.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
+            attrBox.getChildren().add(attrTitle);
+
+            switch (category.toUpperCase()) {
+                case "FASHION" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • Size: " + attr2));
+                }
+                case "ART" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • Artist: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • Medium: " + attr2));
+                }
+                case "VEHICLE" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • Mileage: " + attr2 + " km"));
+                }
+                case "ELECTRONICS" -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • Brand: " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • Warranty: " + attr2 + " months"));
+                }
+                default -> {
+                    if (!attr1.isEmpty()) attrBox.getChildren().add(new Label("  • " + attr1));
+                    if (!attr2.isEmpty()) attrBox.getChildren().add(new Label("  • " + attr2));
+                }
+            }
+        }
+
         String[][] rows = {
-                {"Product", session.optString("itemName")},
-                {"Session id", session.optString("id")},
+                {"Product", session.optString("itemName", "")},
+                {"Session ID", session.optString("id", "")},
                 {"Seller", session.optString("sellerName", session.optString("sellerId", "—"))},
-                {"Status", session.optString("status")},
+                {"Status", session.optString("status", "")},
                 {"Starting price", String.format("%,.0f đ", session.optDouble("startPrice", 0))},
                 {"Bid increment", String.format("%,.0f đ", session.optDouble("stepPrice", 0))},
                 {"Current price", String.format("%,.0f đ", session.optDouble("currentPrice", 0))},
@@ -291,12 +375,19 @@ public class AdminCentreController extends BaseController {
                 {"Winner", session.optString("currentWinner", "—")},
         };
 
+        int rowIndex = 1;
         for (int i = 0; i < rows.length; i++) {
             Label key = new Label(rows[i][0]);
             key.setStyle("-fx-font-weight: bold;");
             Label val = new Label(rows[i][1]);
-            grid.add(key, 0, i + 1);
-            grid.add(val, 1, i + 1);
+            grid.add(key, 0, rowIndex);
+            grid.add(val, 1, rowIndex);
+            rowIndex++;
+        }
+
+        // Thêm attributes nếu có
+        if (!attrBox.getChildren().isEmpty()) {
+            grid.add(attrBox, 0, rowIndex, 2, 1);
         }
 
         dialog.getDialogPane().setContent(grid);
@@ -305,7 +396,7 @@ public class AdminCentreController extends BaseController {
         if (isPending) {
             ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
             ButtonType rejectBtn = new ButtonType("✘ REJECT", ButtonBar.ButtonData.CANCEL_CLOSE);
-            ButtonType cancelBtn = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
             dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
 
             java.util.Optional<ButtonType> result = dialog.showAndWait();
