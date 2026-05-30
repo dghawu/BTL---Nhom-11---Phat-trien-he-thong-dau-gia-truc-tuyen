@@ -33,6 +33,9 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
     private Pane imgPane;
     @FXML
     private VBox attributesContainer;
+    @FXML private Label lblWinner;
+    @FXML private Label lblGiaHienTai;
+    @FXML private javafx.scene.layout.VBox bidHistoryBox;
 
     // TextFields cho edit mode
     private TextField txtThoiDong;
@@ -50,19 +53,11 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
     /**
      * Init data với tất cả thông tin cần thiết (có attributes)
      */
-    public void initData(
-            String sessionId,
-            String tenSP,
-            String thoiGianMo,
-            String thoiGianDong,
-            String gia,
-            String buocGia,
-            String trangThai,
-            String imageDataBase64,
-            String category,
-            String attr1,
-            String attr2
-    ) {
+    public void initData(String sessionId, String tenSP, String thoiGianMo,
+                         String thoiGianDong, String gia, String buocGia,
+                         String trangThai, String imageDataBase64,
+                         String category, String attr1, String attr2,
+                         String currentWinner, String currentPrice) {
         this.currentSessionId = sessionId;
         this.currentCategory = category;
         this.attr1Value = attr1 != null ? attr1 : "";
@@ -95,6 +90,32 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
                 e.printStackTrace();
                 imgPane.getChildren().clear();
             }
+        }
+        if (lblWinner != null) {
+            lblWinner.setText("Winner: " + (currentWinner == null || currentWinner.isEmpty()
+                    ? "Chưa có" : currentWinner));
+        }
+        if (lblGiaHienTai != null) {
+            lblGiaHienTai.setText("Giá hiện tại: " + currentPrice);
+        }
+        if (bidHistoryBox != null) {
+            new Thread(() -> {
+                org.json.JSONArray history = com.example.socket.ServerService.getBidHistory(sessionId);
+                if (history == null) return;
+                javafx.application.Platform.runLater(() -> {
+                    bidHistoryBox.getChildren().clear();
+                    for (int i = history.length() - 1; i >= 0; i--) {
+                        org.json.JSONObject h = history.getJSONObject(i);
+                        String time = h.getString("timestamp").replace("T", " ").substring(0, 16);
+                        javafx.scene.control.Label entry = new javafx.scene.control.Label(
+                                "▶ " + h.getString("bidderName")
+                                        + " bid " + String.format("%,.0f đ", h.getDouble("amount"))
+                                        + " lúc " + time);
+                        entry.setStyle("-fx-font-size: 13px;");
+                        bidHistoryBox.getChildren().add(entry);
+                    }
+                });
+            }).start();
         }
     }
 
