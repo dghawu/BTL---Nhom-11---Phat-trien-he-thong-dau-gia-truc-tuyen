@@ -34,8 +34,8 @@ public class Seller extends User {
     @Override
     public void printInfo() {
         System.out.println("ID      : " + getId());
-        System.out.println("Tên     : " + name);
-        System.out.println("Role    : " + role);
+        System.out.println("Tên     : " + getName());
+        System.out.println("Role    : " + getRole());
         System.out.println("Ngày tạo: " + getCreatedAt());
     }
 

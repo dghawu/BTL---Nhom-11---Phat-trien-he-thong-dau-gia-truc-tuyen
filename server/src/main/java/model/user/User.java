@@ -3,9 +3,9 @@ package model.user;
 import model.entity.Entity;
 
 public abstract class User extends Entity {
-    String name;
-    String password;
-    String role;
+    private String name;
+    private String password;
+    private String role;
     private boolean banned = false; // hỗ trợ UserBannedException
 
     public User(String id, String name, String password, String role) {
