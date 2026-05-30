@@ -835,7 +835,13 @@ public class ClientHandler implements Runnable {
                 && (bidderName.equals(currentWinner) || bidderId.equals(currentWinner));
         if (!isSelf) {
             try {
-                triggerAutoBid(sessionId, currentWinner != null ? currentWinner : "");
+                // Resolve tên winner → userId để triggerAutoBid so sánh đúng với getBidderId()
+                String currentWinnerId = "";
+                if (currentWinner != null && !currentWinner.isEmpty()) {
+                    User winnerUser = userDAO.findByName(currentWinner);
+                    currentWinnerId = winnerUser != null ? winnerUser.getId() : currentWinner;
+                }
+                triggerAutoBid(sessionId, currentWinnerId);
             } catch (Exception e) {
                 System.out.println("[AutoBid] Trigger khi register lỗi: " + e.getMessage());
             }
