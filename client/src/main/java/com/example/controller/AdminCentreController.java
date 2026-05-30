@@ -236,14 +236,9 @@ public class AdminCentreController extends BaseController {
         if (isPending) {
             ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
             ButtonType rejectBtn = new ButtonType("✘ REJECT", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType closeBtn = new ButtonType("CLOSE", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-            ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
-
-            ButtonType cancelBtn = new ButtonType("CLOSE", ButtonBar.ButtonData.CANCEL_CLOSE);
-            dialog.getDialogPane().getButtonTypes().addAll(
-                    approveBtn, rejectBtn, cancelBtn
-            );
+            dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, closeBtn);
 
             for (ButtonType bt : dialog.getDialogPane().getButtonTypes()) {
                 Button btn = (Button) dialog.getDialogPane().lookupButton(bt);
@@ -431,14 +426,9 @@ public class AdminCentreController extends BaseController {
         if (isPending) {
             ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
             ButtonType rejectBtn = new ButtonType("✘ REJECT", ButtonBar.ButtonData.CANCEL_CLOSE);
+            ButtonType closeBtn = new ButtonType("CLOSE", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-            ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-            dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
-
-            ButtonType cancelBtn = new ButtonType("CLOSE", ButtonBar.ButtonData.CANCEL_CLOSE);
-            dialog.getDialogPane().getButtonTypes().addAll(
-                    approveBtn, rejectBtn, cancelBtn
-            );
+            dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, closeBtn);
 
             for (ButtonType bt : dialog.getDialogPane().getButtonTypes()) {
                 Button btn = (Button) dialog.getDialogPane().lookupButton(bt);
