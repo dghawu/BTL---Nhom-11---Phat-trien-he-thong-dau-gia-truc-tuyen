@@ -22,7 +22,7 @@
         <Button fx:id="btnPhuongTien" maxWidth="Infinity" onAction="#handleFilterPhuongTien" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Vehicles" HBox.hgrow="ALWAYS" />
         <Button fx:id="btnThoiTrang" maxWidth="Infinity" onAction="#handleFilterThoiTrang" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Fashion" HBox.hgrow="ALWAYS" />
         <Button fx:id="btnNgheThuat" maxWidth="Infinity" onAction="#handleFilterNgheThuat" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Art" HBox.hgrow="ALWAYS" />
-        <Button fx:id="btnMucKhac" maxWidth="Infinity" onAction="#handleFilterMucKhac" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="Others" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnMucKhac" maxWidth="Infinity" onAction="#handleFilterMucKhac" style="-fx-background-color: transparent; -fx-font-size: 15px; -fx-padding: 14 22 14 22;                        -fx-background-radius: 0; -fx-cursor: hand;" text="ETC" HBox.hgrow="ALWAYS" />
     </HBox>
 
     <ScrollPane fitToWidth="true" style="-fx-background-color: #FFFFFF; -fx-padding: 0;" VBox.vgrow="ALWAYS">

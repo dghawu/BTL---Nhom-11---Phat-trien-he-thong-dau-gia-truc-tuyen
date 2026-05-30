@@ -203,8 +203,13 @@ public class AdminCentreController extends BaseController {
 
         String[][] rows = {
                 {"Product name", product.optString("name", "")},
+
                 {"Product ID", product.optString("id", "")},
                 {"Category", category},
+
+                {"Product id", product.optString("id", "")},
+                {"Category", product.optString("type", "")},
+
                 {"Starting price", String.format("%,.0f đ", product.optDouble("startPrice", 0))},
                 {"Seller", product.optString("sellerName", product.optString("sellerId", ""))},
                 {"Status", product.optString("status", "")},
@@ -231,8 +236,25 @@ public class AdminCentreController extends BaseController {
         if (isPending) {
             ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
             ButtonType rejectBtn = new ButtonType("✘ REJECT", ButtonBar.ButtonData.CANCEL_CLOSE);
+
             ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
             dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
+
+            ButtonType cancelBtn = new ButtonType("CLOSE", ButtonBar.ButtonData.CANCEL_CLOSE);
+            dialog.getDialogPane().getButtonTypes().addAll(
+                    approveBtn, rejectBtn, cancelBtn
+            );
+
+            for (ButtonType bt : dialog.getDialogPane().getButtonTypes()) {
+                Button btn = (Button) dialog.getDialogPane().lookupButton(bt);
+
+                btn.setStyle("""
+        -fx-background-radius: 20;
+        -fx-border-radius: 20;
+        -fx-padding: 8 20 8 20;
+    """);
+            }
+
 
             dialog.showAndWait().ifPresent(result -> {
                 String id = product.optString("id");
@@ -258,6 +280,19 @@ public class AdminCentreController extends BaseController {
             });
         } else {
             dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+            Button closeBtn =
+                    (Button) dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+
+            closeBtn.setStyle("""
+        -fx-background-radius: 20;
+        -fx-border-radius: 20;
+        -fx-padding: 8 25 8 25;
+        -fx-background-color: white;
+        -fx-border-color: #CCCCCC;
+        -fx-border-width: 1;
+    """);
+
             dialog.showAndWait();
         }
     }
@@ -396,8 +431,25 @@ public class AdminCentreController extends BaseController {
         if (isPending) {
             ButtonType approveBtn = new ButtonType("✔ APPROVE", ButtonBar.ButtonData.OK_DONE);
             ButtonType rejectBtn = new ButtonType("✘ REJECT", ButtonBar.ButtonData.CANCEL_CLOSE);
+
             ButtonType cancelBtn = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
             dialog.getDialogPane().getButtonTypes().addAll(approveBtn, rejectBtn, cancelBtn);
+
+            ButtonType cancelBtn = new ButtonType("CLOSE", ButtonBar.ButtonData.CANCEL_CLOSE);
+            dialog.getDialogPane().getButtonTypes().addAll(
+                    approveBtn, rejectBtn, cancelBtn
+            );
+
+            for (ButtonType bt : dialog.getDialogPane().getButtonTypes()) {
+                Button btn = (Button) dialog.getDialogPane().lookupButton(bt);
+
+                btn.setStyle("""
+        -fx-background-radius: 20;
+        -fx-border-radius: 20;
+        -fx-padding: 8 20 8 20;
+    """);
+            }
+
 
             java.util.Optional<ButtonType> result = dialog.showAndWait();
             if (result.isPresent()) {
@@ -426,6 +478,19 @@ public class AdminCentreController extends BaseController {
             }
         } else {
             dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+            Button closeBtn =
+                    (Button) dialog.getDialogPane().lookupButton(ButtonType.CLOSE);
+
+            closeBtn.setStyle("""
+        -fx-background-radius: 20;
+        -fx-border-radius: 20;
+        -fx-padding: 8 25 8 25;
+        -fx-background-color: white;
+        -fx-border-color: #CCCCCC;
+        -fx-border-width: 1;
+    """);
+
             dialog.showAndWait();
         }
     }

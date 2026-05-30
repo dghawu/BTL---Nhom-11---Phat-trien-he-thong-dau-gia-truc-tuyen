@@ -214,7 +214,15 @@ public class BidderCentreController extends com.example.controller.BaseControlle
         tfAmount.setPromptText("Enter amount: " + String.format("%,.0f đ", amount));
 
         javafx.scene.control.Button btnOk = new javafx.scene.control.Button("PAYMENT");
-        btnOk.setStyle("-fx-background-color: #111; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 20;");
+
+        btnOk.setStyle("""
+    -fx-background-color: #111111;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 25;
+    -fx-border-radius: 25;
+    -fx-padding: 10 30 10 30;
+""");
         btnOk.setOnAction(e -> {
             boolean ok = com.example.socket.ServerService.pay(sessionId, amount);
             dialog.close();
