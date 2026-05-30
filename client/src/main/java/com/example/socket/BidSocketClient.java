@@ -142,45 +142,52 @@ public class BidSocketClient {
 
     public static class BidEvent {
 
-        public enum Type { BID_UPDATE, AUCTION_CLOSED, UNKNOWN }
+        public enum Type { BID_UPDATE, AUCTION_CLOSED, ANTI_SNIPE, UNKNOWN }
 
         public final Type   type;
         public final String sessionId;
         public final double price;
         public final String bidderName;
         public final String endTime;
+        public final long   extendMinutes;
+        public final String snipeTime;
 
         private BidEvent(Type type, String sessionId, double price,
-                         String bidderName, String endTime) {
+                         String bidderName, String endTime, long extendMinutes, String snipeTime) {
             this.type       = type;
             this.sessionId  = sessionId;
             this.price      = price;
             this.bidderName = bidderName;
             this.endTime    = endTime;
+            this.extendMinutes = extendMinutes;
+            this.snipeTime     = snipeTime;
         }
+
 
         public static BidEvent parse(String line) {
             if (line == null || line.isBlank()) return null;
-
-            String[] parts = line.split(":", 5);
-            if (parts.length < 4) return null;
-
             try {
+                // ANTI_SNIPE dùng | để tránh conflict với dấu : trong datetime
+                if (line.startsWith("ANTI_SNIPE|")) {
+                    String[] parts = line.split("\\|", 5);
+                    return new BidEvent(
+                            Type.ANTI_SNIPE, parts[1], 0, parts[2], "",
+                            parts.length > 4 ? Long.parseLong(parts[4]) : 0,
+                            parts.length > 3 ? parts[3] : "");
+                }
+
+                String[] parts = line.split(":", 5);
+                if (parts.length < 4) return null;
+
                 return switch (parts[0]) {
                     case "BID_UPDATE" -> new BidEvent(
-                            Type.BID_UPDATE,
-                            parts[1],
-                            Double.parseDouble(parts[2]),
-                            parts[3],
-                            parts.length > 4 ? parts[4] : ""
-                    );
+                            Type.BID_UPDATE, parts[1],
+                            Double.parseDouble(parts[2]), parts[3],
+                            parts.length > 4 ? parts[4] : "", 0, "");
                     case "AUCTION_CLOSED" -> new BidEvent(
-                            Type.AUCTION_CLOSED,
-                            parts[1],
-                            Double.parseDouble(parts[3]),
-                            parts[2],
-                            ""
-                    );
+                            Type.AUCTION_CLOSED, parts[1],
+                            Double.parseDouble(parts[3]), parts[2],
+                            "", 0, "");
                     default -> {
                         System.err.println("[BidSocketClient] Event không xác định: " + parts[0]);
                         yield null;

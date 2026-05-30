@@ -179,7 +179,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
 
-        Label title = new Label("Product name" + ten.toUpperCase());
+        Label title = new Label(ten.toUpperCase());
         title.getStyleClass().add("product-card-title");
         title.setMaxWidth(Double.MAX_VALUE);
 

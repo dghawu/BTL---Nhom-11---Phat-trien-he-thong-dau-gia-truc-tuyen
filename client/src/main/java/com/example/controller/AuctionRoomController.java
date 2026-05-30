@@ -249,8 +249,9 @@ public class AuctionRoomController extends BaseController {
                         String ts = h.getString("timestamp");
                         String time = formatTime(ts); // dùng lại method có sẵn
                         addBidEntry(h.getString("bidderName") + " bid "
-                                + String.format("%,.0f đ", h.getDouble("amount"))
-                                + " at " + time);
+                                        + String.format("%,.0f đ", h.getDouble("amount"))
+                                        + " at " + time,
+                                h.getString("bidderName").equals(currentUsername));
 
                         String chartTime = ts.length() >= 19 ? ts.substring(11, 19) : ts;
                         final String ct = chartTime;
@@ -341,13 +342,14 @@ public class AuctionRoomController extends BaseController {
                 String now = java.time.LocalDateTime.now().format(
                         java.time.format.DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy"));
                 addBidEntry(event.bidderName + " bid "
-                        + String.format("%,.0f đ", event.price)
-                        + " at " + now);
+                                + String.format("%,.0f đ", event.price)
+                                + " at " + now,
+                        event.bidderName.equals(currentUsername));
                 addChartPoint(event.price);
             });
 
             case AUCTION_CLOSED -> Platform.runLater(() -> {
-                addBidEntry("AUCTION ENDED");
+                addBidEntry("AUCTION ENDED", false);
                 if (!event.bidderName.isEmpty() && !"NO_WINNER".equals(event.bidderName)) {
                     showNotification(getStage(bidHistoryBox),
                             "THE AUCTION HAS ENDED!\nWinner: " + event.bidderName
@@ -362,6 +364,12 @@ public class AuctionRoomController extends BaseController {
                 autoMaxGiaField.setDisable(true);
             });
 
+            case ANTI_SNIPE -> Platform.runLater(() -> {
+                addBidEntry("Session extended by " + event.extendMinutes
+                        + " min — " + event.bidderName
+                        + " bid at " + formatTime(event.snipeTime), false);
+            });
+
             default -> System.out.println("[AuctionRoom] Event không xác định: " + event);
         }
     }
@@ -370,16 +378,16 @@ public class AuctionRoomController extends BaseController {
     //  Thêm dòng vào feed lịch sử (dùng nội bộ)
     // ------------------------------------------------------------------ //
 
-    private void addBidEntry(String message) {
+    private void addBidEntry(String message, boolean isMe) {
         Label entry = new Label("▶ " + message);
-        entry.setStyle("-fx-font-size: 13px; -fx-text-fill: #333;");
+        entry.setStyle("-fx-font-size: 13px; -fx-text-fill: " + (isMe ? "#16A34A; -fx-font-weight: bold;" : "#333;"));
         entry.setWrapText(true);
-        bidHistoryBox.getChildren().add(0, entry); // mới nhất lên trên
+        bidHistoryBox.getChildren().add(0, entry);
     }
 
     // ── Public — giữ lại để tương thích nếu có chỗ khác gọi ────────────
     public void addBidEvent(String message) {
-        addBidEntry(message);
+        addBidEntry(message, false);
     }
 
     public void updateCurrentPrice(double price, String holderName) {
