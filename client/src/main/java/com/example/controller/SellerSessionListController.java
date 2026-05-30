@@ -57,7 +57,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
 
-        Label title = new Label("SẢN PHẨM " + ten.toUpperCase());
+        Label title = new Label("PRODUCT " + ten.toUpperCase());
         title.getStyleClass().add("product-card-title");
         title.setMaxWidth(Double.MAX_VALUE);
 
@@ -68,11 +68,11 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         VBox info = new VBox(4);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
-                new Label("Tên sản phẩm: " + ten),
-                new Label("Thời gian mở: " + startTime),
-                new Label("Trạng thái: " + status),
-                new Label("Giá khởi điểm: " + gia),
-                new Label("Phân loại: " + category)
+                new Label("Product name: " + ten),
+                new Label("Opening time: " + startTime),
+                new Label("Status: " + status),
+                new Label("Starting price: " + gia),
+                new Label("Category: " + category)
         );
 
         // 🆕 Thêm attributes vào card
@@ -108,11 +108,11 @@ public class SellerSessionListController extends com.example.controller.BaseCont
             }
         }
 
-        Hyperlink link = new Hyperlink("Xem chi tiết");
+        Hyperlink link = new Hyperlink("View details");
         link.setOnAction(e -> openDetail(s, attr1, attr2));
         link.getStyleClass().add("link-text");
-        Button cancelBtn = new Button("Hủy phiên");
-        cancelBtn.getStyleClass().add("btn-secondary");
+        Button cancelBtn = new Button("Cancel auction");
+        cancelBtn.getStyleClass().add("btn-danger");
 
         cancelBtn.setOnAction(e -> {
 
@@ -124,8 +124,8 @@ public class SellerSessionListController extends com.example.controller.BaseCont
 
                 showAlert(
                         javafx.scene.control.Alert.AlertType.WARNING,
-                        "Không thể hủy",
-                        "Phiên này không thể hủy."
+                        "Unable to cancel",
+                        "This auction cannot be cancelled."
                 );
                 return;
             }
@@ -136,8 +136,8 @@ public class SellerSessionListController extends com.example.controller.BaseCont
 
                 showAlert(
                         javafx.scene.control.Alert.AlertType.INFORMATION,
-                        "Thành công",
-                        "Đã hủy phiên đấu giá."
+                        "Successfully",
+                        "Auction cancelled."
                 );
 
                 loadSessions();
@@ -146,8 +146,8 @@ public class SellerSessionListController extends com.example.controller.BaseCont
 
                 showAlert(
                         javafx.scene.control.Alert.AlertType.ERROR,
-                        "Lỗi",
-                        "Hủy phiên thất bại."
+                        "Error",
+                        "This auction has been cancelled."
                 );
             }
         });
@@ -163,7 +163,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
                 imageView.setPreserveRatio(true);
                 img.getChildren().setAll(imageView);
             } catch (Exception e) {
-                System.err.println("[SellerSessionListController] Lỗi decode image: " + e.getMessage());
+                System.err.println("[SellerSessionListController] Image decode error: " + e.getMessage());
             }
         }
 

@@ -1,41 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;"
-      stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26"
-      fx:controller="com.example.controller.SellerSessionListController">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.SellerSessionListController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
-        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS"/>
-        <Button maxWidth="Infinity" onAction="#handleAuctions" styleClass="nav-tab" text="Auctions"
-                HBox.hgrow="ALWAYS"/>
-        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Seller centre" HBox.hgrow="ALWAYS"/>
-        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings"
-                HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleAuctions" styleClass="nav-tab" text="Auctions" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Seller centre" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS" />
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
         <VBox spacing="4" styleClass="sidebar">
-            <Label styleClass="sidebar-section-title" text="Product management"/>
-            <Button onAction="#handleThemSanPham" styleClass="sidebar-item" text="· Add new product"/>
-            <Button onAction="#handleXemSanPham" styleClass="sidebar-item" text="· View all products"/>
-            <Label styleClass="sidebar-section-title" text="Manage auction sessions"/>
-            <Button onAction="#handleTaoPhien" styleClass="sidebar-item" text="· Create new session"/>
-            <Button onAction="#handleXemPhien" styleClass="sidebar-item-active" text="· View all sessions"/>
-            <Label styleClass="sidebar-section-title" text="Statistics"/>
+            <Label styleClass="sidebar-section-title" text="Product management" />
+            <Button onAction="#handleThemSanPham" styleClass="sidebar-item" text="· Add new product" />
+            <Button onAction="#handleXemSanPham" styleClass="sidebar-item" text="· View all products" />
+            <Label styleClass="sidebar-section-title" text="Manage auction sessions" />
+            <Button onAction="#handleTaoPhien" styleClass="sidebar-item" text="· Create new session" />
+            <Button onAction="#handleXemPhien" styleClass="sidebar-item-active" text="· View all sessions" />
+            <Label styleClass="sidebar-section-title" text="Statistics" />
         </VBox>
 
         <VBox styleClass="detail-panel" HBox.hgrow="ALWAYS">
-            <Label maxWidth="Infinity" styleClass="detail-header" text="Detail"/>
-            <Separator/>
+            <Label maxWidth="Infinity" styleClass="detail-header" text="Detail" />
+            <Separator />
             <ScrollPane fitToWidth="true" style="-fx-padding: 16;" VBox.vgrow="ALWAYS">
-                <FlowPane fx:id="sessionGrid" hgap="20" style="-fx-padding: 10;" vgap="20"/>
+                <FlowPane fx:id="sessionGrid" hgap="20" style="-fx-padding: 10;" vgap="20" />
             </ScrollPane>
-            <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 0;">
-                <Button onAction="#handleEdit" styleClass="btn-secondary" text="EDIT"/>
-                <Button onAction="#handleSave" styleClass="btn-primary" text="SAVE"/>
-            </HBox>
+            <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 0;" />
         </VBox>
     </HBox>
 </VBox>

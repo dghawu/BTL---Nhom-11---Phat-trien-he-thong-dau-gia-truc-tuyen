@@ -34,14 +34,14 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (username.isEmpty() || password.isEmpty()) {
-            showError("Vui lòng nhập đầy đủ thông tin.");
+            showError("Please fill in all required information.");
             return;
         }
 
         if (!SocketClient.getInstance().isConnected()) {
             boolean ok = SocketClient.getInstance().connect();
             if (!ok) {
-                showError("Không thể kết nối đến server. Vui lòng thử lại.");
+                showError("Unable to connect to the server. Please try again.");
                 return;
             }
         }
@@ -89,7 +89,7 @@ public class LoginController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            showError("Lỗi khi tải màn hình.");
+            showError("Error loading screen.");
         }
     }
 

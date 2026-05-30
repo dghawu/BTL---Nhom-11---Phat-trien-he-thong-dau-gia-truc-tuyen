@@ -11,6 +11,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
 
 /**
  * SellerProductListController - SellerProductList.fxml
@@ -65,7 +67,7 @@ public class SellerProductListController extends com.example.controller.BaseCont
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
 
-        Label title = new Label("SẢN PHẨM " + ten.toUpperCase());
+        Label title = new Label("PRODUCT " + ten.toUpperCase());
         title.getStyleClass().add("product-card-title");
         title.setMaxWidth(Double.MAX_VALUE);
 
@@ -76,11 +78,11 @@ public class SellerProductListController extends com.example.controller.BaseCont
         VBox info = new VBox(4);
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
-                new Label("Tên sản phẩm: " + ten),
-                new Label("Id sản phẩm: " + id),
-                new Label("Giá mở bán: " + gia),
-                new Label("Tình trạng: " + tinhTrang),
-                new Label("Phân loại: " + category)
+                new Label("Product name: " + ten),
+                new Label("Product id: " + id),
+                new Label("Starting price: " + gia),
+                new Label("Status: " + tinhTrang),
+                new Label("Category: " + category)
         );
 
 
@@ -113,11 +115,59 @@ public class SellerProductListController extends com.example.controller.BaseCont
             }
         }
 
-        Hyperlink link = new Hyperlink("Xem chi tiết");
+        Hyperlink link = new Hyperlink("View details");
         link.getStyleClass().add("link-text");
         link.setStyle("-fx-text-fill: #0044CC;");
         link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64, attr1, attr2));
-        info.getChildren().add(link);
+
+        Button cancelBtn = new Button("Cancel product");
+
+        info.getChildren().addAll(link, cancelBtn);
+
+        cancelBtn.getStyleClass().add("btn-danger");
+
+        cancelBtn.setOnAction(e -> {
+
+            String st = tinhTrang.toUpperCase();
+
+            if (st.equals("IN_AUCTION") || st.equals("SOLD")) {
+
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+
+                alert.setTitle("Unable to cancel");
+                alert.setHeaderText(null);
+                alert.setContentText("This product cannot be cancelled.");
+
+                alert.showAndWait();
+
+                return;
+            }
+
+            boolean ok = ServerService.cancelItem(id);
+
+            if (ok) {
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+                alert.setTitle("Successfully");
+                alert.setHeaderText(null);
+                alert.setContentText("Product cancelled.");
+
+                alert.showAndWait();
+
+                loadProducts();
+
+            } else {
+
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("This product has been cancelled.");
+
+                alert.showAndWait();
+            }
+        });
 
         if (imageBase64 != null && !imageBase64.isEmpty()) {
             try {
@@ -130,7 +180,7 @@ public class SellerProductListController extends com.example.controller.BaseCont
                 imageView.setPreserveRatio(true);
                 img.getChildren().setAll(imageView);
             } catch (Exception e) {
-                System.err.println("[SellerProductListController] Lỗi decode image: " + e.getMessage());
+                System.err.println("[SellerProductListController] Image decode error: " + e.getMessage());
             }
         }
 

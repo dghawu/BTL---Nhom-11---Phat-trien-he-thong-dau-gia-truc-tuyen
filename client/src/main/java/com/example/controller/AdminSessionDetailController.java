@@ -60,7 +60,7 @@ public class AdminSessionDetailController extends BaseController {
         lblGiaHienTai.setText(String.format("%,.0f đ", session.optDouble("currentPrice", 0)));
 
         String winner = session.optString("currentWinner", "");
-        lblNguoiThang.setText(winner.isEmpty() ? "Chưa có" : winner);
+        lblNguoiThang.setText(winner.isEmpty() ? "There is no" : winner);
         lblTrangThai.setText(session.optString("status", "—"));
 
         // Chỉ hiện APPROVE/REJECT khi phiên đang PENDING
@@ -80,7 +80,7 @@ public class AdminSessionDetailController extends BaseController {
             boolean ok = ServerService.approveSession(currentSessionId);
             Platform.runLater(() -> {
                 showNotification(getStage(lblTenSP),
-                        ok ? "Đã duyệt phiên đấu giá!" : "Duyệt thất bại!");
+                        ok ? "Auction approved!" : "Approval failed!");
                 if (ok) {
                     lblTrangThai.setText("RUNNING");
                     btnApprove.setVisible(false);
@@ -98,7 +98,7 @@ public class AdminSessionDetailController extends BaseController {
             boolean ok = ServerService.rejectSession(currentSessionId);
             Platform.runLater(() -> {
                 showNotification(getStage(lblTenSP),
-                        ok ? "Đã từ chối phiên!" : "Thao tác thất bại!");
+                        ok ? "Auction rejected!" : "Operation failed!");
                 if (ok) {
                     lblTrangThai.setText("CANCELED");
                     btnApprove.setVisible(false);

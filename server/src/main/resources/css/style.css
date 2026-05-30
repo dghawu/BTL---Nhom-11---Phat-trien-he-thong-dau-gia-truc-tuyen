@@ -464,3 +464,24 @@
 .button:hover{
     -fx-background-color:#ececec;
 }
+
+.btn-danger {
+    -fx-background-color: #D32F2F;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+
+    -fx-padding: 8 18 8 18;
+
+    -fx-cursor: hand;
+}
+
+.btn-danger:hover {
+    -fx-background-color: #B71C1C;
+}
+
+.btn-danger:pressed {
+    -fx-background-color: #8E0000;
+}

@@ -40,7 +40,7 @@
                     <TableColumn fx:id="colTrangThai" prefWidth="160" text="Status" visible="false" />
                 </columns>
                 <placeholder>
-                    <Label text="Không có dữ liệu." />
+                    <Label text="No data available." />
                 </placeholder>
             </TableView>
 

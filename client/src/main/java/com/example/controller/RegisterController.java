@@ -57,11 +57,11 @@ public class RegisterController {
             String confirm = confirmPasswordField.getText();
 
             if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                showError("Vui lòng điền đầy đủ thông tin.");
+                showError("Please complete all required fields.");
                 return;
             }
             if (!password.equals(confirm)) {
-                showError("Mật khẩu xác nhận không khớp.");
+                showError("Passwords do not match.");
                 return;
             }
 
@@ -82,7 +82,7 @@ public class RegisterController {
             // --- Bước 2: chọn role và đăng ký ---
             String role = roleComboBox.getValue();
             if (role == null) {
-                showError("Vui lòng chọn vai trò.");
+                showError("Please select a role.");
                 return;
             }
 
@@ -94,11 +94,11 @@ public class RegisterController {
             if (result.success) {
                 com.example.controller.NotificationController.show(
                         (Stage) nameField.getScene().getWindow(),
-                        "ĐĂNG KÝ THÀNH CÔNG!"
+                        "SIGN UP SUCCESSFUL!"
                 );
                 handleGoLogin();
             } else {
-                showError(result.message.isEmpty() ? "Đăng ký thất bại." : result.message);
+                showError(result.message.isEmpty() ? "Sign up failed." : result.message);
             }
         }
     }

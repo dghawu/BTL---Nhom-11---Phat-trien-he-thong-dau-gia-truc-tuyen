@@ -138,7 +138,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
             moTaArea.setText(content.toString());
 
             // Bước giá field (vẫn giữ promptText)
-            buocGiaField.setPromptText("Bid Increment");
+            buocGiaField.setPromptText("Bid increment");
 
             // Auto hiển thị ảnh sản phẩm
             String imageData = item.optString("image", "");
@@ -215,7 +215,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
                 || buocGiaStr.isEmpty()) {
 
             showNotification(getStage(buocGiaField),
-                    "VUI LÒNG ĐIỀN ĐỦ THÔNG TIN!");
+                    "PLEASE FILL IN ALL REQUIRED INFORMATION!");
 
             return;
         }
@@ -226,7 +226,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
         if (startDT == null || endDT == null) {
 
             showNotification(getStage(buocGiaField),
-                    "SAI ĐỊNH DẠNG THỜI GIAN!");
+                    "INVALID TIME FORMAT!");
 
             return;
         }
@@ -234,7 +234,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
         if (endDT.isBefore(startDT)) {
 
             showNotification(getStage(buocGiaField),
-                    "THỜI GIAN ĐÓNG PHẢI SAU THỜI GIAN MỞ!");
+                    "CLOSING TIME MUST BE AFTER OPENING TIME!");
 
             return;
         }
@@ -249,7 +249,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
         catch (NumberFormatException e) {
 
             showNotification(getStage(buocGiaField),
-                    "BƯỚC GIÁ KHÔNG HỢP LỆ!");
+                    "INVALID BID INCREMENT!");
 
             return;
         }
@@ -270,7 +270,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
                 if (ok) {
 
                     showNotification(getStage(buocGiaField),
-                            "TẠO PHIÊN THÀNH CÔNG!");
+                            "“AUCTION CREATED SUCCESSFULLY!");
 
                     navigateTo("/fxml/SellerSessionList.fxml",
                             getStage(buocGiaField));
@@ -278,7 +278,8 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
                 } else {
 
                     showNotification(getStage(buocGiaField),
-                            "TẠO PHIÊN THẤT BẠI!\n(Sản phẩm chưa APPROVED hoặc lỗi server)");
+                            "AUCTION CREATION FAILED!\n" +
+                                    "(Product not approved or server error)");
                 }
             });
 
