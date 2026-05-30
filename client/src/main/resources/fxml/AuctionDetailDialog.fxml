@@ -93,6 +93,5 @@
     <HBox alignment="CENTER" spacing="16">
         <Button onAction="#handleDauGia" prefWidth="160" styleClass="btn-primary" text="AUCTION"/>
         <Button onAction="#handleClose" prefWidth="140" styleClass="btn-secondary" text="BACK"/>
-        <Button onAction="#handleAddToWatchList" prefWidth="200" styleClass="btn-primary" text="ADD TO WATCH LIST"/>
     </HBox>
 </VBox>

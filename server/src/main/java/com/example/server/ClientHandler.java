@@ -510,6 +510,7 @@ public class ClientHandler implements Runnable {
         List<Auction> auctions = auctionDAO.findAll();
         JSONArray arr = new JSONArray();
         boolean isAdmin = "ADMIN".equalsIgnoreCase(auth.getRole());
+
         for (Auction a : auctions) {
             if (!isAdmin) {
                 AuctionStatus st = a.getStatus();
@@ -1010,27 +1011,33 @@ public class ClientHandler implements Runnable {
     // ================================================================== //
 
     private JSONObject auctionToJson(Auction a) {
+        Item item = a.getItem();
+
         JSONObject obj = new JSONObject()
                 .put("id", a.getAuctionId())
-                .put("itemId", a.getItem().getId())
-                .put("itemName", a.getItem().getName())
-                .put("itemImage", a.getItem().getImage() != null ? a.getItem().getImage() : "")
-                .put("description", a.getItem().getDescription())
-                .put("sellerId", a.getItem().getSellerId())
-                .put("sellerName", a.getItem().getSellerName() != null
-                        ? a.getItem().getSellerName()
-                        : a.getItem().getSellerId())
+                .put("itemId", item.getId())
+                .put("itemName", item.getName())
+                .put("itemImage", item.getImage() != null ? item.getImage() : "")
+                .put("description", item.getDescription() != null ? item.getDescription() : "")
+                .put("sellerId", item.getSellerId())
+                .put("sellerName", item.getSellerName() != null
+                        ? item.getSellerName()
+                        : item.getSellerId())
                 .put("startPrice", a.getStartPrice())
                 .put("currentPrice", a.getCurrentPrice())
                 .put("stepPrice", a.getMinIncrement())
                 .put("startTime", a.getStartTime().toString())
                 .put("endTime", a.getEndTime().toString())
                 .put("status", a.getStatus().name())
-                .put("category", a.getItem().getClass().getSimpleName())
+                .put("category", item.getClass().getSimpleName())
                 .put("currentWinner", a.getCurrentWinner() != null ? a.getCurrentWinner() : "");
 
 
-        Item item = a.getItem();
+        obj.put("imageBase64", item.getImageBase64() != null ? item.getImageBase64() : "");
+        obj.put("imageName", item.getImageName() != null ? item.getImageName() : "");
+
+
+        // Xử lý thuộc tính đặc biệt theo từng loại item
         if (item instanceof model.item.Fashion fashion) {
             obj.put("attr1", fashion.getBrand() != null ? fashion.getBrand() : "");
             obj.put("attr2", fashion.getSize() != null ? fashion.getSize() : "");

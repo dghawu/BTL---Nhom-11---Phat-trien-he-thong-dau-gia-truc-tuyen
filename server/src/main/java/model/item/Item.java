@@ -12,6 +12,8 @@ public abstract class Item extends Entity implements ItemFactory {
     private double startPrice;
     private ItemStatus status;
     private String image;
+    private String imageBase64;
+    private String imageName;
     /**
      * Constructor rỗng — cần thiết để các subclass dùng làm prototype.
      */
@@ -87,6 +89,14 @@ public abstract class Item extends Entity implements ItemFactory {
     public void setImage(String image) {
         this.image = image;
     }
+
+    public String getImageBase64() {return imageBase64;}
+
+    public void setImageBase64(String imageBase64) { this.imageBase64 = imageBase64;}
+
+    public String getImageName() {return imageName;}
+
+    public void setImageName(String imageName) {this.imageName = imageName;}
 
     // ── Template methods ────────────────────────────────────────────
     @Override

@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +12,9 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * AuctionsController - Auctions.fxml
@@ -134,16 +138,29 @@ public class AuctionsController extends com.example.controller.BaseController {
     // ------------------------------------------------------------------ //
     //  Load data
     // ------------------------------------------------------------------ //
+    private Map<String, String> itemImageMap = new HashMap<>();
     private void loadAuctions(String filter) {
         auctionGrid.getChildren().clear();
+        itemImageMap.clear();
 
-        org.json.JSONArray sessions = com.example.socket.ServerService.getAllSessions(filter);
+        org.json.JSONArray sessions = ServerService.getAllSessions(filter);
         if (sessions == null) return;
 
         for (int i = 0; i < sessions.length(); i++) {
             org.json.JSONObject s = sessions.getJSONObject(i);
+
             auctionGrid.getChildren().add(buildCard(s));
+            // Lưu imageBase64 vào map nếu có
+            String itemId = s.optString("itemId", "");
+            String imageBase64 = s.optString("imageBase64", "");
+            if (!itemId.isEmpty() && !imageBase64.isEmpty()) {
+                itemImageMap.put(itemId, imageBase64);
+            }
         }
+
+    }
+    public String getItemImage(String itemId) {
+        return itemImageMap.get(itemId);
     }
 
     private VBox buildCard(org.json.JSONObject s) {
@@ -223,13 +240,7 @@ public class AuctionsController extends com.example.controller.BaseController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuctionDetailDialog.fxml"));
             Parent root = loader.load();
             AuctionDetailDialogController ctrl = loader.getController();
-            ctrl.initData(
-                    s.getString("id"),
-                    s.getString("itemName"),
-                    String.format("%,.0fđ", s.getDouble("currentPrice")),
-                    s.getString("sellerId"),
-                    s.getString("category")
-            );
+            ctrl.initData(s);
             ctrl.setParentController(this);
             Stage dialog = new Stage();
             dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -239,11 +250,6 @@ public class AuctionsController extends com.example.controller.BaseController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void handleAddToWatchList(String ten) {
-        // TODO: ServerService.addToWatchList(currentUsername, sessionId);
-        showNotification(getStage(auctionGrid), "ĐÃ THÊM VÀO WATCH LIST!");
     }
 
     public void handleJoinAuction(String sessionId, String productName) {
@@ -267,4 +273,5 @@ public class AuctionsController extends com.example.controller.BaseController {
             e.printStackTrace();
         }
     }
+
 }
