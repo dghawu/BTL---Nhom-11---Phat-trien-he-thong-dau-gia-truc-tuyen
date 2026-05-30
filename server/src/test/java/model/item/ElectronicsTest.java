@@ -16,7 +16,6 @@ class ElectronicsTest {
     private final double price = 45_000_000.0;
 
     // ── Test 1: Khởi tạo mặc định (Default Warranty) ───────────────
-    @Disabled
     @Test
     @DisplayName("Factory: Tạo Electronics mặc định → Bảo hành phải là 12 tháng")
     void testCreateElectronicsDefault() {

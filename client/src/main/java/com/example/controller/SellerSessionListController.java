@@ -37,7 +37,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
 
         for (int i = 0; i < sessions.length(); i++) {
             org.json.JSONObject s = sessions.getJSONObject(i);
-            // 🆕 Lấy attributes từ JSON
+            // Lấy attributes từ JSON
             String attr1 = s.optString("attr1", "");
             String attr2 = s.optString("attr2", "");
             sessionGrid.getChildren().add(buildCard(s, attr1, attr2));
@@ -75,7 +75,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
                 new Label("Category: " + category)
         );
 
-        // 🆕 Thêm attributes vào card
+        // Thêm attributes vào card
         if (!attr1.isEmpty() || !attr2.isEmpty()) {
             VBox attrBox = new VBox(3);
             attrBox.setStyle("-fx-padding: 8; -fx-border-color: #e0e0e0; -fx-border-radius: 5; " +
@@ -203,7 +203,9 @@ public class SellerSessionListController extends com.example.controller.BaseCont
                     s.optString("itemImage", ""),
                     s.optString("category", ""),
                     attr1,
-                    attr2
+                    attr2,
+                    s.optString("currentWinner", ""),
+                    String.format("%,.0f đ", s.optDouble("currentPrice", 0))
             );
             getStage(sessionGrid).setScene(new Scene(root));
         } catch (Exception e) {

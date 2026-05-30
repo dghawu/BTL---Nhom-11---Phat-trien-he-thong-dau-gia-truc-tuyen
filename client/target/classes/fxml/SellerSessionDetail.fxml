@@ -11,6 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.ScrollPane?>
 <VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.SellerSessionDetailController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
@@ -65,7 +66,14 @@
                     <RowConstraints />
                 </rowConstraints>
             </GridPane>
-
+            <Label fx:id="lblGiaHienTai" text="Giá hiện tại: ---"/>
+            <Label fx:id="lblWinner" text="Winner: Chưa có"
+                   style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            <Separator/>
+            <Label text="BID HISTORY" style="-fx-font-weight: bold;"/>
+            <ScrollPane fitToWidth="true" prefHeight="200">
+                <VBox fx:id="bidHistoryBox" spacing="4" style="-fx-padding: 4;"/>
+            </ScrollPane>
 
             <Label style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 16 0 8 0;" text="Product Details" />
             <VBox fx:id="attributesContainer" style="-fx-padding: 10; -fx-border-color: #f0f0f0; -fx-border-radius: 3; -fx-background-color: #fafafa;" />
