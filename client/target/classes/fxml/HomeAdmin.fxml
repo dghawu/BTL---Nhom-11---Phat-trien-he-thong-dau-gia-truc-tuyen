@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- HomeAdmin.fxml -->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;"
+      stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26"
+      fx:controller="com.example.controller.HomeAdminController">
+
+    <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Home" HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleAdminCentre" styleClass="nav-tab" text="Admin centre"
+                HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleUserReport" styleClass="nav-tab" text="User's report"
+                HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings"
+                HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <VBox spacing="0" styleClass="content-area" VBox.vgrow="ALWAYS">
+
+        <Label fx:id="welcomeLabel" style="-fx-font-size: 34px;" styleClass="welcome-title"
+               text="WELCOME"/>
+
+        <Region prefHeight="50"/>
+
+        <HBox alignment="CENTER_LEFT" spacing="30">
+
+            <VBox onMouseClicked="#handleAdminCentre" prefHeight="160" prefWidth="300" spacing="8"
+                  styleClass="home-card">
+                <HBox alignment="CENTER_RIGHT">
+                    <Label styleClass="window-dots" text="_ □ ×"/>
+                </HBox>
+                <Label styleClass="home-card-subtitle" text="Management"/>
+                <Label styleClass="home-card-title" text="AUCTIONS | PRODUCTS | USERS&#10;" wrapText="true"/>
+            </VBox>
+
+            <VBox onMouseClicked="#handleUserReport" prefHeight="160" prefWidth="300" spacing="8"
+                  styleClass="home-card">
+                <HBox alignment="CENTER_RIGHT">
+                    <Label styleClass="window-dots" text="_ □ ×"/>
+                </HBox>
+                <Label styleClass="home-card-subtitle" text="Resolving"/>
+                <Label styleClass="home-card-title" text="USER ISSUES" wrapText="true"/>
+            </VBox>
+
+            <VBox onMouseClicked="#handleSettings" prefHeight="160" prefWidth="300" spacing="8" styleClass="home-card">
+                <HBox alignment="CENTER_RIGHT">
+                    <Label styleClass="window-dots" text="_ □ ×"/>
+                </HBox>
+                <Label styleClass="home-card-subtitle" text="Modification"/>
+                <Label styleClass="home-card-title" text="ACCOUNT INFORMATION&#10;" wrapText="true"/>
+            </VBox>
+
+        </HBox>
+    </VBox>
+</VBox>

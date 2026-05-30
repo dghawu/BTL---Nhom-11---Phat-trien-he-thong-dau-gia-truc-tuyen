@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.SellerCentreController">
+
+    <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
+        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleAuctions" styleClass="nav-tab" text="Auctions" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Seller centre" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox spacing="4" styleClass="sidebar">
+            <Label styleClass="sidebar-section-title" text="Product management" />
+            <Button onAction="#handleThemSanPham" styleClass="sidebar-item-active" text="· Add new product" />
+            <Button onAction="#handleXemSanPham" styleClass="sidebar-item" text="· View all products" />
+            <Label styleClass="sidebar-section-title" text="Manage auction sessions" />
+            <Button onAction="#handleTaoPhien" styleClass="sidebar-item" text="· Create new session" />
+            <Button onAction="#handleXemPhien" styleClass="sidebar-item" text="· View all sessions" />
+            <Label onMouseClicked="#handleThongKe" style="-fx-cursor:hand;" styleClass="sidebar-section-title" text="Statistics" />
+        </VBox>
+
+        <VBox styleClass="detail-panel" HBox.hgrow="ALWAYS">
+            <Label maxWidth="Infinity" styleClass="detail-header" text="Detail" />
+            <Separator />
+
+
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+                <VBox spacing="20" style="-fx-padding: 20 30 20 30;">
+                    <!-- Row 0: Product's name -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Product's name" />
+                        <TextField fx:id="tenField" prefHeight="40" styleClass="text-field-underline" />
+                    </VBox>
+
+                    <!-- Row 1: Category -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Category" />
+                        <ComboBox fx:id="phanLoaiBox" prefHeight="40" promptText="Select category" styleClass="combo-box-rounded">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="ELECTRONICS" />
+                                    <String fx:value="VEHICLE" />
+                                    <String fx:value="FASHION" />
+                                    <String fx:value="ART" />
+                                    <String fx:value="ETC" />
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    <!-- Row 2: Category Attributes Container -->
+                    <VBox fx:id="categoryAttributesContainer" spacing="15" />
+
+                    <!-- Row 3: Description -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Description" />
+                        <TextField fx:id="moTaField" prefHeight="40" styleClass="text-field-underline" />
+                    </VBox>
+
+                    <!-- Row 4: Starting price -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Starting price" />
+                        <TextField fx:id="giaField" prefHeight="40" styleClass="text-field-underline" />
+                    </VBox>
+
+                    <!-- Row 5: Image -->
+                    <VBox spacing="8">
+                        <Label styleClass="detail-label" text="Image" />
+                        <Pane fx:id="imagePane" onMouseClicked="#handleChooseImage" prefHeight="200" prefWidth="200" style="-fx-background-color: #FFFFFF;" />
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- Buttons - giữ cố định ở dưới cùng -->
+            <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 20;">
+                <Button onAction="#handleEdit" styleClass="btn-secondary" text="EDIT" />
+                <Button onAction="#handleSave" styleClass="btn-primary" text="SAVE" />
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

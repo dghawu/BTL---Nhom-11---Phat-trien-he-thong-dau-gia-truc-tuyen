@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.StackPane?>
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.AuctionRoomController">
+
+    <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
+        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Auctions" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleBidderCentre" styleClass="nav-tab" text="Bidder Centre" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+
+    <!-- Back link -->
+    <HBox style="-fx-padding: 8 16 0 16;">
+        <Label onMouseClicked="#handleBack" style="-fx-font-size: 13px; -fx-text-fill: #333333; -fx-font-style: italic; -fx-cursor: hand;" text="▶ Return to session list" />
+    </HBox>
+
+    <!-- Main content: 3 columns -->
+    <HBox spacing="0" style="-fx-border-color: #CCCCCC; -fx-border-width: 1px 0 0 0;" VBox.vgrow="ALWAYS">
+
+        <!-- Left: Product card -->
+        <VBox style="-fx-pref-width: 280px; -fx-min-width: 260px;                      -fx-border-color: transparent #CCCCCC transparent transparent;                      -fx-border-width: 0 1px 0 0;">
+            <Label fx:id="lblProductName" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-alignment: CENTER;                           -fx-padding: 10 8 10 8; -fx-max-width: Infinity;                           -fx-border-color: transparent transparent #CCCCCC transparent;                           -fx-border-width: 0 0 1px 0;" text="PRODUCTS" />
+            <Pane fx:id="imgPane" style="-fx-background-color: #F8F8F8; -fx-min-height: 200px;" VBox.vgrow="ALWAYS" />
+            <VBox style="-fx-padding: 12 14 12 14; -fx-spacing: 4;                          -fx-border-color: #CCCCCC transparent transparent transparent;                          -fx-border-width: 1px 0 0 0;">
+                <Label fx:id="lblTenSP" style="-fx-font-size: 13px;" text="Product's name:" />
+                <Label fx:id="lblIdSP" style="-fx-font-size: 13px;" text="Product id:" />
+                <Label fx:id="lblGiaMoBan" style="-fx-font-size: 13px;" text="Starting price:" />
+                <Label fx:id="lblTinhTrang" style="-fx-font-size: 13px;" text="Status:" />
+                <Label fx:id="lblMoTa" style="-fx-font-size: 13px;" text="Description:" wrapText="true" />
+                <VBox fx:id="attributesContainer" spacing="6" style="-fx-padding: 8 0 0 0;">
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- Middle: Feed / Chart toggle -->
+        <VBox style="-fx-border-color: transparent #CCCCCC transparent transparent;
+             -fx-border-width: 0 1px 0 0; -fx-padding: 16 16 16 16;"
+              HBox.hgrow="ALWAYS">
+
+            <Label style="-fx-font-size: 20px; -fx-font-weight: bold;
+                  -fx-alignment: CENTER; -fx-max-width: Infinity; -fx-padding: 0 0 14 0;"
+                   text="YOU ARE IN THE AUCTION"/>
+
+            <!-- Tab buttons -->
+            <HBox spacing="0"
+                  alignment="CENTER"
+                  style="-fx-padding: 0 0 12 0;">
+                <Button fx:id="btnTabFeed" onAction="#handleTabFeed"
+                        style="-fx-background-color: #111111; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-font-size: 13px;
+                       -fx-padding: 6 20; -fx-cursor: hand;
+                       -fx-background-radius: 20px 0 0 20px;"
+                        text="FOLLOW THE AUCTION"/>
+                <Button fx:id="btnTabChart" onAction="#handleTabChart"
+                        style="-fx-background-color: #DDDDDD; -fx-text-fill: #333;
+                       -fx-font-weight: bold; -fx-font-size: 13px;
+                       -fx-padding: 6 20; -fx-cursor: hand;
+                       -fx-background-radius: 0 20px 20px 0;"
+                        text="PRICE CHART"/>
+            </HBox>
+
+            <!-- StackPane chứa cả 2 view -->
+            <StackPane VBox.vgrow="ALWAYS">
+
+                <!-- Feed view -->
+                <ScrollPane fx:id="scrollFeed" fitToWidth="true"
+                            style="-fx-background-color: transparent; -fx-border-color: transparent;">
+                    <VBox fx:id="bidHistoryBox" spacing="6"
+                          style="-fx-padding: 4 0 4 0; -fx-background-color: transparent;"/>
+                </ScrollPane>
+
+                <!-- Chart view (ẩn mặc định) -->
+                <VBox fx:id="chartPane" visible="false" managed="false"
+                      style="-fx-background-color: transparent;"/>
+
+            </StackPane>
+        </VBox>
+
+        <!-- Right: Price + bid actions -->
+        <VBox spacing="0" style="-fx-pref-width: 420px; -fx-min-width: 300px; -fx-padding: 16 20 16 20;">
+
+            <!-- Timer -->
+            <VBox spacing="4" style="-fx-padding: 0 0 12 0;                                      -fx-border-color: transparent transparent #DDDDDD transparent;                                      -fx-border-width: 0 0 1px 0;">
+                <Label fx:id="lblThoiGianBatDau" style="-fx-font-size: 13px; -fx-text-fill: #444;" text="Opening time:" />
+                <Label fx:id="lblThoiGianKetThuc" style="-fx-font-size: 13px; -fx-text-fill: #444;" text="Closing time:" />
+                <Label fx:id="lblThoiGianConLai" style="-fx-font-size: 13px; -fx-text-fill: #444;" text="Remaining time:" />
+            </VBox>
+
+            <Region prefHeight="12" />
+
+            <!-- Price info -->
+            <GridPane hgap="20" style="-fx-padding: 0 0 12 0;                              -fx-border-color: transparent transparent #DDDDDD transparent;                              -fx-border-width: 0 0 1px 0;" vgap="6">
+                <columnConstraints>
+                    <ColumnConstraints prefWidth="120" />
+                    <ColumnConstraints hgrow="ALWAYS" />
+                </columnConstraints>
+                <Label styleClass="detail-label" text="Starting price:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <Label fx:id="lblGiaKhoiDiem" text="—" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                <Label styleClass="detail-label" text="Bid increment:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <Label fx:id="lblBuocGia" text="—" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label styleClass="detail-label" text="Current price:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <Label fx:id="lblGiaHienTai" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #CC0000;" text="—" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <rowConstraints>
+                    <RowConstraints />
+                    <RowConstraints />
+                    <RowConstraints />
+                </rowConstraints>
+            </GridPane>
+
+            <Region prefHeight="8" />
+            <Label fx:id="lblNguoiGiuGia" style="-fx-font-size: 13px; -fx-text-fill: #333;                           -fx-padding: 0 0 12 0;                           -fx-border-color: transparent transparent #DDDDDD transparent;                           -fx-border-width: 0 0 1px 0;" text="The highest bidder:" />
+
+            <Region prefHeight="14" />
+
+            <!-- Manual bid -->
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="MANUAL AUCTION" />
+                <Label fx:id="lblManualToggle" onMouseClicked="#handleToggleManual" style="-fx-background-color: #22C55E; -fx-text-fill: white;                               -fx-font-size: 11px; -fx-font-weight: bold;                               -fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;" text="ON" />
+            </HBox>
+            <Region prefHeight="8" />
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <TextField fx:id="manualBidField" promptText="Enter your bid" styleClass="text-field-rounded" HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleManualBid" styleClass="btn-primary" text="SUBMIT" />
+            </HBox>
+
+            <Region prefHeight="14" />
+
+            <!-- Auto bid -->
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="AUTOMATIC BIDDING" />
+                <Label fx:id="lblAutoToggle" onMouseClicked="#handleToggleAuto" style="-fx-background-color: #EF4444; -fx-text-fill: white;                               -fx-font-size: 11px; -fx-font-weight: bold;                               -fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;" text="OFF" />
+            </HBox>
+            <Region prefHeight="8" />
+            <VBox spacing="8">
+                <TextField fx:id="autoBuocGiaField" disable="true" promptText="Enter the automatic bid increment" styleClass="text-field-rounded" />
+                <TextField fx:id="autoMaxGiaField" disable="true" promptText="Enter your maximum bid" styleClass="text-field-rounded" />
+            </VBox>
+
+            <Region prefHeight="10" />
+            <HBox alignment="CENTER_RIGHT">
+                <Button onAction="#handleSaveAutoConfig" styleClass="btn-primary" text="SAVE" />
+            </HBox>
+
+            <Region VBox.vgrow="ALWAYS" />
+
+            <!-- Report -->
+            <HBox alignment="CENTER_RIGHT">
+                <Button onAction="#handleReport" style="-fx-background-color: #FFFFFF; -fx-text-fill: #CC0000;                                -fx-border-color: #CC0000; -fx-border-width: 1.5px;                                -fx-border-radius: 30px; -fx-background-radius: 30px;                                -fx-padding: 8 20 8 20; -fx-cursor: hand; -fx-font-size: 13px;" text="Report an issue" />
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

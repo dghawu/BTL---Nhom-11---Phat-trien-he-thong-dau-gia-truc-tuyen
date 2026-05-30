@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Screen 1.1: Register -->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<HBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="640" prefWidth="1024" style="-fx-background-color: #FFFFFF;"
+      stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/25"
+      fx:controller="com.example.controller.RegisterController">
+
+    <!-- Left spacer -->
+    <Region HBox.hgrow="ALWAYS"/>
+
+    <!-- Register Form -->
+    <VBox alignment="TOP_LEFT" spacing="0" style="-fx-padding: 80 100 0 60; -fx-min-width: 500;" HBox.hgrow="NEVER">
+
+        <!-- Name -->
+        <Label styleClass="field-label" stylesheets="@../css/style.css" text="Name"/>
+        <Region prefHeight="6"/>
+        <TextField fx:id="nameField" prefWidth="440" styleClass="text-field-rounded" stylesheets="@../css/style.css"/>
+
+        <Region prefHeight="16"/>
+
+        <!-- Email -->
+        <Label styleClass="field-label" stylesheets="@../css/style.css" text="Email address"/>
+        <Region prefHeight="6"/>
+        <TextField fx:id="emailField" prefWidth="440" styleClass="text-field-rounded" stylesheets="@../css/style.css"/>
+
+        <Region prefHeight="16"/>
+
+        <!-- Password -->
+        <Label styleClass="field-label" stylesheets="@../css/style.css" text="Password"/>
+        <Region prefHeight="6"/>
+        <PasswordField fx:id="passwordField" prefWidth="440" styleClass="text-field-rounded"
+                       stylesheets="@../css/style.css"/>
+
+        <Region prefHeight="16"/>
+
+        <!-- Confirm Password -->
+        <Label styleClass="field-label" stylesheets="@../css/style.css" text="Confirm Password"/>
+        <Region prefHeight="6"/>
+        <PasswordField fx:id="confirmPasswordField" prefWidth="440" styleClass="text-field-rounded"
+                       stylesheets="@../css/style.css"/>
+
+        <Region prefHeight="16"/>
+
+        <!-- Role selection (shown after clicking Submit) -->
+        <Label fx:id="roleLabelVisibility" managed="false" styleClass="field-label" text="Role" visible="false"/>
+        <ComboBox fx:id="roleComboBox" managed="false" prefWidth="440" promptText="Chọn vai trò (Bidder / Seller)"
+                  styleClass="combo-box-rounded" visible="false"/>
+
+        <Region prefHeight="6"/>
+
+        <!-- Error label -->
+        <Label fx:id="errorLabel" managed="false" style="-fx-text-fill: #CC0000; -fx-font-size: 12px;" visible="false"/>
+
+        <Region prefHeight="16"/>
+
+        <!-- Submit button -->
+        <Button onAction="#handleSubmit" prefWidth="440" styleClass="btn-primary" stylesheets="@../css/style.css"
+                text="Submit"/>
+
+        <Region prefHeight="10"/>
+
+        <!-- Back to login -->
+        <Button onAction="#handleGoLogin" prefWidth="440" styleClass="btn-secondary" stylesheets="@../css/style.css"
+                text="I already have an account"/>
+
+    </VBox>
+</HBox>
