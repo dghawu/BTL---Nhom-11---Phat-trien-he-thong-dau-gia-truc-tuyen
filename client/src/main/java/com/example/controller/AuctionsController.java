@@ -152,7 +152,7 @@ public class AuctionsController extends com.example.controller.BaseController {
             auctionGrid.getChildren().add(buildCard(s));
             // Lưu imageBase64 vào map nếu có
             String itemId = s.optString("itemId", "");
-            String imageBase64 = s.optString("imageBase64", "");
+            String imageBase64 = s.optString("itemImage", "");
             if (!itemId.isEmpty() && !imageBase64.isEmpty()) {
                 itemImageMap.put(itemId, imageBase64);
             }

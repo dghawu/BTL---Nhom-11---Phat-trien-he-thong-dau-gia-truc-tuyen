@@ -168,7 +168,7 @@ public class AuctionDetailDialogController extends com.example.controller.BaseCo
             imgPane.getChildren().add(currentImageView);
         }
 
-        String imageBase64 = sessionData.optString("imageBase64", "");
+        String imageBase64 = sessionData.optString("itemImage", "");
 
         if (!imageBase64.isEmpty()) {
             try {
