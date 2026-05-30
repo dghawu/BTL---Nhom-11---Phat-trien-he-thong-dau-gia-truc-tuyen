@@ -37,7 +37,7 @@ public class AuctionDetailDialogController extends com.example.controller.BaseCo
     @FXML
     private Label lblPhanLoai;
     @FXML
-    private VBox attributesContainer;  // ← THÊM DÒNG NÀY
+    private VBox attributesContainer;
     @FXML
     private Pane imgPane;
 
@@ -74,7 +74,7 @@ public class AuctionDetailDialogController extends com.example.controller.BaseCo
         lblIdNguoiBan.setText(sellerId);
         lblPhanLoai.setText(phanLoai);
 
-        // ===== HIỂN THỊ ATTRIBUTES =====
+
         displayAttributes(sessionData, phanLoai);
 
         // Hiển thị ảnh
