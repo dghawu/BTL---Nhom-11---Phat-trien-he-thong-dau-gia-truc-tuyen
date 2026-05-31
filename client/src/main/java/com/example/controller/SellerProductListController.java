@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -10,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -121,10 +123,12 @@ public class SellerProductListController extends com.example.controller.BaseCont
         link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64, attr1, attr2));
 
         Button cancelBtn = new Button("Cancel product");
-
-        info.getChildren().addAll(link, cancelBtn);
-
         cancelBtn.getStyleClass().add("btn-danger");
+
+        HBox buttonBox = new HBox(cancelBtn);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        info.getChildren().addAll(link, buttonBox);
 
         cancelBtn.setOnAction(e -> {
 
