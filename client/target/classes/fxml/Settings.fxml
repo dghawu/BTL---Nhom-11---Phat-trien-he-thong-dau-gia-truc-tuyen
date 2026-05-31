@@ -23,8 +23,11 @@
     <ScrollPane fitToWidth="true" style="-fx-padding: 0; -fx-background-color: transparent;" VBox.vgrow="ALWAYS">
         <VBox spacing="0" style="-fx-padding: 40 100 40 60;">
 
-            <Label fx:id="accountTitleLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;"
-                   text="Your account @user_name"/>
+            <Label fx:id="accountTitleLabel"
+                   text="Your account @user_name"
+                   style="-fx-font-size: 18px;
+              -fx-font-weight: bold;
+              -fx-font-family: 'Apple Garamond';"/>
             <Region prefHeight="12"/>
 
             <VBox maxWidth="440" spacing="8">
@@ -37,7 +40,10 @@
             </VBox>
 
             <Region prefHeight="30"/>
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Change Username"/>
+            <Label text="Change Username"
+                   style="-fx-font-size: 18px;
+              -fx-font-weight: bold;
+              -fx-font-family: 'Apple Garamond';"/>
             <Region prefHeight="12"/>
             <VBox maxWidth="440" spacing="8">
                 <TextField fx:id="newUsernameField" promptText="New Username" styleClass="text-field-rounded"/>
@@ -48,7 +54,10 @@
             </VBox>
 
             <Region prefHeight="30"/>
-            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Change Password"/>
+            <Label text="Change Password"
+                   style="-fx-font-size: 18px;
+              -fx-font-weight: bold;
+              -fx-font-family: 'Apple Garamond';"/>
             <Region prefHeight="12"/>
             <VBox maxWidth="440" spacing="8">
                 <PasswordField fx:id="oldPasswordField" promptText="Old Password" styleClass="text-field-rounded"/>
