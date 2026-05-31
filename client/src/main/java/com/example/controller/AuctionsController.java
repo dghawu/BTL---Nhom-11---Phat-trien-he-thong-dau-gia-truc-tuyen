@@ -181,7 +181,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
 
-        Label title = new Label(ten.toUpperCase());
+        Label title = new Label(ten);
         title.getStyleClass().add("product-card-title");
         title.setMaxWidth(Double.MAX_VALUE);
 
@@ -207,7 +207,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         info.getChildren().add(linkDetail);
 
         Button btnJoin = new Button("JOIN AUCTION");
-        btnJoin.getStyleClass().add("btn-primary");
+        btnJoin.getStyleClass().add("btn-dephon");
         btnJoin.setMaxWidth(Double.MAX_VALUE);
         VBox.setMargin(btnJoin, new javafx.geometry.Insets(8, 10, 10, 10));
         if ("RUNNING".equalsIgnoreCase(status)) {
@@ -233,7 +233,15 @@ public class AuctionsController extends com.example.controller.BaseController {
             }
         }
 
-        card.getChildren().addAll(title, img, info, btnJoin);
+        javafx.scene.layout.HBox sepBox = new javafx.scene.layout.HBox();
+        javafx.scene.layout.Region sep = new javafx.scene.layout.Region();
+        sep.setMaxWidth(Double.MAX_VALUE);
+        sep.setStyle("-fx-background-color: #aaaaaa; -fx-pref-height: 1px; -fx-max-height: 1px;");
+        javafx.scene.layout.HBox.setHgrow(sep, javafx.scene.layout.Priority.ALWAYS);
+        sepBox.setStyle("-fx-padding: 0 16 0 16;");
+        sepBox.getChildren().add(sep);
+
+        card.getChildren().addAll(title, sepBox, img, info, btnJoin);
         return card;
     }
 

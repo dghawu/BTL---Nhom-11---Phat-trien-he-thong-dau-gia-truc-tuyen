@@ -56,7 +56,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
 
-        Label title = new Label("PRODUCT " + ten.toUpperCase());
+        Label title = new Label(ten);
         title.getStyleClass().add("product-card-title");
         title.setMaxWidth(Double.MAX_VALUE);
 

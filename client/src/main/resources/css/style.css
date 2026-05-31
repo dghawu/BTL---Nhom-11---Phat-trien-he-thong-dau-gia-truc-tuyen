@@ -338,35 +338,35 @@
 
 /* ---- PRODUCT CARD ---- */
 .product-card {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CCCCCC;
-    -fx-border-width: 1.2px;
-    -fx-border-radius: 12px;
-    -fx-background-radius: 12px;
+    -fx-background-color: #eef1f6;
+    -fx-border-color: #02182e;
+    -fx-border-width: 1px;
+    -fx-border-radius: 14px;
+    -fx-background-radius: 14px;
     -fx-padding: 0;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 2);
 }
 
 .product-card-title {
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #111111;
+    -fx-font-family: "Apple Garamond";
+    -fx-font-size: 25px;
+    -fx-text-fill: #02182e;
     -fx-alignment: CENTER;
-    -fx-padding: 8 5 8 5;
-    -fx-border-color: transparent transparent #DDDDDD transparent;
+    -fx-padding: 12 8 10 8;
     -fx-border-width: 0 0 1px 0;
 }
 
 .product-card-image {
-    -fx-background-color: #F5F5F5;
+    -fx-background-color: #eef1f6;
     -fx-pref-height: 160px;
     -fx-min-height: 160px;
 }
 
 .product-card-info {
     -fx-padding: 10 12 10 12;
-    -fx-font-size: 12px;
-    -fx-text-fill: #333333;
+    -fx-font-size: 13px;
+    -fx-font-family: "Montserrat";
+    -fx-text-fill: #02182e;
 }
 
 .link-text {
@@ -593,8 +593,8 @@
     -fx-background-radius: 14px;
 }
 .auction-box-white {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CCCCCC;
+    -fx-background-color: #FFF9F0;
+    -fx-border-color: #02182e;
     -fx-border-width: 1px;
     -fx-border-radius: 14px;
     -fx-background-radius: 14px;
@@ -616,7 +616,7 @@
     -fx-padding: 14 8 10 8;
 }
 .auction-img-pane {
-    -fx-background-color: #ddeef8;
+    -fx-background-color: #eef1f6;
     -fx-min-height: 180px;
     -fx-pref-height: 200px;
 }
@@ -629,19 +629,18 @@
 /* ── MIDDLE TABS ── */
 .auction-tab-label-active {
     -fx-font-family: "Apple Garamond";
-    -fx-font-size: 24px;
+    -fx-font-size: 30px;
     -fx-text-fill: #02182e;
-    -fx-background-color: #fff9c2;
-    -fx-background-radius: 4px;
+    -fx-background-color: transparent;
     -fx-padding: 2 8 2 8;
 }
 .auction-tab-label {
     -fx-font-family: "Apple Garamond";
-    -fx-font-size: 24px;
-    -fx-text-fill: #888888;
+    -fx-font-size: 30px;
+    -fx-text-fill: #02182e;
     -fx-padding: 2 8 2 8;
 }
-/* Gạch vàng dưới tab active */
+/* Gạch vàng tab active */
 .auction-tab-underline {
     -fx-background-color: #02182e;
     -fx-pref-height: 3px;
@@ -666,11 +665,13 @@
     -fx-font-size: 52px;
     -fx-text-fill: #bf2222;
     -fx-min-width: 160px;
+    -fx-min-width: 220px;
 }
 .auction-box-blue .auction-countdown {
     -fx-font-family: "Apple Garamond";
     -fx-font-size: 52px;
     -fx-text-fill: #bf2222;
+    -fx-min-width: 220px;
 }
 .auction-info-label {
     -fx-font-family: "Montserrat";
@@ -685,7 +686,7 @@
 /* Current price to + xanh lá */
 .auction-current-price {
     -fx-font-family: "Apple Garamond";
-    -fx-font-size: 38px;
+    -fx-font-size: 52px;
     -fx-text-fill: #337514;
 }
 .auction-winner-label {
@@ -698,7 +699,7 @@
 .auction-bid-section-title {
     -fx-font-family: "Apple Garamond";
     -fx-font-style: italic;
-    -fx-font-size: 22px;
+    -fx-font-size: 30px;
     -fx-text-fill: #02182e;
 }
 .auction-toggle-on {
@@ -734,3 +735,17 @@
     -fx-font-family: "Montserrat";
 }
 .auction-report-btn:hover { -fx-background-color: #fff0f0; }
+.btn-dephon {
+    -fx-background-color: #02182e;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 30px;
+    -fx-padding: 12 30 12 30;
+    -fx-cursor: hand;
+    -fx-pref-height: 46px;
+}
+
+.btn-dephon:hover {
+    -fx-background-color: #333333;
+}

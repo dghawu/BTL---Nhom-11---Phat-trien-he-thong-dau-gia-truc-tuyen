@@ -165,12 +165,12 @@ public class AuctionRoomController extends BaseController {
                 currentPrice = s.getDouble("currentPrice");
                 stepPrice = s.getDouble("stepPrice");
 
-                lblGiaKhoiDiem.setText(String.format("%,.0f đ", s.getDouble("startPrice")));
-                lblBuocGia.setText(String.format("%,.0f đ", s.getDouble("stepPrice")));
-                lblGiaHienTai.setText(String.format("%,.0f đ", currentPrice));
+                lblGiaKhoiDiem.setText(String.format("%,.0f", s.getDouble("startPrice")));
+                lblBuocGia.setText(String.format("%,.0f", s.getDouble("stepPrice")));
+                lblGiaHienTai.setText(String.format("%,.0f", currentPrice));
                 lblTenSP.setText("Product name: " + s.getString("itemName"));
                 lblIdSP.setText("Product id: " + s.getString("itemId"));
-                lblGiaMoBan.setText("Starting price: " + String.format("%,.0f đ", s.getDouble("startPrice")));
+                lblGiaMoBan.setText("Starting price: " + String.format("%,.0f", s.getDouble("startPrice")));
                 lblTinhTrang.setText("Status: " + s.getString("status"));
                 lblMoTa.setText("Description: " + s.optString("description", ""));
 
@@ -345,7 +345,7 @@ public class AuctionRoomController extends BaseController {
                 String now = java.time.LocalDateTime.now().format(
                         java.time.format.DateTimeFormatter.ofPattern("HH:mm  dd/MM/yyyy"));
                 addBidEntry(event.bidderName + " bid "
-                                + String.format("%,.0f đ", event.price)
+                                + String.format("%,.0f", event.price)
                                 + " at " + now,
                         event.bidderName.equals(currentUsername));
                 addChartPoint(event.price);
@@ -356,7 +356,7 @@ public class AuctionRoomController extends BaseController {
                 if (!event.bidderName.isEmpty() && !"NO_WINNER".equals(event.bidderName)) {
                     showNotification(getStage(bidHistoryBox),
                             "THE AUCTION HAS ENDED!\nWinner: " + event.bidderName
-                                    + "\nFinal Price: " + String.format("%,.0f đ", event.price));
+                                    + "\nFinal Price: " + String.format("%,.0f", event.price));
                 } else {
                     showNotification(getStage(bidHistoryBox),
                             "THE AUCTION HAS ENDED!\nThere is no winner.");
@@ -395,7 +395,7 @@ public class AuctionRoomController extends BaseController {
 
     public void updateCurrentPrice(double price, String holderName) {
         currentPrice = price;
-        lblGiaHienTai.setText(String.format("%,.0f đ", price));
+        lblGiaHienTai.setText(String.format("%,.0f", price));
         lblNguoiGiuGia.setText(holderName);
     }
 
@@ -460,9 +460,9 @@ public class AuctionRoomController extends BaseController {
         double minValidBid = currentPrice + stepPrice;
         if (bid < minValidBid) {
             showNotification(getStage(bidHistoryBox),
-                    "THE BID PRICE MUST BE AT LEAST " + String.format("%,.0f đ", minValidBid)
-                            + "\n(Current Price: " + String.format("%,.0f đ", currentPrice)
-                            + " + Bid increment: " + String.format("%,.0f đ", stepPrice) + ")");
+                    "THE BID PRICE MUST BE AT LEAST " + String.format("%,.0f", minValidBid)
+                            + "\n(Current Price: " + String.format("%,.0f", currentPrice)
+                            + " + Bid increment: " + String.format("%,.0f", stepPrice) + ")");
             return;
         }
 
@@ -611,7 +611,6 @@ public class AuctionRoomController extends BaseController {
                             java.time.LocalDateTime.now(), endDateTime);
                     if (remaining.isNegative() || remaining.isZero()) {
                         lblThoiGianConLai.setText("00:00");
-                        lblThoiGianConLai.setStyle("-fx-font-size: 13px; -fx-text-fill: #CC0000; -fx-font-weight: bold;");
                         countdownTimer.stop();
                     } else {
                         long h = remaining.toHours();
@@ -621,7 +620,6 @@ public class AuctionRoomController extends BaseController {
                                 ? String.format("%02d:%02d:%02d", h, m, s)
                                 : String.format("%02d:%02d", m, s);
                         lblThoiGianConLai.setText(txt);
-                        lblThoiGianConLai.setStyle("-fx-font-size: 13px; -fx-text-fill: #CC0000; -fx-font-weight: bold;");
                     }
                 })
         );

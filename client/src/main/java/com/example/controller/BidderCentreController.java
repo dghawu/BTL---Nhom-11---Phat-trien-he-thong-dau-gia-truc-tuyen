@@ -150,7 +150,7 @@ public class BidderCentreController extends com.example.controller.BaseControlle
         card.getStyleClass().add("product-card");
         card.setPrefWidth(260);
 
-        Label title = new Label(ten.toUpperCase());
+        Label title = new Label(ten);
         title.getStyleClass().add("product-card-title");
         title.setMaxWidth(Double.MAX_VALUE);
 
