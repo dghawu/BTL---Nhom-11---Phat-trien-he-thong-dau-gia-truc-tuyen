@@ -494,47 +494,44 @@
     -fx-spacing: 4;
 }
 
-/* "Welcome" – thẳng đứng, font ZT Bros */
+/* "Welcome" */
 .hero-welcome-plain {
-    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-family: "Apple Garamond";
     -fx-font-size: 80px;
     -fx-text-fill: #111111;
 }
 
-/* "@user_name" – nghiêng, font ZT Bros */
+/* "@user_name" */
 .hero-welcome-italic {
-    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-family: "Apple Garamond";
     -fx-font-size: 80px;
     -fx-font-style: italic;
     -fx-text-fill: #111111;
 }
 
-/* "to " – chữ thường, font ZT Bros */
+/* "to " –  */
 .hero-to-plain {
-    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-family: "Apple Garamond";
     -fx-font-size: 80px;
     -fx-text-fill: #111111;
 }
 
 /* Wrapper có nền vàng nhạt bao quanh "Online Bidding Platform" */
 .hero-highlight-wrap {
-    -fx-background-color: #FFF9C2;
-    -fx-background-radius: 4px;
-    -fx-padding: 0 8 0 8;
+    -fx-background-color: transparent;
 }
 
-/* "Online Bidding Platform" – font ZT Bros, nằm trong highlight */
 .hero-highlight-text {
-    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-family: "Apple Garamond";
     -fx-font-size: 80px;
     -fx-text-fill: #111111;
+    -fx-background-color: #fff9c2;
+    -fx-background-insets: 30 0 -8 0;  /* đẩy nền xuống dưới chữ */
 }
-
-
 /* ---- HOME CARD (NEW DESIGN) ---- */
 .home-card-new {
-    -fx-background-color: #F0FAFF;
-    -fx-border-color: #091D2D;
+    -fx-background-color: #eef1f6;
+    -fx-border-color: #02182e;
     -fx-border-width: 1px;
     -fx-border-radius: 14px;
     -fx-background-radius: 14px;
@@ -550,9 +547,9 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 10, 0, 0, 3);
 }
 
-/* Tiêu đề card – ZT Bros Oskon 90s */
+/* Tiêu đề card */
 .home-card-new-title {
-    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-family: "Apple Garamond";
     -fx-font-size: 35px;
     -fx-text-fill: #111111;
 }
@@ -564,14 +561,176 @@
 }
 
 .home-card-new-sep .line {
-    -fx-border-color: #091d2d;
+    -fx-border-color: #02182e;
     -fx-border-width: 1px 0 0 0;
 }
-/* Mô tả card – Arial Regular */
+
 .home-card-new-desc {
-    -fx-font-family: "Arial";
+    -fx-font-family: "Montserrat";
     -fx-font-size: 13px;
-    -fx-text-fill: #091d2d;
+    -fx-text-fill: #02182e;
     -fx-wrap-text: true;
     -fx-line-spacing: 2;
 }
+.auction-back-link {
+    -fx-font-family: "Montserrat";
+    -fx-font-size: 13px;
+    -fx-text-fill: #02182e;
+    -fx-font-style: italic;
+    -fx-cursor: hand;
+    -fx-background-color: #fff9c2;
+    -fx-background-radius: 4px;
+    -fx-padding: 3 10 3 10;
+}
+.auction-back-link:hover { -fx-text-fill: #59520e; }
+
+/* ── BOXES ── */
+.auction-box-blue {
+    -fx-background-color: #eef1f6;
+    -fx-border-color: #02182e;
+    -fx-border-width: 1px;
+    -fx-border-radius: 14px;
+    -fx-background-radius: 14px;
+}
+.auction-box-white {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1px;
+    -fx-border-radius: 14px;
+    -fx-background-radius: 14px;
+}
+/* Đường kẻ ngắn (không full width — dùng HBox wrapper với padding) */
+.auction-inner-sep {
+    -fx-background-color: #02182e;
+    -fx-pref-height: 1px;
+    -fx-max-height: 1px;
+    -fx-opacity: 0.25;
+}
+
+/* ── LEFT BOX ── */
+.auction-box-title {
+    -fx-font-family: "Apple Garamond";
+    -fx-font-size: 30px;
+    -fx-text-fill: #02182e;
+    -fx-alignment: CENTER;
+    -fx-padding: 14 8 10 8;
+}
+.auction-img-pane {
+    -fx-background-color: #ddeef8;
+    -fx-min-height: 180px;
+    -fx-pref-height: 200px;
+}
+.auction-detail-text {
+    -fx-font-family: "Montserrat";
+    -fx-font-size: 13px;
+    -fx-text-fill: #02182e;
+}
+
+/* ── MIDDLE TABS ── */
+.auction-tab-label-active {
+    -fx-font-family: "Apple Garamond";
+    -fx-font-size: 24px;
+    -fx-text-fill: #02182e;
+    -fx-background-color: #fff9c2;
+    -fx-background-radius: 4px;
+    -fx-padding: 2 8 2 8;
+}
+.auction-tab-label {
+    -fx-font-family: "Apple Garamond";
+    -fx-font-size: 24px;
+    -fx-text-fill: #888888;
+    -fx-padding: 2 8 2 8;
+}
+/* Gạch vàng dưới tab active */
+.auction-tab-underline {
+    -fx-background-color: #02182e;
+    -fx-pref-height: 3px;
+    -fx-max-height: 3px;
+}
+/* Gạch ẩn tab inactive */
+.auction-tab-underline-inactive {
+    -fx-background-color: transparent;
+    -fx-pref-height: 3px;
+    -fx-max-height: 3px;
+}
+
+/* ── RIGHT: TIMER ── */
+.auction-time-label {
+    -fx-font-family: "Montserrat";
+    -fx-font-size: 14px;
+    -fx-text-fill: #02182e;
+}
+/* Countdown to */
+.auction-countdown {
+    -fx-font-family: "Apple Garamond";
+    -fx-font-size: 52px;
+    -fx-text-fill: #bf2222;
+    -fx-min-width: 160px;
+}
+.auction-box-blue .auction-countdown {
+    -fx-font-family: "Apple Garamond";
+    -fx-font-size: 52px;
+    -fx-text-fill: #bf2222;
+}
+.auction-info-label {
+    -fx-font-family: "Montserrat";
+    -fx-font-size: 13px;
+    -fx-text-fill: #02182e;
+}
+.auction-info-value {
+    -fx-font-family: "Montserrat";
+    -fx-font-size: 13px;
+    -fx-text-fill: #02182e;
+}
+/* Current price to + xanh lá */
+.auction-current-price {
+    -fx-font-family: "Apple Garamond";
+    -fx-font-size: 38px;
+    -fx-text-fill: #337514;
+}
+.auction-winner-label {
+    -fx-font-family: "Montserrat";
+    -fx-font-size: 13px;
+    -fx-text-fill: #02182e;
+}
+
+/* ── RIGHT: BID ACTIONS ── */
+.auction-bid-section-title {
+    -fx-font-family: "Apple Garamond";
+    -fx-font-style: italic;
+    -fx-font-size: 22px;
+    -fx-text-fill: #02182e;
+}
+.auction-toggle-on {
+    -fx-background-color: #337514;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px;
+    -fx-padding: 2 10 2 10;
+    -fx-cursor: hand;
+    -fx-font-family: "Montserrat", "Helvetica Neue", sans-serif;
+}
+.auction-toggle-off {
+    -fx-background-color: #bf2222;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20px;
+    -fx-padding: 2 10 2 10;
+    -fx-cursor: hand;
+    -fx-font-family: "Montserrat", "Helvetica Neue", sans-serif;
+}
+.auction-report-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #bf2222;
+    -fx-border-color: #bf2222;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 30px;
+    -fx-background-radius: 30px;
+    -fx-padding: 6 18 6 18;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+    -fx-font-family: "Montserrat";
+}
+.auction-report-btn:hover { -fx-background-color: #fff0f0; }

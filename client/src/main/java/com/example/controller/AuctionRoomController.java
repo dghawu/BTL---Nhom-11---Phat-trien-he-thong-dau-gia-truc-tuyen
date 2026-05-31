@@ -53,6 +53,9 @@ public class AuctionRoomController extends BaseController {
     private VBox bidHistoryBox;
     @FXML private Button btnTabFeed;
     @FXML private Button btnTabChart;
+    @FXML private javafx.scene.layout.Region tabFeedUnderline;
+    @FXML private javafx.scene.layout.Region tabChartUnderline;
+
     @FXML private ScrollPane scrollFeed;
     @FXML private VBox chartPane;
 
@@ -122,7 +125,7 @@ public class AuctionRoomController extends BaseController {
      */
     public void initSession(String sessionId, String productName) {
         this.sessionId = sessionId;
-        lblProductName.setText(productName.toUpperCase());
+        //lblProductName.setText(productName.toUpperCase());
 
         // 1. Load thông tin phiên ban đầu
         initChart();
@@ -607,7 +610,7 @@ public class AuctionRoomController extends BaseController {
                     java.time.Duration remaining = java.time.Duration.between(
                             java.time.LocalDateTime.now(), endDateTime);
                     if (remaining.isNegative() || remaining.isZero()) {
-                        lblThoiGianConLai.setText("Ended");
+                        lblThoiGianConLai.setText("00:00");
                         lblThoiGianConLai.setStyle("-fx-font-size: 13px; -fx-text-fill: #CC0000; -fx-font-weight: bold;");
                         countdownTimer.stop();
                     } else {
@@ -617,7 +620,7 @@ public class AuctionRoomController extends BaseController {
                         String txt = h > 0
                                 ? String.format("%02d:%02d:%02d", h, m, s)
                                 : String.format("%02d:%02d", m, s);
-                        lblThoiGianConLai.setText("Remaining time: " + txt);
+                        lblThoiGianConLai.setText(txt);
                         lblThoiGianConLai.setStyle("-fx-font-size: 13px; -fx-text-fill: #CC0000; -fx-font-weight: bold;");
                     }
                 })
@@ -653,24 +656,18 @@ public class AuctionRoomController extends BaseController {
     private void handleTabFeed() {
         scrollFeed.setVisible(true);  scrollFeed.setManaged(true);
         chartPane.setVisible(false);  chartPane.setManaged(false);
-        btnTabFeed.setStyle("-fx-background-color: #111111; -fx-text-fill: white;"
-                + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
-                + "-fx-cursor: hand; -fx-background-radius: 20px 0 0 20px;");
-        btnTabChart.setStyle("-fx-background-color: #DDDDDD; -fx-text-fill: #333;"
-                + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
-                + "-fx-cursor: hand; -fx-background-radius: 0 20px 20px 0;");
+        // Đổi underline tab
+        tabFeedUnderline.getStyleClass().setAll("auction-tab-underline");
+        tabChartUnderline.getStyleClass().setAll("auction-tab-underline-inactive");
+        // Giữ lại style inline cho btnTabFeed/btnTabChart (không làm gì vì hidden)
     }
 
     @FXML
     private void handleTabChart() {
         chartPane.setVisible(true);   chartPane.setManaged(true);
         scrollFeed.setVisible(false); scrollFeed.setManaged(false);
-        btnTabChart.setStyle("-fx-background-color: #111111; -fx-text-fill: white;"
-                + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
-                + "-fx-cursor: hand; -fx-background-radius: 0 20px 20px 0;");
-        btnTabFeed.setStyle("-fx-background-color: #DDDDDD; -fx-text-fill: #333;"
-                + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
-                + "-fx-cursor: hand; -fx-background-radius: 20px 0 0 20px;");
+        tabChartUnderline.getStyleClass().setAll("auction-tab-underline");
+        tabFeedUnderline.getStyleClass().setAll("auction-tab-underline-inactive");
     }
 
 }

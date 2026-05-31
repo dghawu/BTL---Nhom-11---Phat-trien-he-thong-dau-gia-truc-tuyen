@@ -31,6 +31,10 @@ public class Main extends Application {
         // ── Load custom fonts (phải gọi trước khi load bất kỳ scene nào) ──
         Font.loadFont(getClass().getResourceAsStream("/fonts/ZTBrosOskon90s-Regular.otf"), 14);
         Font.loadFont(getClass().getResourceAsStream("/fonts/ZTBrosOskon90s-Italic.otf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/AppleGaramond.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/AppleGaramond-Bold.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/AppleGaramond-Italic.ttf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/AppleGaramond-BoldItalic.ttf"), 14);
 
         stage.setTitle("Auction System");
         stage.setMinWidth(1000);
