@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
@@ -111,46 +110,6 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         Hyperlink link = new Hyperlink("View details");
         link.setOnAction(e -> openDetail(s, attr1, attr2));
         link.getStyleClass().add("link-text");
-        Button cancelBtn = new Button("Cancel auction");
-        cancelBtn.getStyleClass().add("btn-danger");
-
-        cancelBtn.setOnAction(e -> {
-
-            String st = status.toUpperCase();
-
-            if (st.equals("FINISHED")
-                    || st.equals("PAID")
-                    || st.equals("CANCELED")) {
-
-                showAlert(
-                        javafx.scene.control.Alert.AlertType.WARNING,
-                        "Unable to cancel",
-                        "This auction cannot be cancelled."
-                );
-                return;
-            }
-
-            boolean ok = com.example.socket.ServerService.cancelAuction(id);
-
-            if (ok) {
-
-                showAlert(
-                        javafx.scene.control.Alert.AlertType.INFORMATION,
-                        "Successfully",
-                        "Auction cancelled."
-                );
-
-                loadSessions();
-
-            } else {
-
-                showAlert(
-                        javafx.scene.control.Alert.AlertType.ERROR,
-                        "Error",
-                        "This auction has been cancelled."
-                );
-            }
-        });
 
         if (imageBase64 != null && !imageBase64.isEmpty()) {
             try {
@@ -167,7 +126,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
             }
         }
 
-        info.getChildren().addAll(link, cancelBtn);
+        info.getChildren().add(link);
 
         card.getChildren().addAll(title, img, info);
         return card;

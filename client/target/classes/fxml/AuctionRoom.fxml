@@ -56,7 +56,9 @@
                    text="YOU ARE IN THE AUCTION"/>
 
             <!-- Tab buttons -->
-            <HBox spacing="0" style="-fx-padding: 0 0 12 0;">
+            <HBox spacing="0"
+                  alignment="CENTER"
+                  style="-fx-padding: 0 0 12 0;">
                 <Button fx:id="btnTabFeed" onAction="#handleTabFeed"
                         style="-fx-background-color: #111111; -fx-text-fill: white;
                        -fx-font-weight: bold; -fx-font-size: 13px;
