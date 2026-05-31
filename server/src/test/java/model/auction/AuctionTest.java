@@ -58,7 +58,9 @@ class AuctionTest {
         auction.startAuction(); // → RUNNING
     }
 
-    /** Helper: tạo auction RUNNING với item nhỏ (startPrice = 1_000_000) */
+    /**
+     * Helper: tạo auction RUNNING với item nhỏ (startPrice = 1_000_000)
+     */
     private Auction makeRunningAuction(String id, int minutesFromNow) {
         Auction a = new Auction(id, item, 1_000_000.0, 100_000.0,
                 LocalDateTime.now(),

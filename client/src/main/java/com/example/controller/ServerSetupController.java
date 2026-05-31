@@ -5,36 +5,49 @@ import com.example.socket.SocketClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.Stage;
 
 /**
  * ServerSetupController — màn hình nhập địa chỉ server khi khởi động.
- *
+ * <p>
  * Hiển thị trước Login nếu chưa có config hoặc người dùng muốn đổi server.
  * Hỗ trợ cả 2 chế độ:
- *   - localhost  : chạy server trên cùng máy (demo nội bộ)
- *   - ngrok/internet : nhập host + port riêng cho API và Push server
+ * - localhost  : chạy server trên cùng máy (demo nội bộ)
+ * - ngrok/internet : nhập host + port riêng cho API và Push server
  */
 public class ServerSetupController {
 
     // ── FXML fields ──────────────────────────────────────────────────────
-    @FXML private RadioButton localRadio;
-    @FXML private RadioButton ngrokRadio;
-    @FXML private ToggleGroup modeGroup;
+    @FXML
+    private RadioButton localRadio;
+    @FXML
+    private RadioButton ngrokRadio;
+    @FXML
+    private ToggleGroup modeGroup;
 
-    @FXML private Label apiHostLabel;
-    @FXML private Label apiPortLabel;
-    @FXML private Label pushHostLabel;
-    @FXML private Label pushPortLabel;
+    @FXML
+    private Label apiHostLabel;
+    @FXML
+    private Label apiPortLabel;
+    @FXML
+    private Label pushHostLabel;
+    @FXML
+    private Label pushPortLabel;
 
-    @FXML private TextField apiHostField;
-    @FXML private TextField apiPortField;
-    @FXML private TextField pushHostField;
-    @FXML private TextField pushPortField;
+    @FXML
+    private TextField apiHostField;
+    @FXML
+    private TextField apiPortField;
+    @FXML
+    private TextField pushHostField;
+    @FXML
+    private TextField pushPortField;
 
-    @FXML private Button connectBtn;
-    @FXML private Label  statusLabel;
-    @FXML private ProgressIndicator loadingIndicator;
+    @FXML
+    private Button connectBtn;
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private ProgressIndicator loadingIndicator;
 
     // ── Callback khi connect thành công ──────────────────────────────────
     private Runnable onConnectSuccess;
@@ -94,14 +107,22 @@ public class ServerSetupController {
     private void setNgrokMode(boolean ngrok) {
         // Ở chế độ localhost, ẩn các field (tự điền)
         boolean show = ngrok;
-        apiHostLabel.setVisible(show);   apiHostLabel.setManaged(show);
-        apiPortLabel.setVisible(show);   apiPortLabel.setManaged(show);
-        pushHostLabel.setVisible(show);  pushHostLabel.setManaged(show);
-        pushPortLabel.setVisible(show);  pushPortLabel.setManaged(show);
-        apiHostField.setVisible(show);   apiHostField.setManaged(show);
-        apiPortField.setVisible(show);   apiPortField.setManaged(show);
-        pushHostField.setVisible(show);  pushHostField.setManaged(show);
-        pushPortField.setVisible(show);  pushPortField.setManaged(show);
+        apiHostLabel.setVisible(show);
+        apiHostLabel.setManaged(show);
+        apiPortLabel.setVisible(show);
+        apiPortLabel.setManaged(show);
+        pushHostLabel.setVisible(show);
+        pushHostLabel.setManaged(show);
+        pushPortLabel.setVisible(show);
+        pushPortLabel.setManaged(show);
+        apiHostField.setVisible(show);
+        apiHostField.setManaged(show);
+        apiPortField.setVisible(show);
+        apiPortField.setManaged(show);
+        pushHostField.setVisible(show);
+        pushHostField.setManaged(show);
+        pushPortField.setVisible(show);
+        pushPortField.setManaged(show);
     }
 
     // ── Connect button ────────────────────────────────────────────────────
@@ -109,16 +130,16 @@ public class ServerSetupController {
     @FXML
     private void handleConnect() {
         String apiHost, pushHost;
-        int    apiPort, pushPort;
+        int apiPort, pushPort;
 
         if (localRadio.isSelected()) {
-            apiHost  = "localhost";
-            apiPort  = 8888;
+            apiHost = "localhost";
+            apiPort = 8888;
             pushHost = "localhost";
             pushPort = 8889;
         } else {
             // Validate ngrok fields
-            apiHost  = apiHostField.getText().trim();
+            apiHost = apiHostField.getText().trim();
             pushHost = pushHostField.getText().trim();
 
             if (apiHost.isEmpty() || pushHost.isEmpty()) {
@@ -127,7 +148,7 @@ public class ServerSetupController {
             }
 
             try {
-                apiPort  = Integer.parseInt(apiPortField.getText().trim());
+                apiPort = Integer.parseInt(apiPortField.getText().trim());
                 pushPort = Integer.parseInt(pushPortField.getText().trim());
             } catch (NumberFormatException e) {
                 showError("Port must be an integer (e.g., 12345).");
@@ -147,8 +168,8 @@ public class ServerSetupController {
         setLoading(true);
         showStatus("Connecting...", "#333333");
 
-        final String fApiHost  = apiHost;
-        final int    fApiPort  = apiPort;
+        final String fApiHost = apiHost;
+        final int fApiPort = apiPort;
 
         new Thread(() -> {
             // Reset và kết nối lại SocketClient
@@ -161,7 +182,10 @@ public class ServerSetupController {
                     showStatus("✓ “Connection successful!", "#1A8A1A");
                     // Chuyển sang Login sau 600ms
                     new Thread(() -> {
-                        try { Thread.sleep(600); } catch (InterruptedException ignored) {}
+                        try {
+                            Thread.sleep(600);
+                        } catch (InterruptedException ignored) {
+                        }
                         Platform.runLater(() -> {
                             if (onConnectSuccess != null) onConnectSuccess.run();
                         });

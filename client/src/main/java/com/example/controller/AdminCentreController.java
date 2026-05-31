@@ -568,7 +568,10 @@ public class AdminCentreController extends BaseController {
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) setText(null);
-                else { setText(item); setWrapText(true); }
+                else {
+                    setText(item);
+                    setWrapText(true);
+                }
             }
         });
         colExtra.setCellValueFactory(c -> {
@@ -582,7 +585,10 @@ public class AdminCentreController extends BaseController {
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) setText(null);
-                else { setText(item); setWrapText(true); }
+                else {
+                    setText(item);
+                    setWrapText(true);
+                }
             }
         });
         colExtra2.setCellValueFactory(c ->

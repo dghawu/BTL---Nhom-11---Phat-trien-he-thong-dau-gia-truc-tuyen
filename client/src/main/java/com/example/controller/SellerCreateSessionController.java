@@ -22,12 +22,18 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
     @FXML
     private ComboBox<String> sanPhamBox;
 
-    @FXML private DatePicker ngayMoPicker;
-    @FXML private DatePicker ngayDongPicker;
-    @FXML private ComboBox<String> gioMoBox;
-    @FXML private ComboBox<String> gioDongBox;
-    @FXML private ComboBox<String> phutMoBox;
-    @FXML private ComboBox<String> phutDongBox;
+    @FXML
+    private DatePicker ngayMoPicker;
+    @FXML
+    private DatePicker ngayDongPicker;
+    @FXML
+    private ComboBox<String> gioMoBox;
+    @FXML
+    private ComboBox<String> gioDongBox;
+    @FXML
+    private ComboBox<String> phutMoBox;
+    @FXML
+    private ComboBox<String> phutDongBox;
 
     @FXML
     private TextField buocGiaField;
@@ -70,7 +76,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
                 if (!"APPROVED".equals(item.optString("status"))) continue;
 
                 String name = item.getString("name");
-                String id   = item.getString("id");
+                String id = item.getString("id");
                 itemNameToId.put(name, id);
                 itemCache.put(id, item);
 
@@ -221,7 +227,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
         }
 
         java.time.LocalDateTime startDT = parseTime(startStr);
-        java.time.LocalDateTime endDT   = parseTime(endStr);
+        java.time.LocalDateTime endDT = parseTime(endStr);
 
         if (startDT == null || endDT == null) {
 
@@ -245,8 +251,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
 
         try {
             buocGia = Double.parseDouble(buocGiaStr);
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
 
             showNotification(getStage(buocGiaField),
                     "INVALID BID INCREMENT!");

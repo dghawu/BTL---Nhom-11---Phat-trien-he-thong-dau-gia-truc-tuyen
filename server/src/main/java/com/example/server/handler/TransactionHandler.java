@@ -21,12 +21,12 @@ public class TransactionHandler extends BaseHandler {
     @Override
     public String handle(JSONObject req) {
         return switch (req.getString("action")) {
-            case "getMyTransactions"  -> handleGetMyTransactions(req);
-            case "getAllTransactions"  -> handleGetAllTransactions(req);   // ← đã thêm vào switch
-            case "confirmWin"         -> handleConfirmWin(req);
-            case "pay"                -> handlePay(req);
-            case "getMyWonSessions"   -> handleGetMyWonSessions(req);
-            default                   -> fail("Action không hợp lệ.");
+            case "getMyTransactions" -> handleGetMyTransactions(req);
+            case "getAllTransactions" -> handleGetAllTransactions(req);   // ← đã thêm vào switch
+            case "confirmWin" -> handleConfirmWin(req);
+            case "pay" -> handlePay(req);
+            case "getMyWonSessions" -> handleGetMyWonSessions(req);
+            default -> fail("Action không hợp lệ.");
         };
     }
 
@@ -35,7 +35,7 @@ public class TransactionHandler extends BaseHandler {
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
         return success()
-                .put("transactions", txToJson(bidDAO.findByBidderId(auth.getUserId())))
+                .put("transactions", txToJson(getBidDAO().findByBidderId(auth.getUserId())))
                 .toString();
     }
 
@@ -44,17 +44,17 @@ public class TransactionHandler extends BaseHandler {
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
         JSONArray arr = new JSONArray();
-        for (Auction a : auctionDAO.findAll()) {
-            for (BidTransaction tx : bidDAO.findByAuctionId(a.getAuctionId())) {
-                User bidder = userDAO.findById(tx.getBidderId());
+        for (Auction a : getAuctionDAO().findAll()) {
+            for (BidTransaction tx : getBidDAO().findByAuctionId(a.getAuctionId())) {
+                User bidder = getUserDAO().findById(tx.getBidderId());
                 arr.put(new JSONObject()
-                        .put("id",          tx.getId())
-                        .put("auctionId",   tx.getAuctionId())
-                        .put("itemName",    a.getItem().getName())
-                        .put("bidderName",  bidder != null ? bidder.getName() : tx.getBidderId())
-                        .put("amount",      tx.getAmount())
-                        .put("timestamp",   tx.getTimestamp().toString())
-                        .put("status",      a.getStatus().name()));
+                        .put("id", tx.getId())
+                        .put("auctionId", tx.getAuctionId())
+                        .put("itemName", a.getItem().getName())
+                        .put("bidderName", bidder != null ? bidder.getName() : tx.getBidderId())
+                        .put("amount", tx.getAmount())
+                        .put("timestamp", tx.getTimestamp().toString())
+                        .put("status", a.getStatus().name()));
             }
         }
         return success().put("transactions", arr).toString();
@@ -65,23 +65,23 @@ public class TransactionHandler extends BaseHandler {
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
         String sessionId = req.getString("sessionId");
-        Auction auction  = auctionDAO.findById(sessionId);
+        Auction auction = getAuctionDAO().findById(sessionId);
         if (auction == null) return fail("Không tìm thấy phiên.");
         if (auction.getStatus() != AuctionStatus.FINISHED)
             return fail("Phiên chưa kết thúc.");
 
-        User winner = userDAO.findByName(auction.getCurrentWinner());
+        User winner = getUserDAO().findByName(auction.getCurrentWinner());
         String winnerId = winner != null ? winner.getId() : "";
         if (!auth.getUserId().equals(winnerId))
             return fail("Bạn không phải người thắng phiên này.");
 
-        auctionDAO.updateStatus(sessionId, AuctionStatus.PAYING);
+        getAuctionDAO().updateStatus(sessionId, AuctionStatus.PAYING);
 
         Executors.newSingleThreadScheduledExecutor().schedule(() -> {
-            Auction a = auctionDAO.findById(sessionId);
+            Auction a = getAuctionDAO().findById(sessionId);
             if (a != null && a.getStatus() == AuctionStatus.PAYING) {
-                auctionDAO.updateStatus(sessionId, AuctionStatus.CANCELED);
-                itemDAO.updateStatus(a.getItem().getId(), "APPROVED");
+                getAuctionDAO().updateStatus(sessionId, AuctionStatus.CANCELED);
+                getItemDAO().updateStatus(a.getItem().getId(), "APPROVED");
                 System.out.println("[Pay] Phiên " + sessionId + " hết 24h, tự hủy.");
             }
         }, 24, TimeUnit.HOURS);
@@ -94,13 +94,13 @@ public class TransactionHandler extends BaseHandler {
         if (!auth.isOk()) return fail(auth.getErrorMessage());
 
         String sessionId = req.getString("sessionId");
-        Auction auction  = auctionDAO.findById(sessionId);
+        Auction auction = getAuctionDAO().findById(sessionId);
         if (auction == null) return fail("Không tìm thấy phiên.");
         if (auction.getStatus() != AuctionStatus.PAYING)
             return fail("Phiên không ở trạng thái chờ thanh toán.");
 
-        auctionDAO.updateStatus(sessionId, AuctionStatus.PAID);
-        itemDAO.updateStatus(auction.getItem().getId(), "SOLD");
+        getAuctionDAO().updateStatus(sessionId, AuctionStatus.PAID);
+        getItemDAO().updateStatus(auction.getItem().getId(), "SOLD");
         return success().put("message", "Thanh toán thành công!").toString();
     }
 
@@ -110,7 +110,7 @@ public class TransactionHandler extends BaseHandler {
 
         String bidderName = auth.getUsername();
         JSONArray arr = new JSONArray();
-        for (Auction a : auctionDAO.findAll()) {
+        for (Auction a : getAuctionDAO().findAll()) {
             AuctionStatus st = a.getStatus();
             if (st != AuctionStatus.FINISHED && st != AuctionStatus.PAYING
                     && st != AuctionStatus.PAID) continue;
@@ -125,14 +125,14 @@ public class TransactionHandler extends BaseHandler {
     private JSONArray txToJson(List<BidTransaction> list) {
         JSONArray arr = new JSONArray();
         for (BidTransaction tx : list) {
-            Auction a = auctionDAO.findById(tx.getAuctionId());
+            Auction a = getAuctionDAO().findById(tx.getAuctionId());
             arr.put(new JSONObject()
-                    .put("id",        tx.getId())
+                    .put("id", tx.getId())
                     .put("auctionId", tx.getAuctionId())
-                    .put("itemName",  a != null ? a.getItem().getName() : "")
-                    .put("amount",    tx.getAmount())
+                    .put("itemName", a != null ? a.getItem().getName() : "")
+                    .put("amount", tx.getAmount())
                     .put("timestamp", tx.getTimestamp().toString())
-                    .put("status",    a != null ? a.getStatus().name() : ""));
+                    .put("status", a != null ? a.getStatus().name() : ""));
         }
         return arr;
     }

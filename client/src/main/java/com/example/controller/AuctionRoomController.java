@@ -51,10 +51,14 @@ public class AuctionRoomController extends BaseController {
     // Middle: bid history
     @FXML
     private VBox bidHistoryBox;
-    @FXML private Button btnTabFeed;
-    @FXML private Button btnTabChart;
-    @FXML private ScrollPane scrollFeed;
-    @FXML private VBox chartPane;
+    @FXML
+    private Button btnTabFeed;
+    @FXML
+    private Button btnTabChart;
+    @FXML
+    private ScrollPane scrollFeed;
+    @FXML
+    private VBox chartPane;
 
     private javafx.scene.chart.LineChart<String, Number> priceChart;
     private javafx.scene.chart.XYChart.Series<String, Number> priceSeries;
@@ -264,6 +268,7 @@ public class AuctionRoomController extends BaseController {
             }).start();
         });
     }
+
     private void displayAttributes() {
         if (attributesContainer == null) {
             // Nếu chưa có container trong FXML, tạo mới
@@ -625,6 +630,7 @@ public class AuctionRoomController extends BaseController {
         countdownTimer.setCycleCount(javafx.animation.Animation.INDEFINITE);
         countdownTimer.play();
     }
+
     private void initChart() {
         javafx.scene.chart.CategoryAxis xAxis = new javafx.scene.chart.CategoryAxis();
         javafx.scene.chart.NumberAxis yAxis = new javafx.scene.chart.NumberAxis();
@@ -643,16 +649,20 @@ public class AuctionRoomController extends BaseController {
         VBox.setVgrow(priceChart, javafx.scene.layout.Priority.ALWAYS);
         chartPane.getChildren().setAll(priceChart);
     }
+
     private void addChartPoint(double price) {
         String time = java.time.LocalDateTime.now()
                 .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
         priceSeries.getData().add(
                 new javafx.scene.chart.XYChart.Data<>(time, price));
     }
+
     @FXML
     private void handleTabFeed() {
-        scrollFeed.setVisible(true);  scrollFeed.setManaged(true);
-        chartPane.setVisible(false);  chartPane.setManaged(false);
+        scrollFeed.setVisible(true);
+        scrollFeed.setManaged(true);
+        chartPane.setVisible(false);
+        chartPane.setManaged(false);
         btnTabFeed.setStyle("-fx-background-color: #111111; -fx-text-fill: white;"
                 + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
                 + "-fx-cursor: hand; -fx-background-radius: 20px 0 0 20px;");
@@ -663,8 +673,10 @@ public class AuctionRoomController extends BaseController {
 
     @FXML
     private void handleTabChart() {
-        chartPane.setVisible(true);   chartPane.setManaged(true);
-        scrollFeed.setVisible(false); scrollFeed.setManaged(false);
+        chartPane.setVisible(true);
+        chartPane.setManaged(true);
+        scrollFeed.setVisible(false);
+        scrollFeed.setManaged(false);
         btnTabChart.setStyle("-fx-background-color: #111111; -fx-text-fill: white;"
                 + "-fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 6 20;"
                 + "-fx-cursor: hand; -fx-background-radius: 0 20px 20px 0;");

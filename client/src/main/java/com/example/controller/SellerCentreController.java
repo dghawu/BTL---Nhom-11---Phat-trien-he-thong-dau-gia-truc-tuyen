@@ -7,7 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -70,6 +73,7 @@ public class SellerCentreController extends com.example.controller.BaseControlle
             });
         }
     }
+
     private void updateCategoryFields(String category) {
         // Xoá các field cũ
         if (categoryAttributesContainer != null) {
@@ -354,23 +358,24 @@ public class SellerCentreController extends com.example.controller.BaseControlle
         categoryAttr1 = null;
         categoryAttr2 = null;
     }
+
     private void styleRoundedField(TextField field) {
         field.setStyle("""
-        -fx-background-color: white;
-        -fx-background-radius: 20px;
-        -fx-border-radius: 20px;
-        -fx-border-color: #D0D0D0;
-        -fx-border-width: 1.2px;
-
-        -fx-background-insets: 0;
-        -fx-border-insets: 0;
-
-        -fx-padding: 0 15 0 15;
-
-        -fx-focus-color: transparent;
-        -fx-faint-focus-color: transparent;
-
-        -fx-font-size: 14px;
-    """);
+                    -fx-background-color: white;
+                    -fx-background-radius: 20px;
+                    -fx-border-radius: 20px;
+                    -fx-border-color: #D0D0D0;
+                    -fx-border-width: 1.2px;
+                
+                    -fx-background-insets: 0;
+                    -fx-border-insets: 0;
+                
+                    -fx-padding: 0 15 0 15;
+                
+                    -fx-focus-color: transparent;
+                    -fx-faint-focus-color: transparent;
+                
+                    -fx-font-size: 14px;
+                """);
     }
 }

@@ -9,7 +9,6 @@ import model.user.Bidder;
 import model.user.Seller;
 import model.user.User;
 
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;

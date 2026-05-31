@@ -178,6 +178,7 @@ public class ServerService {
         if (!res.getBoolean("success")) return new JSONArray();
         return res.optJSONArray("sessions");
     }
+
     public static boolean addItemWithImageAndAttributes(
             String name,
             String category,
@@ -201,7 +202,6 @@ public class ServerService {
         JSONObject response = send(req);
         return response.optBoolean("success", false);
     }
-
 
 
     // ================================================================== //
@@ -240,6 +240,7 @@ public class ServerService {
 
         return send(req).getBoolean("success");
     }
+
     public static boolean cancelItem(String itemId) {
 
         JSONObject req = req("cancelItem");

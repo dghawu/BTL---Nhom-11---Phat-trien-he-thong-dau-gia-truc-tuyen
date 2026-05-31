@@ -153,6 +153,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
 
         enableAttributesEditMode();
     }
+
     private void enableAttributesEditMode() {
         if (attributesContainer == null || attributesContainer.getChildren().isEmpty()) return;
 
@@ -214,6 +215,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
             imgPane.getChildren().clear();
         }
     }
+
     private void displayAttributes() {
         if (attributesContainer == null) return;
         attributesContainer.getChildren().clear();
@@ -239,6 +241,7 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
             }
         }
     }
+
     private void addAttributeRow(String label, String value) {
         HBox row = new HBox(10);
         row.setStyle("-fx-padding: 4 0;");

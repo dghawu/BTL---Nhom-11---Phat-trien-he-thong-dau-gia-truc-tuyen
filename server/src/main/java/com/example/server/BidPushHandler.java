@@ -5,14 +5,19 @@ import auth.TokenGuard;
 import observer.SocketBroadcaster;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
  * BidPushHandler — xử lý 1 client kết nối vào Push Server (port 8889).
  * <p>
  * Khác với ClientHandler (req/res), BidPushHandler giữ kết nối persistent:
- * Client kết nối → gửi joinSession → server đăng ký client vào SocketBroadcaster
+ * Client kết nối → gửi joinSession → server đăng ký client
+ * vào SocketBroadcaster
  * → Server push BID_UPDATE / AUCTION_CLOSED trực tiếp qua kết nối này.
  * <p>
  * Protocol (client → server):
@@ -25,16 +30,28 @@ import java.net.Socket;
  * AUCTION_CLOSED:AUC-001:winnerId:16000000.0
  * <p>
  * Client chỉ cần giữ kết nối đọc (blocking readLine()).
- * Nếu client ngắt kết nối → SocketBroadcaster tự dọn dẹp lần broadcast tiếp theo.
+ * Nếu client ngắt kết nối, SocketBroadcaster sẽ tự dọn dẹp
+ * lần broadcast tiếp theo.
  */
-public class BidPushHandler implements Runnable {
+public final class BidPushHandler implements Runnable {
 
+    /**
+     * Kết nối client push.
+     */
     private final Socket clientSocket;
 
-    public BidPushHandler(Socket socket) {
+    /**
+     * Tạo handler cho kết nối client push.
+     *
+     * @param socket socket client push
+     */
+    public BidPushHandler(final Socket socket) {
         this.clientSocket = socket;
     }
 
+    /**
+     * Chạy vòng lặp đọc dữ liệu từ client push và duy trì kết nối.
+     */
     @Override
     public void run() {
         String clientAddr = clientSocket.getInetAddress().getHostAddress();
@@ -42,14 +59,20 @@ public class BidPushHandler implements Runnable {
 
         try (
                 BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
+                        new InputStreamReader(
+                                clientSocket.getInputStream(),
+                                "UTF-8"));
                 PrintWriter writer = new PrintWriter(
-                        new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"), true)
+                        new OutputStreamWriter(
+                                clientSocket.getOutputStream(),
+                                "UTF-8"), true)
         ) {
             // Bước 1: nhận joinSession request
             String line = reader.readLine();
             if (line == null) {
-                System.out.println("[BidPushHandler] Client ngắt kết nối ngay sau khi connect.");
+                System.out.println(
+                            "[BidPushHandler] Client ngắt kết nối ngay sau "
+                                    + "khi connect.");
                 return;
             }
 
@@ -85,27 +108,34 @@ public class BidPushHandler implements Runnable {
             }
 
             // Đăng ký client vào SocketBroadcaster của phiên
-            SocketBroadcaster broadcaster = BidRegistry.getInstance().getOrCreate(sessionId);
+            SocketBroadcaster broadcaster = BidRegistry.getInstance()
+                    .getOrCreate(sessionId);
             broadcaster.addSubscriber(clientSocket);
 
             // Báo thành công
             writer.println(success("Joined " + sessionId));
-            System.out.println("[BidPushHandler] " + auth.getUserId()
+            String joinMessage = "[BidPushHandler] " + auth.getUserId()
                     + " đã join phiên " + sessionId
-                    + " | Subscribers hiện tại: " + broadcaster.getSubscriberCount());
+                    + " | Subscribers hiện tại: "
+                    + broadcaster.getSubscriberCount();
+            System.out.println(joinMessage);
 
             // Bước 2: giữ kết nối đọc (để phát hiện khi client ngắt kết nối)
             // Client không cần gửi thêm gì, chỉ cần duy trì socket.
             // Khi client đóng kết nối, readLine() trả về null.
-            while (reader.readLine() != null) {
+            String extraLine;
+            while ((extraLine = reader.readLine()) != null) {
                 // Bỏ qua các dòng client gửi thêm (heartbeat nếu cần)
+                continue;
             }
 
-            System.out.println("[BidPushHandler] Client " + auth.getUserId()
-                    + " rời phiên " + sessionId);
+            String leaveMessage = "[BidPushHandler] Client " + auth.getUserId()
+                    + " rời phiên " + sessionId;
+            System.out.println(leaveMessage);
 
         } catch (IOException e) {
-            System.out.println("[BidPushHandler] Mất kết nối: " + e.getMessage());
+            String errMsg = "[BidPushHandler] Mất kết nối: " + e.getMessage();
+            System.out.println(errMsg);
         } finally {
             try {
                 clientSocket.close();
@@ -116,14 +146,20 @@ public class BidPushHandler implements Runnable {
 
     // ── Helpers ──────────────────────────────────────────────────────────
 
-    private String success(String message) {
+    /**
+     * Tạo phản hồi success cho push client.
+     */
+    private String success(final String message) {
         return new JSONObject()
                 .put("success", true)
                 .put("message", message)
                 .toString();
     }
 
-    private String fail(String message) {
+    /**
+     * Tạo phản hồi fail cho push client.
+     */
+    private String fail(final String message) {
         return new JSONObject()
                 .put("success", false)
                 .put("message", message)
