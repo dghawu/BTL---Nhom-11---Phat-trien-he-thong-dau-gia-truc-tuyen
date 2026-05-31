@@ -16,7 +16,7 @@
 
         <!-- Title -->
         <Label style="-fx-font-size: 42px; -fx-font-weight: bold;" styleClass="page-title"
-               stylesheets="@../css/style.css" text="WELCOME TO..."/>
+               stylesheets="@../css/style.css" text="WELCOME TO ONLINE BIDDING PLATFORM"/>
 
         <Region prefHeight="30"/>
 
