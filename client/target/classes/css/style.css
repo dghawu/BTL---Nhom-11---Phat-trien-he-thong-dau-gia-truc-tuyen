@@ -531,7 +531,7 @@
 /* ---- HOME CARD (NEW DESIGN) ---- */
 .home-card-new {
     -fx-background-color: #eef1f6;
-    -fx-border-color: #081F5C;
+    -fx-border-color: #02182e;
     -fx-border-width: 1px;
     -fx-border-radius: 14px;
     -fx-background-radius: 14px;
@@ -561,21 +561,21 @@
 }
 
 .home-card-new-sep .line {
-    -fx-border-color: #081F5C;
+    -fx-border-color: #02182e;
     -fx-border-width: 1px 0 0 0;
 }
 
 .home-card-new-desc {
     -fx-font-family: "Montserrat";
     -fx-font-size: 13px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
     -fx-wrap-text: true;
     -fx-line-spacing: 2;
 }
 .auction-back-link {
     -fx-font-family: "Montserrat";
     -fx-font-size: 13px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
     -fx-font-style: italic;
     -fx-cursor: hand;
     -fx-background-color: #fff9c2;
@@ -587,7 +587,7 @@
 /* ── BOXES ── */
 .auction-box-blue {
     -fx-background-color: #eef1f6;
-    -fx-border-color: #081F5C;
+    -fx-border-color: #02182e;
     -fx-border-width: 1px;
     -fx-border-radius: 14px;
     -fx-background-radius: 14px;
@@ -601,7 +601,7 @@
 }
 /* Đường kẻ ngắn (không full width — dùng HBox wrapper với padding) */
 .auction-inner-sep {
-    -fx-background-color: #081F5C;
+    -fx-background-color: #02182e;
     -fx-pref-height: 1px;
     -fx-max-height: 1px;
     -fx-opacity: 0.25;
@@ -611,7 +611,7 @@
 .auction-box-title {
     -fx-font-family: "Apple Garamond";
     -fx-font-size: 30px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
     -fx-alignment: CENTER;
     -fx-padding: 14 8 10 8;
 }
@@ -623,14 +623,14 @@
 .auction-detail-text {
     -fx-font-family: "Montserrat";
     -fx-font-size: 13px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
 }
 
 /* ── MIDDLE TABS ── */
 .auction-tab-label-active {
     -fx-font-family: "Apple Garamond";
     -fx-font-size: 24px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
     -fx-background-color: #fff9c2;
     -fx-background-radius: 4px;
     -fx-padding: 2 8 2 8;
@@ -643,7 +643,7 @@
 }
 /* Gạch vàng dưới tab active */
 .auction-tab-underline {
-    -fx-background-color: #081F5C;
+    -fx-background-color: #02182e;
     -fx-pref-height: 3px;
     -fx-max-height: 3px;
 }
@@ -658,7 +658,7 @@
 .auction-time-label {
     -fx-font-family: "Montserrat";
     -fx-font-size: 14px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
 }
 /* Countdown to */
 .auction-countdown {
@@ -675,12 +675,12 @@
 .auction-info-label {
     -fx-font-family: "Montserrat";
     -fx-font-size: 13px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
 }
 .auction-info-value {
     -fx-font-family: "Montserrat";
     -fx-font-size: 13px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
 }
 /* Current price to + xanh lá */
 .auction-current-price {
@@ -691,7 +691,7 @@
 .auction-winner-label {
     -fx-font-family: "Montserrat";
     -fx-font-size: 13px;
-    -fx-text-fill: #081F5C;
+    -fx-text-fill: #02182e;
 }
 
 /* ── RIGHT: BID ACTIONS ── */
@@ -699,7 +699,7 @@
     -fx-font-family: "Apple Garamond";
     -fx-font-style: italic;
     -fx-font-size: 22px;
-    -fx-text-fill: #081F5C081F5C;
+    -fx-text-fill: #02182e;
 }
 .auction-toggle-on {
     -fx-background-color: #337514;
