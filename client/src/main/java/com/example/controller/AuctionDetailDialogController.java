@@ -1,6 +1,5 @@
 package com.example.controller;
 
-import com.example.socket.ServerService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;

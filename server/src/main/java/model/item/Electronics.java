@@ -32,7 +32,7 @@ public class Electronics extends Item {
     public Item createItem(String sellerId, String name, String id,
                            String description, double startingPrice,
                            Item.ItemStatus status) {
-        return new Electronics(id, sellerId, name, description, startingPrice, status, null,  12);
+        return new Electronics(id, sellerId, name, description, startingPrice, status, null, 12);
     }
 
 
@@ -52,9 +52,13 @@ public class Electronics extends Item {
         this.warrantyMonths = months;
     }
 
-    public String getBrand() {return brand;}
+    public String getBrand() {
+        return brand;
+    }
 
-    public void setBrand(String brand) {this.brand = brand;}
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
 
     @Override
     protected void printExtraInfo() {

@@ -5,17 +5,18 @@ import io.jsonwebtoken.JwtException;
 import org.json.JSONObject;
 
 /**
- * TokenGuard - middleware xác thực JWT cho mọi request (trừ login/register).
+ * TokenGuard - middleware xác thực JWT cho mọi request trừ login/register.
  * <p>
  * Mỗi request cần auth phải có field "token" trong JSON:
- * {"action":"placeBid", "token":"eyJhbGc...", "auctionId":"AUC-01", "amount":1500}
+ * {"action":"placeBid", "token":"eyJhbGc...", "auctionId":"AUC-01",
+ * "amount":1500}
  * <p>
  * Cách dùng trong ClientHandler:
  * AuthResult auth = TokenGuard.check(req);
  * if (!auth.isOk()) return fail(auth.getErrorMessage());
  * String userId = auth.getUserId();
  */
-public class TokenGuard {
+public final class TokenGuard {
 
     /**
      * Tên field chứa token trong JSON request
@@ -31,9 +32,10 @@ public class TokenGuard {
      * @param req JSONObject request từ client
      * @return AuthResult.success(...) hoặc AuthResult.fail(...)
      */
-    public static AuthResult check(JSONObject req) {
-        // Kiểm tra có gửi token không
-        if (!req.has(TOKEN_FIELD) || req.getString(TOKEN_FIELD).isBlank()) {
+    public static AuthResult check(final JSONObject req) {
+        boolean missingToken = !req.has(TOKEN_FIELD)
+                || req.getString(TOKEN_FIELD).isBlank();
+        if (missingToken) {
             return AuthResult.fail("Yêu cầu xác thực: thiếu token.");
         }
 
@@ -49,7 +51,9 @@ public class TokenGuard {
 
         } catch (JwtException e) {
             // Token sai chữ ký, hết hạn, bị chỉnh sửa...
-            return AuthResult.fail("Token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.");
+            return AuthResult.fail(
+                    "Token không hợp lệ hoặc đã hết hạn. "
+                            + "Vui lòng đăng nhập lại.");
         }
     }
 
@@ -60,12 +64,18 @@ public class TokenGuard {
      * @param requiredRole role yêu cầu (VD: "ADMIN")
      * @return AuthResult
      */
-    public static AuthResult checkRole(JSONObject req, String requiredRole) {
+    public static AuthResult checkRole(final JSONObject req,
+                                       final String requiredRole) {
         AuthResult result = check(req);
-        if (!result.isOk()) return result;
+        if (!result.isOk()) {
+            return result;
+        }
 
-        if (!result.hasRole(requiredRole)) {
-            return AuthResult.fail("Không có quyền truy cập. Yêu cầu role: " + requiredRole);
+        boolean hasRequiredRole = result.hasRole(requiredRole);
+        if (!hasRequiredRole) {
+            String message = "Không có quyền truy cập. Yêu cầu role: "
+                    + requiredRole;
+            return AuthResult.fail(message);
         }
         return result;
     }

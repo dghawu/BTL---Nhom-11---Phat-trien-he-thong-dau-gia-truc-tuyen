@@ -33,9 +33,12 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
     private Pane imgPane;
     @FXML
     private VBox attributesContainer;
-    @FXML private Label lblWinner;
-    @FXML private Label lblGiaHienTai;
-    @FXML private javafx.scene.layout.VBox bidHistoryBox;
+    @FXML
+    private Label lblWinner;
+    @FXML
+    private Label lblGiaHienTai;
+    @FXML
+    private javafx.scene.layout.VBox bidHistoryBox;
 
     // TextFields cho edit mode
     private TextField txtThoiDong;

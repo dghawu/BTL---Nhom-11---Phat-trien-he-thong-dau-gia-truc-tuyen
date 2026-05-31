@@ -1,6 +1,5 @@
 package com.example.main;
 
-import com.example.config.ServerConfig;
 import com.example.controller.ServerSetupController;
 import com.example.socket.SocketClient;
 import javafx.application.Application;
@@ -13,10 +12,10 @@ import javafx.stage.Stage;
 
 /**
  * Main — điểm khởi động ứng dụng client.
- *
+ * <p>
  * ── Thay đổi so với bản gốc ──────────────────────────────────────────────
  * 1. Hiển thị màn hình ServerSetup trước khi Login (nếu chưa có config
- *    hoặc config là localhost).
+ * hoặc config là localhost).
  * 2. Sau khi kết nối thành công → chuyển sang Login.
  * 3. Bỏ UserDAO.initAdminIfNotExists() ở client (việc này thuộc server).
  */

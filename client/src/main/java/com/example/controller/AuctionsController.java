@@ -139,6 +139,7 @@ public class AuctionsController extends com.example.controller.BaseController {
     //  Load data
     // ------------------------------------------------------------------ //
     private Map<String, String> itemImageMap = new HashMap<>();
+
     private void loadAuctions(String filter) {
         auctionGrid.getChildren().clear();
         itemImageMap.clear();
@@ -159,6 +160,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         }
 
     }
+
     public String getItemImage(String itemId) {
         return itemImageMap.get(itemId);
     }

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 /**
  * BidSocketClient — kết nối persistent đến Push Server (port 8889).
- *
+ * <p>
  * ── Thay đổi so với bản gốc ──────────────────────────────────────────────
  * Bỏ hardcode "localhost":8889 → đọc từ ServerConfig.
  * Hỗ trợ kết nối qua ngrok (host và port riêng biệt cho push server).
@@ -26,7 +26,8 @@ public class BidSocketClient {
 
     private Consumer<BidEvent> onEvent;
 
-    private BidSocketClient() {}
+    private BidSocketClient() {
+    }
 
     public static synchronized BidSocketClient getInstance() {
         if (instance == null) instance = new BidSocketClient();
@@ -45,7 +46,7 @@ public class BidSocketClient {
         this.onEvent = callback;
 
         String pushHost = ServerConfig.getPushHost();
-        int    pushPort = ServerConfig.getPushPort();
+        int pushPort = ServerConfig.getPushPort();
 
         try {
             socket = new Socket(pushHost, pushPort);
@@ -54,9 +55,9 @@ public class BidSocketClient {
 
             // Gửi joinSession request
             JSONObject req = new JSONObject();
-            req.put("action",    "joinSession");
+            req.put("action", "joinSession");
             req.put("sessionId", sessionId);
-            req.put("token",     token);
+            req.put("token", token);
             writer.println(req.toString());
 
             // Đọc response xác nhận join
@@ -133,7 +134,8 @@ public class BidSocketClient {
     private void disconnect() {
         try {
             if (socket != null && !socket.isClosed()) socket.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         socket = null;
         writer = null;
     }
@@ -142,25 +144,25 @@ public class BidSocketClient {
 
     public static class BidEvent {
 
-        public enum Type { BID_UPDATE, AUCTION_CLOSED, ANTI_SNIPE, UNKNOWN }
+        public enum Type {BID_UPDATE, AUCTION_CLOSED, ANTI_SNIPE, UNKNOWN}
 
-        public final Type   type;
+        public final Type type;
         public final String sessionId;
         public final double price;
         public final String bidderName;
         public final String endTime;
-        public final long   extendMinutes;
+        public final long extendMinutes;
         public final String snipeTime;
 
         private BidEvent(Type type, String sessionId, double price,
                          String bidderName, String endTime, long extendMinutes, String snipeTime) {
-            this.type       = type;
-            this.sessionId  = sessionId;
-            this.price      = price;
+            this.type = type;
+            this.sessionId = sessionId;
+            this.price = price;
             this.bidderName = bidderName;
-            this.endTime    = endTime;
+            this.endTime = endTime;
             this.extendMinutes = extendMinutes;
-            this.snipeTime     = snipeTime;
+            this.snipeTime = snipeTime;
         }
 
 

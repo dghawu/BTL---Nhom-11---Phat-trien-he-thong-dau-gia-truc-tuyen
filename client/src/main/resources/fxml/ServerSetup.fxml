@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
 <!--
   ServerSetup.fxml — màn hình nhập địa chỉ server (hiện trước Login)
   Controller: com.example.controller.ServerSetupController
 -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <HBox prefHeight="720" prefWidth="1280"
       style="-fx-background-color: #FFFFFF;"
       stylesheets="@../css/style.css"
@@ -64,7 +62,9 @@
                          styleClass="radio-option"
                          style="-fx-font-size: 14px;"
                          onAction="#handleLocalMode">
-                <toggleGroup><ToggleGroup fx:id="modeGroup"/></toggleGroup>
+                <toggleGroup>
+                    <ToggleGroup fx:id="modeGroup"/>
+                </toggleGroup>
             </RadioButton>
             <RadioButton fx:id="ngrokRadio" text="🌐  Ngrok / Internet — The server is running on another machine."
                          styleClass="radio-option"

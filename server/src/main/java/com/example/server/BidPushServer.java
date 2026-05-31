@@ -21,16 +21,37 @@ import java.util.concurrent.Executors;
  * Khởi động trong ServerMain:
  * new BidPushServer(8889).startInBackground();
  */
-public class BidPushServer {
+public final class BidPushServer {
 
-    private static final int MAX_CLIENTS = 200; // nhiều hơn API server vì giữ lâu hơn
+    /**
+     * Số kết nối client push tối đa.
+     *
+     * Giữ lớn hơn API server vì kết nối push tồn tại lâu hơn.
+     */
+    private static final int MAX_CLIENTS = 200;
 
+    /**
+     * Cổng server push.
+     */
     private final int port;
-    private final ExecutorService threadPool = Executors.newFixedThreadPool(MAX_CLIENTS);
+
+    /**
+     * Thread pool giữ kết nối push lâu dài.
+     */
+    private final ExecutorService threadPool =
+            Executors.newFixedThreadPool(MAX_CLIENTS);
+
+    /**
+     * Server socket lắng nghe kết nối client.
+     */
     private ServerSocket serverSocket;
+
+    /**
+     * Cờ trạng thái chạy.
+     */
     private boolean running = false;
 
-    public BidPushServer(int port) {
+    public BidPushServer(final int port) {
         this.port = port;
     }
 
@@ -51,7 +72,10 @@ public class BidPushServer {
         try {
             serverSocket = new ServerSocket(port);
             running = true;
-            System.out.println("[BidPushServer] Đang lắng nghe tại cổng " + port + " (push realtime)...");
+            String listeningMessage = "[BidPushServer] Đang lắng nghe tại cổng "
+                    + port
+                    + " (push realtime)...";
+            System.out.println(listeningMessage);
 
             while (running) {
                 Socket clientSocket = serverSocket.accept();
@@ -60,7 +84,11 @@ public class BidPushServer {
                 threadPool.submit(new BidPushHandler(clientSocket));
             }
         } catch (IOException e) {
-            if (running) System.err.println("[BidPushServer] Lỗi: " + e.getMessage());
+            if (running) {
+                String errorLine = "[BidPushServer] Lỗi: "
+                        + e.getMessage();
+                System.err.println(errorLine);
+            }
         }
     }
 
@@ -68,9 +96,13 @@ public class BidPushServer {
         running = false;
         threadPool.shutdown();
         try {
-            if (serverSocket != null) serverSocket.close();
+            if (serverSocket != null) {
+                serverSocket.close();
+            }
         } catch (IOException e) {
-            System.err.println("[BidPushServer] Lỗi khi đóng: " + e.getMessage());
+            String errClose = "[BidPushServer] Lỗi khi đóng: "
+                    + e.getMessage();
+            System.err.println(errClose);
         }
         System.out.println("[BidPushServer] Đã dừng.");
     }

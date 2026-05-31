@@ -1,7 +1,6 @@
 package dao;
 
 import model.item.*;
-import model.item.Item;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -82,8 +81,7 @@ public class ItemDAO {
             } catch (SQLException e) {
                 System.out.println("[ItemDAO] Lỗi save Fashion attributes: " + e.getMessage());
             }
-        }
-        else if (item instanceof Art art) {
+        } else if (item instanceof Art art) {
             String sql = "INSERT IGNORE INTO art (id, item_id, artist, medium) VALUES (UUID(), ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, item.getId());
@@ -94,8 +92,7 @@ public class ItemDAO {
             } catch (SQLException e) {
                 System.out.println("[ItemDAO] Lỗi save Art attributes: " + e.getMessage());
             }
-        }
-        else if (item instanceof Vehicle vehicle) {
+        } else if (item instanceof Vehicle vehicle) {
             String sql = "INSERT IGNORE INTO vehicle (id, item_id, brand, mileage) VALUES (UUID(), ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, item.getId());
@@ -106,8 +103,7 @@ public class ItemDAO {
             } catch (SQLException e) {
                 System.out.println("[ItemDAO] Lỗi save Vehicle attributes: " + e.getMessage());
             }
-        }
-        else if (item instanceof Electronics electronics) {
+        } else if (item instanceof Electronics electronics) {
             String sql = "INSERT IGNORE INTO electronics (id, item_id, brand, warranty_months) VALUES (UUID(), ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, item.getId());
@@ -138,8 +134,7 @@ public class ItemDAO {
             } catch (SQLException e) {
                 System.out.println("[ItemDAO] Lỗi load Fashion attributes: " + e.getMessage());
             }
-        }
-        else if (item instanceof Art art) {
+        } else if (item instanceof Art art) {
             String sql = "SELECT artist, medium FROM art WHERE item_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, item.getId());
@@ -152,8 +147,7 @@ public class ItemDAO {
             } catch (SQLException e) {
                 System.out.println("[ItemDAO] Lỗi load Art attributes: " + e.getMessage());
             }
-        }
-        else if (item instanceof Vehicle vehicle) {
+        } else if (item instanceof Vehicle vehicle) {
             String sql = "SELECT brand, mileage FROM vehicle WHERE item_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, item.getId());
@@ -166,8 +160,7 @@ public class ItemDAO {
             } catch (SQLException e) {
                 System.out.println("[ItemDAO] Lỗi load Vehicle attributes: " + e.getMessage());
             }
-        }
-        else if (item instanceof Electronics electronics) {
+        } else if (item instanceof Electronics electronics) {
             String sql = "SELECT brand, warranty_months FROM electronics WHERE item_id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, item.getId());

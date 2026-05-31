@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-
-<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.controller.AdminCentreController">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;" stylesheets="@../css/style.css"
+      xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.controller.AdminCentreController">
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
-        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS" />
-        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Admin centre" HBox.hgrow="ALWAYS" />
-        <Button maxWidth="Infinity" onAction="#handleUserReport" styleClass="nav-tab" text="User's report" HBox.hgrow="ALWAYS" />
-        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings" HBox.hgrow="ALWAYS" />
+        <Button maxWidth="Infinity" onAction="#handleHome" styleClass="nav-tab" text="Home" HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Admin centre" HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleUserReport" styleClass="nav-tab" text="User's report"
+                HBox.hgrow="ALWAYS"/>
+        <Button maxWidth="Infinity" onAction="#handleSettings" styleClass="nav-tab" text="Settings"
+                HBox.hgrow="ALWAYS"/>
     </HBox>
 
     <HBox VBox.vgrow="ALWAYS">
 
         <!-- Sidebar -->
         <VBox spacing="4" styleClass="sidebar">
-            <Button fx:id="btnNguoiDung" onAction="#handleShowNguoiDung" styleClass="sidebar-item-active" text="User" />
-            <Button fx:id="btnSanPham" onAction="#handleShowSanPham" styleClass="sidebar-item" text="Products" />
-            <Button fx:id="btnPhien" onAction="#handleShowPhien" styleClass="sidebar-item" text="Sessions" />
-            <Button fx:id="btnGiaoDich" onAction="#handleShowGiaoDich" styleClass="sidebar-item" text="Transactions" />
+            <Button fx:id="btnNguoiDung" onAction="#handleShowNguoiDung" styleClass="sidebar-item-active" text="User"/>
+            <Button fx:id="btnSanPham" onAction="#handleShowSanPham" styleClass="sidebar-item" text="Products"/>
+            <Button fx:id="btnPhien" onAction="#handleShowPhien" styleClass="sidebar-item" text="Sessions"/>
+            <Button fx:id="btnGiaoDich" onAction="#handleShowGiaoDich" styleClass="sidebar-item" text="Transactions"/>
         </VBox>
 
         <!-- Main panel -->
@@ -31,24 +30,27 @@
             <!-- TableView khai báo cột -->
             <TableView fx:id="dataTable" styleClass="table-view" VBox.vgrow="ALWAYS">
                 <columns>
-                    <TableColumn fx:id="colId" prefWidth="80" text="ID" />
-                    <TableColumn fx:id="colImage" prefWidth="120" text="Image" />
-                    <TableColumn fx:id="colTen" prefWidth="180" text="Name" />
-                    <TableColumn fx:id="colThongTin" prefWidth="300" text="Other informations" />
-                    <TableColumn fx:id="colExtra" prefWidth="200" text="....." />
-                    <TableColumn fx:id="colExtra2" prefWidth="150" text="Extra2" />
-                    <TableColumn fx:id="colTrangThai" prefWidth="160" text="Status" visible="false" />
+                    <TableColumn fx:id="colId" prefWidth="80" text="ID"/>
+                    <TableColumn fx:id="colImage" prefWidth="120" text="Image"/>
+                    <TableColumn fx:id="colTen" prefWidth="180" text="Name"/>
+                    <TableColumn fx:id="colThongTin" prefWidth="300" text="Other informations"/>
+                    <TableColumn fx:id="colExtra" prefWidth="200" text="....."/>
+                    <TableColumn fx:id="colExtra2" prefWidth="150" text="Extra2"/>
+                    <TableColumn fx:id="colTrangThai" prefWidth="160" text="Status" visible="false"/>
                 </columns>
                 <placeholder>
-                    <Label text="No data available." />
+                    <Label text="No data available."/>
                 </placeholder>
             </TableView>
 
             <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 16 0 0 0;">
-                <Button fx:id="btnBan" managed="false" onAction="#handleBan" styleClass="btn-danger" text="BAN" visible="false" />
-                <Button fx:id="btnMakeAdmin" managed="false" onAction="#handleMakeAdmin" styleClass="btn-success" text="ADMIN" visible="false" />
-                <Button fx:id="btnEdit" managed="false" onAction="#handleEdit" styleClass="btn-secondary" text="EDIT" visible="false" />
-                <Button fx:id="btnSave" onAction="#handleSave" styleClass="btn-primary" text="SAVE" />
+                <Button fx:id="btnBan" managed="false" onAction="#handleBan" styleClass="btn-danger" text="BAN"
+                        visible="false"/>
+                <Button fx:id="btnMakeAdmin" managed="false" onAction="#handleMakeAdmin" styleClass="btn-success"
+                        text="ADMIN" visible="false"/>
+                <Button fx:id="btnEdit" managed="false" onAction="#handleEdit" styleClass="btn-secondary" text="EDIT"
+                        visible="false"/>
+                <Button fx:id="btnSave" onAction="#handleSave" styleClass="btn-primary" text="SAVE"/>
             </HBox>
         </VBox>
     </HBox>

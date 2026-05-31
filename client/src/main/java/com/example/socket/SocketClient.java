@@ -8,7 +8,7 @@ import java.net.Socket;
 /**
  * SocketClient - quản lý kết nối TCP từ client đến server (port API).
  * Dùng Singleton để toàn app chỉ có 1 kết nối duy nhất.
- *
+ * <p>
  * ── Thay đổi so với bản gốc ──────────────────────────────────────────────
  * Bỏ hardcode "localhost" → đọc từ ServerConfig (hỗ trợ ngrok/internet).
  * Thêm reconnect() để tạo lại kết nối sau khi đổi server config.
@@ -23,7 +23,8 @@ public class SocketClient {
     private PrintWriter writer;
     private boolean connected = false;
 
-    private SocketClient() {}
+    private SocketClient() {
+    }
 
     public static SocketClient getInstance() {
         if (instance == null) {
@@ -50,11 +51,11 @@ public class SocketClient {
      */
     public boolean connect() {
         String host = ServerConfig.getApiHost();
-        int    port = ServerConfig.getApiPort();
+        int port = ServerConfig.getApiPort();
         try {
-            socket  = new Socket(host, port);
-            reader  = new BufferedReader(new InputStreamReader(socket.getInputStream(),  "UTF-8"));
-            writer  = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+            socket = new Socket(host, port);
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+            writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
             connected = true;
             System.out.println("[Client] Đã kết nối đến server " + host + ":" + port);
             return true;
@@ -111,5 +112,7 @@ public class SocketClient {
         }
     }
 
-    public boolean isConnected() { return connected; }
+    public boolean isConnected() {
+        return connected;
+    }
 }

@@ -1,5 +1,6 @@
 package model.user;
 
+import dao.AuctionDAO;
 import exception.*;
 import model.auction.Auction;
 import model.enums.AuctionStatus;
@@ -9,7 +10,6 @@ import service.AuctionTimer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import dao.AuctionDAO;
 
 public class Seller extends User {
     private List<Item> myItems;
