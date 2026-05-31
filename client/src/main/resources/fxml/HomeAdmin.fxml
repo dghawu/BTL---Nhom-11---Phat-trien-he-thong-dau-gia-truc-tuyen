@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.StackPane?>
+
 
 <!-- HomeAdmin.fxml -->
+
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="720" prefWidth="1280" style="-fx-background-color: #FFFFFF;"
       stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/26"
       fx:controller="com.example.controller.HomeAdminController">
+
 
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
         <Button maxWidth="Infinity" styleClass="nav-tab-active" text="Home" HBox.hgrow="ALWAYS"/>
@@ -18,41 +23,129 @@
                 HBox.hgrow="ALWAYS"/>
     </HBox>
 
+
     <VBox spacing="0" styleClass="content-area" VBox.vgrow="ALWAYS">
 
-        <Label fx:id="welcomeLabel" style="-fx-font-size: 34px;" styleClass="welcome-title"
-               text="WELCOME"/>
+
+        <VBox styleClass="home-hero-block" spacing="0">
+
+
+            <VBox.margin>
+                <Insets top="48" left="60" right="60"/>
+            </VBox.margin>
+
+
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label styleClass="hero-welcome-plain" text="Welcome"/>
+                <Label fx:id="welcomeLabel"
+                       styleClass="hero-welcome-italic"
+                       text=""/>
+            </HBox>
+
+
+            <HBox alignment="CENTER_LEFT" spacing="0">
+                <Label styleClass="hero-to-plain" text="to "/>
+
+
+                <StackPane styleClass="hero-highlight-wrap">
+                    <Label styleClass="hero-highlight-text"
+                           text="Online Bidding Platform"/>
+                </StackPane>
+            </HBox>
+
+
+        </VBox>
+
 
         <Region prefHeight="50"/>
 
-        <HBox alignment="CENTER_LEFT" spacing="30">
 
-            <VBox onMouseClicked="#handleAdminCentre" prefHeight="160" prefWidth="300" spacing="8"
-                  styleClass="home-card">
-                <HBox alignment="CENTER_RIGHT">
-                    <Label styleClass="window-dots" text="_ □ ×"/>
-                </HBox>
-                <Label styleClass="home-card-subtitle" text="Management"/>
-                <Label styleClass="home-card-title" text="AUCTIONS | PRODUCTS | USERS&#10;" wrapText="true"/>
+        <HBox alignment="TOP_CENTER"
+              spacing="100"
+              fillHeight="false">
+
+
+            <padding>
+                <Insets left="60" right="60"/>
+            </padding>
+
+
+            <!-- Card 1 -->
+            <VBox onMouseClicked="#handleAdminCentre"
+                  styleClass="home-card-new"
+                  prefWidth="320"
+                  prefHeight="320"
+                  maxWidth="320"
+                  maxHeight="320">
+
+
+                <Label styleClass="home-card-new-title"
+                       text="Admin Centre"
+                       wrapText="true"/>
+
+
+                <Separator styleClass="home-card-new-sep"/>
+
+
+                <Label styleClass="home-card-new-desc"
+                       wrapText="true"
+                       text="Manage auctions, products, user accounts, approvals and system-wide operations."/>
+
+
             </VBox>
 
-            <VBox onMouseClicked="#handleUserReport" prefHeight="160" prefWidth="300" spacing="8"
-                  styleClass="home-card">
-                <HBox alignment="CENTER_RIGHT">
-                    <Label styleClass="window-dots" text="_ □ ×"/>
-                </HBox>
-                <Label styleClass="home-card-subtitle" text="Resolving"/>
-                <Label styleClass="home-card-title" text="USER ISSUES" wrapText="true"/>
+
+            <!-- Card 2 -->
+            <VBox onMouseClicked="#handleUserReport"
+                  styleClass="home-card-new"
+                  prefWidth="320"
+                  prefHeight="320"
+                  maxWidth="320"
+                  maxHeight="320">
+
+
+                <Label styleClass="home-card-new-title"
+                       text="User Reports"
+                       wrapText="true"/>
+
+
+                <Separator styleClass="home-card-new-sep"/>
+
+
+                <Label styleClass="home-card-new-desc"
+                       wrapText="true"
+                       text="Review complaints, resolve disputes, and handle user-reported issues."/>
+
+
             </VBox>
 
-            <VBox onMouseClicked="#handleSettings" prefHeight="160" prefWidth="300" spacing="8" styleClass="home-card">
-                <HBox alignment="CENTER_RIGHT">
-                    <Label styleClass="window-dots" text="_ □ ×"/>
-                </HBox>
-                <Label styleClass="home-card-subtitle" text="Modification"/>
-                <Label styleClass="home-card-title" text="ACCOUNT INFORMATION&#10;" wrapText="true"/>
+
+            <!-- Card 3 -->
+            <VBox onMouseClicked="#handleSettings"
+                  styleClass="home-card-new"
+                  prefWidth="320"
+                  prefHeight="320"
+                  maxWidth="320"
+                  maxHeight="320">
+
+
+                <Label styleClass="home-card-new-title"
+                       text="Account Settings"
+                       wrapText="true"/>
+
+
+                <Separator styleClass="home-card-new-sep"/>
+
+
+                <Label styleClass="home-card-new-desc"
+                       wrapText="true"
+                       text="Update profile information, security settings, and administrator preferences."/>
+
+
             </VBox>
+
 
         </HBox>
     </VBox>
 </VBox>
+

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="720" prefWidth="1280"
       style="-fx-background-color: #FFFFFF;"
       stylesheets="@../css/style.css"
       xmlns="http://javafx.com/javafx/26"
       fx:controller="com.example.controller.HomeSellerController">
+
 
     <!-- ── NAV BAR ── -->
     <HBox alignment="CENTER_LEFT" styleClass="nav-bar">
@@ -18,18 +21,22 @@
         <Button maxWidth="Infinity" onAction="#handleSettings"     styleClass="nav-tab" text="Settings"      HBox.hgrow="ALWAYS"/>
     </HBox>
 
+
     <!-- ── CONTENT ── -->
     <VBox VBox.vgrow="ALWAYS">
+
 
         <!-- Welcome block -->
         <VBox styleClass="home-hero-block" spacing="0">
             <VBox.margin><Insets top="48" left="60" right="60"/></VBox.margin>
+
 
             <!-- Dòng 1: "Welcome" + "@username" (italic) -->
             <HBox alignment="CENTER_LEFT" spacing="12">
                 <Label styleClass="hero-welcome-plain" text="Welcome"/>
                 <Label fx:id="welcomeLabel" styleClass="hero-welcome-italic" text=""/>
             </HBox>
+
 
             <!-- Dòng 2: "to" + [highlight] "Online Bidding Platform" -->
             <HBox alignment="CENTER_LEFT" spacing="0">
@@ -40,40 +47,100 @@
             </HBox>
         </VBox>
 
+
         <!-- Spacer -->
         <Region prefHeight="48"/>
 
+
         <!-- Cards row -->
-        <HBox alignment="CENTER_LEFT" spacing="28">
-            <HBox.margin><Insets left="60" right="60"/></HBox.margin>
+        <HBox alignment="TOP_CENTER"
+              spacing="100"
+              fillHeight="false">
 
-            <!-- Card 1 – View Auction Sessions -->
-            <VBox onMouseClicked="#handleGoAuctions" styleClass="home-card-new" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                <Label styleClass="home-card-new-title" text="View Auction Sessions" wrapText="true"/>
-                <Separator styleClass="home-card-new-sep"/>
-                <Label styleClass="home-card-new-desc"
-                       text="Access our comprehensive marketplace to explore active bidding pools, monitor real-time listings, and track price fluctuations with dynamic live charts."
+
+            <padding>
+                <Insets left="60" right="60"/>
+            </padding>
+
+
+            <!-- Card 1 -->
+            <VBox onMouseClicked="#handleGoAuctions"
+                  styleClass="home-card-new"
+                  prefWidth="320"
+                  prefHeight="320"
+                  maxWidth="320"
+                  maxHeight="320">
+
+
+                <Label styleClass="home-card-new-title"
+                       text="View Auction Sessions"
                        wrapText="true"/>
+
+
+                <Separator styleClass="home-card-new-sep"/>
+
+
+                <Label styleClass="home-card-new-desc"
+                       wrapText="true"
+                       text="Access our comprehensive marketplace to explore active bidding pools, monitor real-time listings, and track price fluctuations with dynamic live charts."/>
+
+
             </VBox>
 
-            <!-- Card 2 – Visit Seller Centre -->
-            <VBox onMouseClicked="#handleGoSellerCentre" styleClass="home-card-new" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                <Label styleClass="home-card-new-title" text="Visit Seller Centre" wrapText="true"/>
-                <Separator styleClass="home-card-new-sep"/>
-                <Label styleClass="home-card-new-desc"
-                       text="Utilize advanced merchant tools to create and manage your products, launch new auction sessions, and streamline your inventory fulfillment."
+
+            <!-- Card 2 -->
+            <VBox onMouseClicked="#handleGoAuctions"
+                  styleClass="home-card-new"
+                  prefWidth="320"
+                  prefHeight="320"
+                  maxWidth="320"
+                  maxHeight="320">
+
+
+                <Label styleClass="home-card-new-title"
+                       text="Visit Seller Centre"
                        wrapText="true"/>
+
+
+                <Separator styleClass="home-card-new-sep"/>
+
+
+                <Label styleClass="home-card-new-desc"
+                       wrapText="true"
+                       text="Utilize advanced merchant tools to create and manage your products, launch new auction sessions, and streamline your inventory fulfillment."/>
+
+
             </VBox>
 
-            <!-- Card 3 – Account Settings -->
-            <VBox onMouseClicked="#handleGoSettings" styleClass="home-card-new" HBox.hgrow="ALWAYS" maxWidth="Infinity">
-                <Label styleClass="home-card-new-title" text="Account Settings" wrapText="true"/>
-                <Separator styleClass="home-card-new-sep"/>
-                <Label styleClass="home-card-new-desc"
-                       text="Configure advanced security protocols, update your personal profiles, manage authentication details."
+
+            <!-- Card 3 -->
+            <VBox onMouseClicked="#handleGoAuctions"
+                  styleClass="home-card-new"
+                  prefWidth="320"
+                  prefHeight="320"
+                  maxWidth="320"
+                  maxHeight="320">
+
+
+                <Label styleClass="home-card-new-title"
+                       text="Account Settings"
                        wrapText="true"/>
+
+
+                <Separator styleClass="home-card-new-sep"/>
+
+
+                <Label styleClass="home-card-new-desc"
+                       wrapText="true"
+                       text="Configure advanced security protocols, update your personal profiles, manage authentication details."/>
+
+
             </VBox>
 
-        </HBox>
+
+        </HBox>   <!-- THIẾU DÒNG NÀY -->
+
+
     </VBox>
 </VBox>
+
