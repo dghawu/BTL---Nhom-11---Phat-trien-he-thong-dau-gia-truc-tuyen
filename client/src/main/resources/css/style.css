@@ -749,3 +749,14 @@
 .btn-dephon:hover {
     -fx-background-color: #333333;
 }
+.chart-series-line {
+    -fx-stroke: #02182e;
+    -fx-stroke-width: 2px;
+}
+
+/* Màu nút tròn */
+.chart-line-symbol {
+    -fx-background-color: #02182e, white;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px;
+}

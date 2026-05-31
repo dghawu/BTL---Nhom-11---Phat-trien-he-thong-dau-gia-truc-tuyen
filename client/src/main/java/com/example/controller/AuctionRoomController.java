@@ -259,9 +259,25 @@ public class AuctionRoomController extends BaseController {
                         String chartTime = ts.length() >= 19 ? ts.substring(11, 19) : ts;
                         final String ct = chartTime;
                         final double amt = h.getDouble("amount");
-                        Platform.runLater(() ->
-                                priceSeries.getData().add(
-                                        new javafx.scene.chart.XYChart.Data<>(ct, amt)));
+                        final String bidder = h.getString("bidderName");
+                        Platform.runLater(() -> {
+                            javafx.scene.chart.XYChart.Data<String, Number> d =
+                                    new javafx.scene.chart.XYChart.Data<>(ct, amt);
+                            priceSeries.getData().add(d);
+
+                            javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(
+                                    javafx.util.Duration.millis(300));
+                            pause.setOnFinished(ev -> {
+                                if (d.getNode() != null) {
+                                    javafx.scene.control.Tooltip tip = new javafx.scene.control.Tooltip(
+                                            "Bidder: " + bidder + "\nPrice: " + String.format("%,.0f", amt));
+                                    tip.setShowDelay(javafx.util.Duration.millis(50));
+                                    tip.setStyle("-fx-font-size: 13px; -fx-font-family: 'Montserrat';");
+                                    javafx.scene.control.Tooltip.install(d.getNode(), tip);
+                                }
+                            });
+                            pause.play();
+                        });
                     }
                 });
             }).start();
@@ -348,7 +364,7 @@ public class AuctionRoomController extends BaseController {
                                 + String.format("%,.0f", event.price)
                                 + " at " + now,
                         event.bidderName.equals(currentUsername));
-                addChartPoint(event.price);
+                addChartPoint(event.price, event.bidderName);
             });
 
             case AUCTION_CLOSED -> Platform.runLater(() -> {
@@ -640,16 +656,34 @@ public class AuctionRoomController extends BaseController {
         priceSeries = new javafx.scene.chart.XYChart.Series<>();
         priceSeries.setName("Bid price");
         priceChart.getData().add(priceSeries);
+        // Đổi màu đường sau khi add series vào chart
+        priceChart.lookup(".default-color0.chart-series-line").setStyle("-fx-stroke: #02182e;");
 
         VBox.setVgrow(priceChart, javafx.scene.layout.Priority.ALWAYS);
         chartPane.getChildren().setAll(priceChart);
     }
-    private void addChartPoint(double price) {
+    private void addChartPoint(double price, String bidderName) {
         String time = java.time.LocalDateTime.now()
                 .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss"));
-        priceSeries.getData().add(
-                new javafx.scene.chart.XYChart.Data<>(time, price));
+        javafx.scene.chart.XYChart.Data<String, Number> data =
+                new javafx.scene.chart.XYChart.Data<>(time, price);
+        priceSeries.getData().add(data);
+
+        // Chờ JavaFX render xong rồi mới gắn tooltip
+        javafx.animation.PauseTransition pause = new javafx.animation.PauseTransition(
+                javafx.util.Duration.millis(300));
+        pause.setOnFinished(e -> {
+            if (data.getNode() != null) {
+                javafx.scene.control.Tooltip tip = new javafx.scene.control.Tooltip(
+                        "Bidder: " + bidderName + "\nPrice: " + String.format("%,.0f", price));
+                tip.setShowDelay(javafx.util.Duration.millis(50));
+                tip.setStyle("-fx-font-size: 13px; -fx-font-family: 'Montserrat';");
+                javafx.scene.control.Tooltip.install(data.getNode(), tip);
+            }
+        });
+        pause.play();
     }
+
     @FXML
     private void handleTabFeed() {
         scrollFeed.setVisible(true);  scrollFeed.setManaged(true);
