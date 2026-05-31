@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -26,6 +27,10 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.primaryStage = stage;
+
+        // ── Load custom fonts (phải gọi trước khi load bất kỳ scene nào) ──
+        Font.loadFont(getClass().getResourceAsStream("/fonts/ZTBrosOskon90s-Regular.otf"), 14);
+        Font.loadFont(getClass().getResourceAsStream("/fonts/ZTBrosOskon90s-Italic.otf"), 14);
 
         stage.setTitle("Auction System");
         stage.setMinWidth(1000);

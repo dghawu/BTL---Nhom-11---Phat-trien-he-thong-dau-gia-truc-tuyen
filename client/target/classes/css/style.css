@@ -1,10 +1,7 @@
-/* ========================================
-   AUCTION SYSTEM - Global Stylesheet
-   Font: Clean sans-serif, B&W theme
-   ======================================== */
-
-* {
+.root {
     -fx-font-family: "Montserrat", "Helvetica Neue", sans-serif;
+    -fx-background-color: #FFFFFF;
+    -fx-font-size: 14px;
 }
 
 /* ---- ROOT / BACKGROUND ---- */
@@ -491,4 +488,90 @@
 }
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
+}
+
+.home-hero-block {
+    -fx-spacing: 4;
+}
+
+/* "Welcome" – thẳng đứng, font ZT Bros */
+.hero-welcome-plain {
+    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-size: 80px;
+    -fx-text-fill: #111111;
+}
+
+/* "@user_name" – nghiêng, font ZT Bros */
+.hero-welcome-italic {
+    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-size: 80px;
+    -fx-font-style: italic;
+    -fx-text-fill: #111111;
+}
+
+/* "to " – chữ thường, font ZT Bros */
+.hero-to-plain {
+    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-size: 80px;
+    -fx-text-fill: #111111;
+}
+
+/* Wrapper có nền vàng nhạt bao quanh "Online Bidding Platform" */
+.hero-highlight-wrap {
+    -fx-background-color: #FFF9C2;
+    -fx-background-radius: 4px;
+    -fx-padding: 0 8 0 8;
+}
+
+/* "Online Bidding Platform" – font ZT Bros, nằm trong highlight */
+.hero-highlight-text {
+    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-size: 80px;
+    -fx-text-fill: #111111;
+}
+
+
+/* ---- HOME CARD (NEW DESIGN) ---- */
+.home-card-new {
+    -fx-background-color: #F0FAFF;
+    -fx-border-color: #091D2D;
+    -fx-border-width: 1px;
+    -fx-border-radius: 14px;
+    -fx-background-radius: 14px;
+    -fx-padding: 22 24 24 24;
+    -fx-spacing: 10;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 6, 0, 0, 2);
+    -fx-min-height: 200px;
+}
+
+.home-card-new:hover {
+    -fx-background-color: #D8EBF5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 10, 0, 0, 3);
+}
+
+/* Tiêu đề card – ZT Bros Oskon 90s */
+.home-card-new-title {
+    -fx-font-family: "ZT Bros Oskon 90s";
+    -fx-font-size: 35px;
+    -fx-text-fill: #111111;
+}
+
+/* Đường kẻ ngang dưới tiêu đề */
+.home-card-new-sep {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.home-card-new-sep .line {
+    -fx-border-color: #091d2d;
+    -fx-border-width: 1px 0 0 0;
+}
+/* Mô tả card – Arial Regular */
+.home-card-new-desc {
+    -fx-font-family: "Arial";
+    -fx-font-size: 13px;
+    -fx-text-fill: #091d2d;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 2;
 }

@@ -9,13 +9,13 @@ import javafx.scene.control.Label;
 public class HomeSellerController extends com.example.controller.BaseController {
 
     @FXML
-    private Label welcomeLabel;
+    private Label welcomeLabel;  // chỉ hiển thị "@username" – italic
 
     public void initData(String username, String userId) {
         currentUsername = username;
         currentRole = "SELLER";
         currentUserId = userId;
-        welcomeLabel.setText("WELCOME SELLER @" + username + " TO ABCXYZ");
+        welcomeLabel.setText("@" + username);  // chỉ set phần italic
     }
 
     @FXML
