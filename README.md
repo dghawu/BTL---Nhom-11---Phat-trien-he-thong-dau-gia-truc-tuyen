@@ -530,12 +530,11 @@ server.bid.port=8889
 #### 3. **Tính Năng Nâng Cao**
 - ✔️ **Auto Bid (Đấu Giá Tự Động)**
   - Người dùng đặt giá tối đa, hệ thống tự động đấu giá
-  - Tính toán bước tăng giá thông minh dựa trên lệnh cũ
   - Ưu tiên bid có thời gian sớm hơn (FIFO)
   - Log lịch sử auto bid chi tiết
 
 - ✔️ **Anti-Sniping (Chống Đấu Ở Phút Cuối)**
-  - Tự động gia hạn phiên 5 phút khi có bid trong 5 phút cuối
+  - Tự động gia hạn phiên 1 phút khi có bid trong 30 giây cuối
   - Ngăn chặn "sniper bids" - đấu ở giây cuối cùng
   - Công bằng cho tất cả người tham gia
 
