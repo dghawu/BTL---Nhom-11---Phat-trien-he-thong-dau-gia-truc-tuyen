@@ -7,10 +7,9 @@ import java.util.Map;
 
 /**
  * RequestRouter — ánh xạ action → Handler tương ứng.
- * Thay thế switch-case trong ClientHandler cũ.
  * <p>
  * Thêm action mới: chỉ cần đăng ký thêm 1 dòng trong registerHandlers(),
- * không cần chạm vào ClientHandler hay các Handler khác. (Open/Closed)
+ * không cần chạm vào ClientHandler hay các Handler khác.
  */
 public final class RequestRouter {
 
@@ -67,7 +66,7 @@ public final class RequestRouter {
 
         // Transactions
         register("getMyTransactions", transaction);
-        register("getAllTransactions", transaction);  // ← đã thêm, không còn bị bỏ sót
+        register("getAllTransactions", transaction);
         register("confirmWin", transaction);
         register("pay", transaction);
         register("getMyWonSessions", transaction);
@@ -95,8 +94,7 @@ public final class RequestRouter {
         if (handler == null) {
             return new JSONObject()
                     .put("success", false)
-                    .put("message", "Action không hợp lệ: "
-                            + action)
+                    .put("message", "Action không hợp lệ: " + action)
                     .toString();
         }
 

@@ -71,8 +71,7 @@ public final class BidPushHandler implements Runnable {
             String line = reader.readLine();
             if (line == null) {
                 System.out.println(
-                            "[BidPushHandler] Client ngắt kết nối ngay sau "
-                                    + "khi connect.");
+                            "[BidPushHandler] Client ngắt kết nối ngay sau " + "khi connect.");
                 return;
             }
 
@@ -125,7 +124,6 @@ public final class BidPushHandler implements Runnable {
             // Khi client đóng kết nối, readLine() trả về null.
             String extraLine;
             while ((extraLine = reader.readLine()) != null) {
-                // Bỏ qua các dòng client gửi thêm (heartbeat nếu cần)
                 continue;
             }
 

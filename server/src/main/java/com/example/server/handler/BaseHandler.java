@@ -83,8 +83,6 @@ public abstract class BaseHandler {
 
     /**
      * Gắn attr1/attr2 vào JSONObject tuỳ loại item.
-     * Thay thế 3 khối instanceof lặp lại trong phiên bản cũ.
-     *
      * @param obj  JSONObject đích
      * @param item item cần lấy thuộc tính
      */

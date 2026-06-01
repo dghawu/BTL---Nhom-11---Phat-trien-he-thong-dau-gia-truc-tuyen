@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * ServerService — giao tiếp với API Server qua Socket (port 8888).
+ * ServerService — giao tiếp với Server qua Socket (port 8888).
  */
 public class ServerService {
 
@@ -42,9 +42,7 @@ public class ServerService {
         return new JSONObject(raw);
     }
 
-    // ================================================================== //
     //  AUTH
-    // ================================================================== //
 
     public static UserResult login(String username, String password) {
         JSONObject req = new JSONObject();
@@ -98,9 +96,7 @@ public class ServerService {
         return res.optJSONArray("items");
     }
 
-    // ================================================================== //
     //  ITEMS
-    // ================================================================== //
 
     public static JSONArray getAllItems() {
         JSONObject res = send(req("getAllItems"));
@@ -203,10 +199,7 @@ public class ServerService {
         return response.optBoolean("success", false);
     }
 
-
-    // ================================================================== //
     //  SESSIONS
-    // ================================================================== //
 
     public static JSONArray getMySessions() {
         JSONObject res = send(req("getMySessions"));
@@ -273,9 +266,7 @@ public class ServerService {
         return send(req).getBoolean("success");
     }
 
-    // ================================================================== //
     //  BIDDING
-    // ================================================================== //
 
     public static boolean setAutoBid(String sessionId, double stepPrice, double maxPrice) {
         JSONObject req = req("setAutoBid");
@@ -323,9 +314,7 @@ public class ServerService {
         return res.optJSONArray("transactions");
     }
 
-    // ================================================================== //
     //  TRANSACTIONS
-    // ================================================================== //
 
     public static boolean pay(String transactionId) {
         JSONObject req = req("pay");
@@ -344,9 +333,7 @@ public class ServerService {
         return res.optJSONArray("users");
     }
 
-    // ================================================================== //
     //  ADMIN
-    // ================================================================== //
 
     public static boolean banUser(String userId) {
         JSONObject req = req("banUser");

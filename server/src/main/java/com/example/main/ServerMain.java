@@ -14,14 +14,14 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ServerMain - khởi động cả 2 server:
- * - SocketServer  (port 8888): API request/response (login, bid, ...)
+ * - SocketServer  (port 8888): request/response (login, bid, ...)
  * - BidPushServer (port 8889): Push realtime (BID_UPDATE, AUCTION_CLOSED)
  * <p>
  * Chạy file này TRƯỚC khi chạy client.
  */
 public final class ServerMain {
 
-    /** Port lắng nghe API request/response. */
+    /** Port lắng nghe request/response. */
     private static final int API_PORT = 8888;
 
     /** Port lắng nghe Push realtime. */

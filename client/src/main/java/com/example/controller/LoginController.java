@@ -60,9 +60,7 @@ public class LoginController {
         loadScene("/fxml/Register.fxml");
     }
 
-    // ------------------------------------------------------------------ //
     //  Helpers
-    // ------------------------------------------------------------------ //
 
     private void navigateToHome(String role, String username, String userId) {
         try {

@@ -10,9 +10,6 @@ import java.util.function.Consumer;
 /**
  * BidSocketClient — kết nối persistent đến Push Server (port 8889).
  * <p>
- * ── Thay đổi so với bản gốc ──────────────────────────────────────────────
- * Bỏ hardcode "localhost":8889 → đọc từ ServerConfig.
- * Hỗ trợ kết nối qua ngrok (host và port riêng biệt cho push server).
  */
 public class BidSocketClient {
 
