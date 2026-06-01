@@ -1,5 +1,7 @@
 package model.item;
 
+import com.example.model.item.Fashion;
+import com.example.model.item.Item;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

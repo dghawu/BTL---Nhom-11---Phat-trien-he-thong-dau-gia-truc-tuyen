@@ -1,9 +1,12 @@
 package com.example.server.handler;
 
-import auth.AuthResult;
-import auth.JwtUtil;
-import auth.TokenGuard;
-import model.user.User;
+import com.example.auth.AuthResult;
+import com.example.auth.JwtUtil;
+import com.example.auth.TokenGuard;
+import com.example.model.user.Bidder;
+import com.example.model.user.Seller;
+import com.example.model.user.User;
+import com.example.util.PasswordUtil;
 import org.json.JSONObject;
 
 import java.util.UUID;
@@ -60,11 +63,11 @@ public final class AuthHandler extends BaseHandler {
         }
 
         User newUser = switch (role) {
-            case "SELLER" -> new model.user.Seller(
+            case "SELLER" -> new Seller(
                     UUID.randomUUID().toString(),
                     name,
                     password);
-            default -> new model.user.Bidder(
+            default -> new Bidder(
                     UUID.randomUUID().toString(),
                     name,
                     password);
@@ -91,7 +94,7 @@ public final class AuthHandler extends BaseHandler {
         if (user == null) {
             return fail("Không tìm thấy user.");
         }
-        if (!util.PasswordUtil.verify(password, user.getPassword())) {
+        if (!PasswordUtil.verify(password, user.getPassword())) {
             return fail("Sai mật khẩu.");
         }
         if (getUserDAO().findByName(newUsername) != null) {
@@ -119,7 +122,7 @@ public final class AuthHandler extends BaseHandler {
         if (user == null) {
             return fail("Không tìm thấy user.");
         }
-        if (!util.PasswordUtil.verify(oldPassword, user.getPassword())) {
+        if (!PasswordUtil.verify(oldPassword, user.getPassword())) {
             return fail("Sai mật khẩu cũ.");
         }
 

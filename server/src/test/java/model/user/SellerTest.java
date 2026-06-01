@@ -1,13 +1,14 @@
 package model.user;
 
-import exception.AuctionCancelNotAllowedException;
-import exception.AuctionEditNotAllowedException;
-import exception.AuctionNotFoundException;
-import model.auction.Auction;
-import model.enums.AuctionStatus;
-import model.item.Item;
+import com.example.exception.AuctionCancelNotAllowedException;
+import com.example.exception.AuctionEditNotAllowedException;
+import com.example.exception.AuctionNotFoundException;
+import com.example.model.auction.Auction;
+import com.example.model.enums.AuctionStatus;
+import com.example.model.item.Item;
+import com.example.model.user.Seller;
 import org.junit.jupiter.api.*;
-import service.AuctionTimer;
+import com.example.service.AuctionTimer;
 
 import java.time.LocalDateTime;
 

@@ -1,16 +1,17 @@
 package server;
 
-import exception.AuctionClosedException;
-import exception.InvalidBidException;
-import exception.SelfBidException;
-import model.auction.Auction;
-import model.auction.BidTransaction;
-import model.enums.AuctionStatus;
-import model.item.Item;
-import model.user.Bidder;
+import com.example.exception.AuctionClosedException;
+import com.example.exception.DuplicateUsernameException;
+import com.example.exception.InvalidBidException;
+import com.example.exception.SelfBidException;
+import com.example.model.auction.Auction;
+import com.example.model.auction.BidTransaction;
+import com.example.model.enums.AuctionStatus;
+import com.example.model.item.Item;
+import com.example.model.user.Bidder;
 import org.junit.jupiter.api.*;
-import service.AuctionTimer;
-import service.UserService;
+import com.example.service.AuctionTimer;
+import com.example.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -159,7 +160,7 @@ class ConcurrencyTest {
                         errors.add("DUPLICATE ID: " + b.getId());
                     }
                     successCount.incrementAndGet();
-                } catch (exception.DuplicateUsernameException e) {
+                } catch (DuplicateUsernameException e) {
                     dupCount.incrementAndGet(); // trùng tên — hợp lệ
                 } catch (Exception e) {
                     errors.add("BUG: " + e.getClass().getSimpleName() + " - " + e.getMessage());

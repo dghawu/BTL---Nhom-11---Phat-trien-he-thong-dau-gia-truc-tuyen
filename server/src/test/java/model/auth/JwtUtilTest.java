@@ -1,6 +1,6 @@
 package model.auth;
 
-import auth.JwtUtil;
+import com.example.auth.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.junit.jupiter.api.*;

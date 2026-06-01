@@ -1,6 +1,6 @@
 package com.example.server;
 
-import observer.SocketBroadcaster;
+import com.example.observer.SocketBroadcaster;
 
 import java.util.concurrent.ConcurrentHashMap;
 

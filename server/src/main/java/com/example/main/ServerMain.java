@@ -2,10 +2,10 @@ package com.example.main;
 
 import com.example.server.BidPushServer;
 import com.example.server.SocketServer;
-import dao.AuctionDAO;
-import model.auction.Auction;
-import model.enums.AuctionStatus;
-import service.AuctionTimer;
+import com.example.dao.AuctionDAO;
+import com.example.model.auction.Auction;
+import com.example.model.enums.AuctionStatus;
+import com.example.service.AuctionTimer;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

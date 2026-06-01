@@ -1,8 +1,8 @@
 package model.auth;
 
-import auth.AuthResult;
-import auth.JwtUtil;
-import auth.TokenGuard;
+import com.example.auth.AuthResult;
+import com.example.auth.JwtUtil;
+import com.example.auth.TokenGuard;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 

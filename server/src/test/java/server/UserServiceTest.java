@@ -1,14 +1,14 @@
 package server;
 
-import exception.DuplicateUsernameException;
-import exception.UserNotFoundException;
-import exception.WrongPasswordException;
-import model.user.Admin;
-import model.user.Bidder;
-import model.user.Seller;
-import model.user.User;
+import com.example.exception.DuplicateUsernameException;
+import com.example.exception.UserNotFoundException;
+import com.example.exception.WrongPasswordException;
+import com.example.model.user.Admin;
+import com.example.model.user.Bidder;
+import com.example.model.user.Seller;
+import com.example.model.user.User;
 import org.junit.jupiter.api.*;
-import service.UserService;
+import com.example.service.UserService;
 
 import java.util.List;
 

@@ -1,10 +1,11 @@
 package com.example.server.handler;
 
-import auth.AuthResult;
-import auth.TokenGuard;
-import model.auction.Auction;
-import model.enums.AuctionStatus;
-import model.item.Item;
+import com.example.auth.AuthResult;
+import com.example.auth.TokenGuard;
+import com.example.model.auction.Auction;
+import com.example.model.enums.AuctionStatus;
+import com.example.model.item.Item;
+import com.example.service.AuctionTimer;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -153,7 +154,7 @@ public final class SessionHandler extends BaseHandler {
         if (delaySeconds <= 0) {
             getAuctionDAO().updateStatus(sessionId, AuctionStatus.RUNNING);
             auction.setStatus(AuctionStatus.RUNNING);
-            service.AuctionTimer.getInstance().schedule(auction);
+            AuctionTimer.getInstance().schedule(auction);
         } else {
             Executors.newSingleThreadScheduledExecutor()
                     .schedule(() -> {
@@ -161,7 +162,7 @@ public final class SessionHandler extends BaseHandler {
                 if (a != null && a.getStatus() == AuctionStatus.APPROVED) {
                     getAuctionDAO().updateStatus(sessionId, AuctionStatus.RUNNING);
                     a.setStatus(AuctionStatus.RUNNING);
-                    service.AuctionTimer.getInstance().schedule(a);
+                    AuctionTimer.getInstance().schedule(a);
                     System.out.println("[Session] Phiên " + sessionId + " bắt đầu!");
                 }
             }, delaySeconds, TimeUnit.SECONDS);
@@ -208,7 +209,7 @@ public final class SessionHandler extends BaseHandler {
 
         getAuctionDAO().updateStatus(auctionId, AuctionStatus.CANCELED);
         getItemDAO().updateStatus(auction.getItem().getId(), "APPROVED");
-        service.AuctionTimer.getInstance().cancelTask(auctionId);
+        AuctionTimer.getInstance().cancelTask(auctionId);
         return success().put("message", "Đã hủy phiên đấu giá.").toString();
     }
 

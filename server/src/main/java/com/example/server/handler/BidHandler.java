@@ -1,17 +1,17 @@
 package com.example.server.handler;
 
-import auth.AuthResult;
-import auth.TokenGuard;
+import com.example.auth.AuthResult;
+import com.example.auth.TokenGuard;
 import com.example.server.BidRegistry;
-import model.auction.Auction;
-import model.auction.AutoBidConfig;
-import model.auction.BidTransaction;
-import model.enums.AuctionStatus;
-import model.user.User;
-import observer.SocketBroadcaster;
+import com.example.model.auction.Auction;
+import com.example.model.auction.AutoBidConfig;
+import com.example.model.auction.BidTransaction;
+import com.example.model.enums.AuctionStatus;
+import com.example.model.user.User;
+import com.example.observer.SocketBroadcaster;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import service.AutoBidManager;
+import com.example.service.AutoBidManager;
 
 import java.time.LocalDateTime;
 import java.util.List;

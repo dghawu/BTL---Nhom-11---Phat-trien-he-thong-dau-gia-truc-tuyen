@@ -1,9 +1,10 @@
 package model.user;
 
-import model.auction.Auction;
-import model.auction.BidTransaction;
-import model.enums.AuctionStatus;
-import model.item.Item;
+import com.example.model.auction.Auction;
+import com.example.model.auction.BidTransaction;
+import com.example.model.enums.AuctionStatus;
+import com.example.model.item.Item;
+import com.example.model.user.Bidder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

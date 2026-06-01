@@ -1,10 +1,10 @@
 package com.example.server.handler;
 
-import dao.AuctionDAO;
-import dao.BidTransactionDAO;
-import dao.ItemDAO;
-import dao.UserDAO;
-import model.item.Item;
+import com.example.dao.AuctionDAO;
+import com.example.dao.BidTransactionDAO;
+import com.example.dao.ItemDAO;
+import com.example.dao.UserDAO;
+import com.example.model.item.*;
 import org.json.JSONObject;
 
 /**
@@ -89,16 +89,16 @@ public abstract class BaseHandler {
      * @param item item cần lấy thuộc tính
      */
     protected void putItemAttrs(final JSONObject obj, final Item item) {
-        if (item instanceof model.item.Fashion f) {
+        if (item instanceof Fashion f) {
             obj.put("attr1", f.getBrand() != null ? f.getBrand() : "");
             obj.put("attr2", f.getSize() != null ? f.getSize() : "");
-        } else if (item instanceof model.item.Art a) {
+        } else if (item instanceof Art a) {
             obj.put("attr1", a.getArtist() != null ? a.getArtist() : "");
             obj.put("attr2", a.getMedium() != null ? a.getMedium() : "");
-        } else if (item instanceof model.item.Vehicle v) {
+        } else if (item instanceof Vehicle v) {
             obj.put("attr1", v.getBrand() != null ? v.getBrand() : "");
             obj.put("attr2", String.valueOf(v.getMileage()));
-        } else if (item instanceof model.item.Electronics e) {
+        } else if (item instanceof Electronics e) {
             obj.put("attr1", e.getBrand() != null ? e.getBrand() : "");
             obj.put("attr2", String.valueOf(e.getWarrantyMonths()));
         } else {

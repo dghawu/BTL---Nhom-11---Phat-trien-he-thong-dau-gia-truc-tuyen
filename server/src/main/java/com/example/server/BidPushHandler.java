@@ -1,8 +1,8 @@
 package com.example.server;
 
-import auth.AuthResult;
-import auth.TokenGuard;
-import observer.SocketBroadcaster;
+import com.example.auth.AuthResult;
+import com.example.auth.TokenGuard;
+import com.example.observer.SocketBroadcaster;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;

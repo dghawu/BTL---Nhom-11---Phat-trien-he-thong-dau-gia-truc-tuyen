@@ -1,5 +1,6 @@
 package model.auction;
 
+import com.example.model.auction.BidTransaction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

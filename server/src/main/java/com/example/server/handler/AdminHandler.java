@@ -1,8 +1,8 @@
 package com.example.server.handler;
 
-import auth.AuthResult;
-import auth.TokenGuard;
-import model.user.User;
+import com.example.auth.AuthResult;
+import com.example.auth.TokenGuard;
+import com.example.model.user.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

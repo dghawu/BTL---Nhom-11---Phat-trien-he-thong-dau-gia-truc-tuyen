@@ -1,6 +1,7 @@
 package service;
 
-import model.auction.AutoBidConfig;
+import com.example.model.auction.AutoBidConfig;
+import com.example.service.AutoBidManager;
 import org.junit.jupiter.api.*;
 
 import java.util.List;

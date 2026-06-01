@@ -1,6 +1,6 @@
 package model.auth;
 
-import auth.AuthResult;
+import com.example.auth.AuthResult;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;

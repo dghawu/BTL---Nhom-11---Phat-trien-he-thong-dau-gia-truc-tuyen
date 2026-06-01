@@ -1,11 +1,11 @@
 package com.example.server.handler;
 
-import auth.AuthResult;
-import auth.TokenGuard;
-import model.auction.Auction;
-import model.auction.BidTransaction;
-import model.enums.AuctionStatus;
-import model.user.User;
+import com.example.auth.AuthResult;
+import com.example.auth.TokenGuard;
+import com.example.model.auction.Auction;
+import com.example.model.auction.BidTransaction;
+import com.example.model.enums.AuctionStatus;
+import com.example.model.user.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

@@ -1,11 +1,11 @@
 package server;
 
-import model.auction.Auction;
-import model.enums.AuctionStatus;
-import model.item.Item;
-import observer.AuctionObserver;
+import com.example.model.auction.Auction;
+import com.example.model.enums.AuctionStatus;
+import com.example.model.item.Item;
+import com.example.observer.AuctionObserver;
 import org.junit.jupiter.api.*;
-import service.AuctionTimer;
+import com.example.service.AuctionTimer;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;

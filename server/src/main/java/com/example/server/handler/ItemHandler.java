@@ -1,8 +1,8 @@
 package com.example.server.handler;
 
-import auth.AuthResult;
-import auth.TokenGuard;
-import model.item.Item;
+import com.example.auth.AuthResult;
+import com.example.auth.TokenGuard;
+import com.example.model.item.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -285,20 +285,20 @@ public final class ItemHandler extends BaseHandler {
     private void applyAttributes(final Item item,
                                  final String attr1,
                                  final String attr2) {
-        if (item instanceof model.item.Fashion f) {
+        if (item instanceof Fashion f) {
             f.setBrand(attr1);
             f.setSize(attr2);
-        } else if (item instanceof model.item.Art a) {
+        } else if (item instanceof Art a) {
             a.setArtist(attr1);
             a.setMedium(attr2);
-        } else if (item instanceof model.item.Vehicle v) {
+        } else if (item instanceof Vehicle v) {
             v.setBrand(attr1);
             try {
                 v.setMileage(Long.parseLong(attr2));
             } catch (NumberFormatException exception) {
                 v.setMileage(0);
             }
-        } else if (item instanceof model.item.Electronics e) {
+        } else if (item instanceof Electronics e) {
             e.setBrand(attr1);
             try {
                 e.setWarrantyMonths(Integer.parseInt(attr2));
