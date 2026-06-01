@@ -78,7 +78,7 @@
 
             <Region VBox.vgrow="ALWAYS"/>
             <HBox alignment="CENTER_RIGHT" spacing="12" style="-fx-padding: 0 20 16 0;">
-                <Button onAction="#handleEdit" styleClass="btn-secondary" text="EDIT"/>
+                <Button fx:id="btnEdit" onAction="#handleEdit" styleClass="btn-secondary" text="EDIT"/>
                 <Button onAction="#handleSave" styleClass="btn-primary" text="SAVE"/>
             </HBox>
         </VBox>

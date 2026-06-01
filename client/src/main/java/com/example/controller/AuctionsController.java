@@ -213,7 +213,7 @@ public class AuctionsController extends com.example.controller.BaseController {
         if ("RUNNING".equalsIgnoreCase(status)) {
             btnJoin.setOnAction(e -> handleJoinAuction(id, ten));
         } else {
-            btnJoin.setText("IT’S NOT TIME TO START YET.");
+            btnJoin.setText("NOT START YET");
             btnJoin.setDisable(true);
             btnJoin.setStyle("-fx-opacity: 0.5;");
         }

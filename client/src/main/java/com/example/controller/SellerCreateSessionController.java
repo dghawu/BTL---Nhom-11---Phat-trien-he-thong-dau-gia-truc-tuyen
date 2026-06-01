@@ -109,7 +109,7 @@ public class SellerCreateSessionController extends com.example.controller.BaseCo
             StringBuilder content = new StringBuilder();
 
             // 1. Starting price
-            content.append("* STARTING PRICE: ").append(String.format("%,.0f đ", startPrice)).append("\n\n");
+            content.append("* STARTING PRICE: ").append(String.format("%,.0f", startPrice)).append("\n\n");
 
             // 2. Description
             content.append("* DESCRIPTION:\n").append(desc != null && !desc.isEmpty() ? desc : "Chưa có mô tả").append("\n\n");

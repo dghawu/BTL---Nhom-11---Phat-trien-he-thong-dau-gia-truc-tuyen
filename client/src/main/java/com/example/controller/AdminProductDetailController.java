@@ -44,7 +44,7 @@ public class AdminProductDetailController extends BaseController {
         lblId.setText(currentItemId);
         lblTen.setText(product.optString("name", "—"));
         lblLoai.setText(product.optString("type", "—"));
-        lblGia.setText(String.format("%,.0f đ", product.optDouble("startPrice", 0)));
+        lblGia.setText(String.format("%,.0f", product.optDouble("startPrice", 0)));
         lblSeller.setText(product.optString("sellerId", "—"));
         lblMoTa.setText(product.optString("description", "No description available."));
         lblTrangThai.setText(product.optString("status", "—"));

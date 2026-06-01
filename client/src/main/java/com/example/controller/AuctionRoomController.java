@@ -32,8 +32,6 @@ public class AuctionRoomController extends BaseController {
 
     // Left: product info
     @FXML
-    private Label lblProductName;
-    @FXML
     private Label lblTenSP;
     @FXML
     private Label lblIdSP;
@@ -58,6 +56,9 @@ public class AuctionRoomController extends BaseController {
 
     @FXML private ScrollPane scrollFeed;
     @FXML private VBox chartPane;
+
+    @FXML private Label lblTabFeed;
+    @FXML private Label lblTabChart;
 
     private javafx.scene.chart.LineChart<String, Number> priceChart;
     private javafx.scene.chart.XYChart.Series<String, Number> priceSeries;
@@ -127,9 +128,6 @@ public class AuctionRoomController extends BaseController {
         this.sessionId = sessionId;
         //lblProductName.setText(productName.toUpperCase());
 
-        // 1. Load thông tin phiên ban đầu
-        initChart();
-        loadSessionInfo();
         // Nếu là Seller → ẩn/disable toàn bộ phần đặt giá
         if ("SELLER".equalsIgnoreCase(currentRole)) {
             manualBidField.setDisable(true);
@@ -141,12 +139,15 @@ public class AuctionRoomController extends BaseController {
             manualBidField.setPromptText("You are a seller and cannot place a bid.");
         }
 
-        // 2. Join Push Server để nhận realtime
+        // Join Push Server để nhận realtime
         BidSocketClient.getInstance().joinSession(
                 sessionId,
                 ServerService.getToken(),
                 event -> handleBidEvent(event)   // callback — chạy trên background thread
         );
+        // Load thông tin phiên ban đầu
+        initChart();
+        loadSessionInfo();
     }
 
     // ------------------------------------------------------------------ //
@@ -252,7 +253,7 @@ public class AuctionRoomController extends BaseController {
                         String ts = h.getString("timestamp");
                         String time = formatTime(ts); // dùng lại method có sẵn
                         addBidEntry(h.getString("bidderName") + " bid "
-                                        + String.format("%,.0f đ", h.getDouble("amount"))
+                                        + String.format("%,.0f", h.getDouble("amount"))
                                         + " at " + time,
                                 h.getString("bidderName").equals(currentUsername));
 
@@ -344,7 +345,7 @@ public class AuctionRoomController extends BaseController {
             case BID_UPDATE -> Platform.runLater(() -> {
                 // Cập nhật giá và người giữ giá
                 currentPrice = event.price;
-                lblGiaHienTai.setText(String.format("%,.0f đ", event.price));
+                lblGiaHienTai.setText(String.format("%,.0f", event.price));
                 lblNguoiGiuGia.setText("Current winner: " + event.bidderName);
 
                 // Cập nhật endTime nếu bị anti-snipe kéo dài
@@ -447,7 +448,7 @@ public class AuctionRoomController extends BaseController {
     private void handleManualBid() {
         if ("SELLER".equalsIgnoreCase(currentRole)) {
             showNotification(getStage(bidHistoryBox),
-                    "YOU ARE A SELLER!\nYOU CANNOT PLACE A BID IN YOUR OWN AUCTION.");
+                    "YOU ARE A SELLER!\nYOU CANNOT PLACE A BID.");
             return;
         }
 
@@ -646,7 +647,7 @@ public class AuctionRoomController extends BaseController {
         javafx.scene.chart.CategoryAxis xAxis = new javafx.scene.chart.CategoryAxis();
         javafx.scene.chart.NumberAxis yAxis = new javafx.scene.chart.NumberAxis();
         xAxis.setLabel("Time");
-        yAxis.setLabel("Price (đ)");
+        yAxis.setLabel("Price");
 
         priceChart = new javafx.scene.chart.LineChart<>(xAxis, yAxis);
         priceChart.setTitle("Realtime Price Curve");
@@ -688,10 +689,10 @@ public class AuctionRoomController extends BaseController {
     private void handleTabFeed() {
         scrollFeed.setVisible(true);  scrollFeed.setManaged(true);
         chartPane.setVisible(false);  chartPane.setManaged(false);
-        // Đổi underline tab
         tabFeedUnderline.getStyleClass().setAll("auction-tab-underline");
         tabChartUnderline.getStyleClass().setAll("auction-tab-underline-inactive");
-        // Giữ lại style inline cho btnTabFeed/btnTabChart (không làm gì vì hidden)
+        lblTabFeed.getStyleClass().setAll("auction-tab-label-active");
+        lblTabChart.getStyleClass().setAll("auction-tab-label");
     }
 
     @FXML
@@ -700,6 +701,8 @@ public class AuctionRoomController extends BaseController {
         scrollFeed.setVisible(false); scrollFeed.setManaged(false);
         tabChartUnderline.getStyleClass().setAll("auction-tab-underline");
         tabFeedUnderline.getStyleClass().setAll("auction-tab-underline-inactive");
+        lblTabChart.getStyleClass().setAll("auction-tab-label-active");
+        lblTabFeed.getStyleClass().setAll("auction-tab-label");
     }
 
 }

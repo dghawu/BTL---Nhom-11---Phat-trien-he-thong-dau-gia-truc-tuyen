@@ -210,7 +210,7 @@ public class AdminCentreController extends BaseController {
                 {"Product id", product.optString("id", "")},
                 {"Category", product.optString("type", "")},
 
-                {"Starting price", String.format("%,.0f đ", product.optDouble("startPrice", 0))},
+                {"Starting price", String.format("%,.0f", product.optDouble("startPrice", 0))},
                 {"Seller", product.optString("sellerName", product.optString("sellerId", ""))},
                 {"Status", product.optString("status", "")},
         };
@@ -397,9 +397,9 @@ public class AdminCentreController extends BaseController {
                 {"Session ID", session.optString("id", "")},
                 {"Seller", session.optString("sellerName", session.optString("sellerId", "—"))},
                 {"Status", session.optString("status", "")},
-                {"Starting price", String.format("%,.0f đ", session.optDouble("startPrice", 0))},
-                {"Bid increment", String.format("%,.0f đ", session.optDouble("stepPrice", 0))},
-                {"Current price", String.format("%,.0f đ", session.optDouble("currentPrice", 0))},
+                {"Starting price", String.format("%,.0f", session.optDouble("startPrice", 0))},
+                {"Bid increment", String.format("%,.0f", session.optDouble("stepPrice", 0))},
+                {"Current price", String.format("%,.0f", session.optDouble("currentPrice", 0))},
                 {"Opening time", session.optString("startTime", "").replace("T", " ")},
                 {"Closing time", session.optString("endTime", "").replace("T", " ")},
                 {"Winner", session.optString("currentWinner", "—")},
@@ -588,7 +588,7 @@ public class AdminCentreController extends BaseController {
         colTen.setCellValueFactory(c -> str(c.getValue().optString("name")));
         colThongTin.setCellValueFactory(c -> str(c.getValue().optString("type")));  // Loại
         colExtra.setCellValueFactory(c ->                                            // Giá khởi điểm
-                str(String.format("%,.0f đ", c.getValue().optDouble("startPrice", 0))));
+                str(String.format("%,.0f", c.getValue().optDouble("startPrice", 0))));
         colExtra2.setCellValueFactory(c ->                                           // Seller
                 str(c.getValue().optString("sellerName", c.getValue().optString("sellerId"))));
         colTrangThai.setCellValueFactory(c -> str(c.getValue().optString("status")));
@@ -631,8 +631,8 @@ public class AdminCentreController extends BaseController {
         });
         colExtra.setCellValueFactory(c -> {
             JSONObject o = c.getValue();
-            return str("Starting price: " + String.format("%,.0f đ", o.optDouble("startPrice", 0))
-                    + "\nBid increment: " + String.format("%,.0f đ", o.optDouble("stepPrice", 0)));
+            return str("Starting price: " + String.format("%,.0f", o.optDouble("startPrice", 0))
+                    + "\nBid increment: " + String.format("%,.0f", o.optDouble("stepPrice", 0)));
         });
         colExtra.setText("Price");
         colExtra.setCellFactory(col -> new TableCell<>() {
@@ -668,7 +668,7 @@ public class AdminCentreController extends BaseController {
         colThongTin.setCellValueFactory(c ->
                 str(c.getValue().optString("bidderName", c.getValue().optString("bidderId", ""))));
         colExtra.setCellValueFactory(c ->
-                str(String.format("%,.0f đ", c.getValue().optDouble("amount", 0))));
+                str(String.format("%,.0f", c.getValue().optDouble("amount", 0))));
         colTrangThai.setCellValueFactory(c ->
                 str(c.getValue().optString("timestamp", "").replace("T", " ")));
 

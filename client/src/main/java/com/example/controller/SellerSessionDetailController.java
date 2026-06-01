@@ -39,6 +39,10 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
     private Label lblGiaHienTai;
     @FXML
     private javafx.scene.layout.VBox bidHistoryBox;
+    @FXML
+    private javafx.scene.control.Button btnEdit;
+
+    private String currentStatus;
 
     // TextFields cho edit mode
     private TextField txtThoiDong;
@@ -63,6 +67,7 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
                          String currentWinner, String currentPrice) {
         this.currentSessionId = sessionId;
         this.currentCategory = category;
+        this.currentStatus = trangThai != null ? trangThai : "";
         this.attr1Value = attr1 != null ? attr1 : "";
         this.attr2Value = attr2 != null ? attr2 : "";
 
@@ -73,6 +78,8 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
         lblGiaKhoiDiem.setText(gia);
         lblBuocGia.setText(buocGia != null && !buocGia.isEmpty() ? buocGia : "---");
         lblTrangThai.setText(trangThai);
+        boolean canEdit = "PENDING".equalsIgnoreCase(currentStatus);
+        btnEdit.setDisable(!canEdit);
 
         // Hiển thị attributes
         displayAttributes();
@@ -112,7 +119,7 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
                         String time = h.getString("timestamp").replace("T", " ").substring(0, 16);
                         javafx.scene.control.Label entry = new javafx.scene.control.Label(
                                 "▶ " + h.getString("bidderName")
-                                        + " bid " + String.format("%,.0f đ", h.getDouble("amount"))
+                                        + " bid " + String.format("%,.0f", h.getDouble("amount"))
                                         + " lúc " + time);
                         entry.setStyle("-fx-font-size: 13px;");
                         bidHistoryBox.getChildren().add(entry);
@@ -202,6 +209,7 @@ public class SellerSessionDetailController extends com.example.controller.BaseCo
 
     @FXML
     private void handleEdit() {
+        if (!"PENDING".equalsIgnoreCase(currentStatus)) return;
         if (!isEditMode) {
             enableEditMode();
             isEditMode = true;

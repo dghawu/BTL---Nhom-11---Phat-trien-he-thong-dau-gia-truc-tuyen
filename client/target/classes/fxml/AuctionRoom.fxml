@@ -62,7 +62,7 @@
             <HBox alignment="CENTER" spacing="0" style="-fx-padding: 16 20 0 20;">
                 <!-- Tab Feed -->
                 <VBox alignment="CENTER" spacing="4" style="-fx-cursor: hand;" onMouseClicked="#handleTabFeed" HBox.hgrow="ALWAYS">
-                    <Label fx:id="lblProductName" styleClass="auction-tab-label-active" text="History Bid"
+                    <Label fx:id="lblTabFeed" styleClass="auction-tab-label-active" text="History Bid"
                            maxWidth="Infinity" style="-fx-alignment: CENTER;"/>
                     <HBox style="-fx-padding: 0 20 0 20;">
                         <Region fx:id="tabFeedUnderline" styleClass="auction-tab-underline"
@@ -75,7 +75,7 @@
 
                 <!-- Tab Chart -->
                 <VBox alignment="CENTER" spacing="4" style="-fx-cursor: hand;" onMouseClicked="#handleTabChart" HBox.hgrow="ALWAYS">
-                    <Label styleClass="auction-tab-label" text="Price Chart"
+                    <Label fx:id="lblTabChart" styleClass="auction-tab-label" text="Price Chart"
                            maxWidth="Infinity" style="-fx-alignment: CENTER;"/>
                     <HBox style="-fx-padding: 0 20 0 20;">
                         <Region fx:id="tabChartUnderline" styleClass="auction-tab-underline-inactive"

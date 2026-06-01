@@ -48,7 +48,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
         String ten = s.getString("itemName");
         String startTime = s.getString("startTime");
         String status = s.getString("status");
-        String gia = String.format("%,.0fđ", s.getDouble("startPrice"));
+        String gia = String.format("%,.0f", s.getDouble("startPrice"));
         String category = s.getString("category");
         String imageBase64 = s.optString("itemImage", "");
 
@@ -156,7 +156,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
                     s.getString("itemName"),
                     s.getString("startTime"),
                     s.optString("endTime", "---"),
-                    String.format("%,.0fđ", s.getDouble("startPrice")),
+                    String.format("%,.0f", s.getDouble("startPrice")),
                     String.format("%,.0f", s.optDouble("stepPrice", 0)),
                     s.getString("status"),
                     s.optString("itemImage", ""),
@@ -164,7 +164,7 @@ public class SellerSessionListController extends com.example.controller.BaseCont
                     attr1,
                     attr2,
                     s.optString("currentWinner", ""),
-                    String.format("%,.0f đ", s.optDouble("currentPrice", 0))
+                    String.format("%,.0f", s.optDouble("currentPrice", 0))
             );
             getStage(sessionGrid).setScene(new Scene(root));
         } catch (Exception e) {

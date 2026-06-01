@@ -56,17 +56,20 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
     private String currentAttr2;
     private TextField txtAttr1;
     private TextField txtAttr2;
+    private String currentStatus;
+    private String currentStartDate;
 
 
     public void initData(String id, String ten, String phanLoai, String gia, String moTa,
-                         String tinhTrang, String imageBase64, String attr1, String attr2) {
+                         String tinhTrang, String imageBase64, String attr1, String attr2, String startDate) {
         this.currentId = id;
         this.currentImageBase64 = imageBase64 != null ? imageBase64 : "";
-
 
         this.currentCategory = phanLoai;
         this.currentAttr1 = attr1 != null ? attr1 : "";
         this.currentAttr2 = attr2 != null ? attr2 : "";
+        this.currentStatus = tinhTrang != null ? tinhTrang : "";
+        this.currentStartDate = startDate != null ? startDate : "";
 
         lblId.setText(id);
         lblTen.setText(ten);
@@ -75,9 +78,20 @@ public class SellerProductDetailController extends com.example.controller.BaseCo
         lblMoTa.setText(moTa != null && !moTa.isEmpty() ? moTa : "No description available.");
         lblTinhTrang.setText(tinhTrang);
 
+        lblNgayMoBan.setText(
+                (startDate != null && !startDate.isEmpty() && !startDate.equals("N/A"))
+                        ? startDate : "N/A"
+        );
+
+        boolean canEdit = "PENDING".equalsIgnoreCase(currentStatus);
+        btnEdit.setDisable(!canEdit);
+
         displayCurrentImage();
-        displayAttributes();  // Bây giờ currentCategory, currentAttr1, currentAttr2 đã có giá trị
+        displayAttributes();
     }
+
+    @FXML
+    private javafx.scene.control.Button btnEdit;
 
     @FXML
     private void handleHome() {

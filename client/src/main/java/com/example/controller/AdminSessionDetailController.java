@@ -55,9 +55,9 @@ public class AdminSessionDetailController extends BaseController {
         lblSeller.setText(session.optString("sellerId", "—"));
         lblThoiGianMo.setText(session.optString("startTime", "—").replace("T", " "));
         lblThoiGianDong.setText(session.optString("endTime", "—").replace("T", " "));
-        lblGiaKhoiDiem.setText(String.format("%,.0f đ", session.optDouble("startPrice", 0)));
-        lblBuocGia.setText(String.format("%,.0f đ", session.optDouble("stepPrice", 0)));
-        lblGiaHienTai.setText(String.format("%,.0f đ", session.optDouble("currentPrice", 0)));
+        lblGiaKhoiDiem.setText(String.format("%,.0f", session.optDouble("startPrice", 0)));
+        lblBuocGia.setText(String.format("%,.0f", session.optDouble("stepPrice", 0)));
+        lblGiaHienTai.setText(String.format("%,.0f", session.optDouble("currentPrice", 0)));
 
         String winner = session.optString("currentWinner", "");
         lblNguoiThang.setText(winner.isEmpty() ? "There is no" : winner);

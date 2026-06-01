@@ -49,8 +49,9 @@ public class SellerProductListController extends com.example.controller.BaseCont
             String description = item.optString("description", "");
             String status = item.getString("status");
             double price = item.getDouble("startPrice");
-            String priceStr = String.format("%,.0fđ", price);
+            String priceStr = String.format("%,.0f", price);
             String imageBase64 = item.optString("image", "");
+            String startDate = item.optString("startDate", "N/A");
 
 
             String attr1 = item.optString("attr1", "");
@@ -58,13 +59,13 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
 
             productGrid.getChildren().add(buildMockCard(name, id, priceStr, status, category,
-                    description, imageBase64, attr1, attr2));
+                    description, imageBase64, attr1, attr2, startDate));
         }
     }
 
     private VBox buildMockCard(String ten, String id, String gia, String tinhTrang,
                                String category, String description, String imageBase64,
-                               String attr1, String attr2) {
+                               String attr1, String attr2, String startDate) {
         VBox card = new VBox();
         card.getStyleClass().add("product-card");
         card.setPrefWidth(280);
@@ -120,10 +121,13 @@ public class SellerProductListController extends com.example.controller.BaseCont
         Hyperlink link = new Hyperlink("View details");
         link.getStyleClass().add("link-text");
         link.setStyle("-fx-text-fill: #0044CC;");
-        link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64, attr1, attr2));
+        link.setOnAction(e -> openDetail(id, ten, category, gia, description, tinhTrang, imageBase64, attr1, attr2, startDate));
 
         Button cancelBtn = new Button("Cancel product");
         cancelBtn.getStyleClass().add("btn-danger");
+        if (!tinhTrang.toUpperCase().equals("PENDING")) {
+            cancelBtn.setDisable(true);
+        }
 
         HBox buttonBox = new HBox(cancelBtn);
         buttonBox.setAlignment(Pos.CENTER);
@@ -134,16 +138,12 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
             String st = tinhTrang.toUpperCase();
 
-            if (st.equals("IN_AUCTION") || st.equals("SOLD")) {
-
+            if (!st.equals("PENDING")) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
-
                 alert.setTitle("Unable to cancel");
                 alert.setHeaderText(null);
-                alert.setContentText("This product cannot be cancelled.");
-
+                alert.setContentText("Only products with PENDING status can be cancelled.");
                 alert.showAndWait();
-
                 return;
             }
 
@@ -194,7 +194,7 @@ public class SellerProductListController extends com.example.controller.BaseCont
 
     private void openDetail(String id, String ten, String category, String gia,
                             String moTa, String tinhTrang, String imageBase64,
-                            String attr1, String attr2) {
+                            String attr1, String attr2, String startDate) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/SellerProductDetail.fxml"));
             Parent root = loader.load();
@@ -202,8 +202,8 @@ public class SellerProductListController extends com.example.controller.BaseCont
             ctrl.currentUsername = currentUsername;
             ctrl.currentRole = currentRole;
             ctrl.currentUserId = currentUserId;
-            // Truyền đầy đủ 9 tham số (có attr1, attr2)
-            ctrl.initData(id, ten, category, gia, moTa, tinhTrang, imageBase64, attr1, attr2);
+            // Truyền đầy đủ 10 tham số (có attr1, attr2)
+            ctrl.initData(id, ten, category, gia, moTa, tinhTrang, imageBase64, attr1, attr2, startDate);
             Stage stage = getStage(productGrid);
             stage.setScene(new Scene(root));
             stage.show();

@@ -175,7 +175,7 @@ public class BidderCentreController extends com.example.controller.BaseControlle
         info.getStyleClass().add("product-card-info");
         info.getChildren().addAll(
                 new Label("Product: " + ten),
-                new Label("Winning bid: " + String.format("%,.0f đ", finalPrice)),
+                new Label("Winning bid: " + String.format("%,.0f", finalPrice)),
                 new Label("Status: " + status)
         );
 
@@ -214,7 +214,7 @@ public class BidderCentreController extends com.example.controller.BaseControlle
         dialog.setTitle("Payment");
 
         javafx.scene.control.TextField tfAmount = new javafx.scene.control.TextField();
-        tfAmount.setPromptText("Enter amount: " + String.format("%,.0f đ", amount));
+        tfAmount.setPromptText("Enter amount: " + String.format("%,.0f", amount));
 
         javafx.scene.control.Button btnOk = new javafx.scene.control.Button("PAYMENT");
 
@@ -234,7 +234,7 @@ public class BidderCentreController extends com.example.controller.BaseControlle
         });
 
         javafx.scene.layout.VBox layout = new javafx.scene.layout.VBox(12,
-                new javafx.scene.control.Label("Amount to pay: " + String.format("%,.0f đ", amount)),
+                new javafx.scene.control.Label("Amount to pay: " + String.format("%,.0f", amount)),
                 tfAmount, btnOk);
         layout.setStyle("-fx-padding: 24; -fx-alignment: center;");
         dialog.setScene(new javafx.scene.Scene(layout, 320, 160));
