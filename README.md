@@ -23,7 +23,7 @@ Hệ thống đấu giá trực tuyến là một ứng dụng desktop được 
 | **Nguyễn Hà Thu** | 25023407 | Phát triển Backend (Socket & Core Logic)      | • Phát triển hệ thống kết nối mạng thời gian (Socket Server & Socket Client)<br>• Thiết kế và cài đặt các lớp logic cốt lõi (Service, Observer Pattern)<br>• Xử lý nghiệp vụ và chức năng của User<br>• Tính năng nâng cao: Đấu giá tự động (Auto Bid), Gia hạn thời gian (Anti Sniping) |
 | **Chu Tuấn Hùng** | 25023261 | Phát triển Frontend (Database & DAO)           | • Phát triển hệ thống kết nối mạng thời gian (Socket Server & Socket Client)<br>• Thiết kế Database & cấu hình JDBC<br>• Xử lý tầng giao tiếp dữ liệu (DAO - Data Access Object)<br>• Định nghĩa cấu trúc dữ liệu enum (Item, ItemStatus)<br>• Thiết lập cấu hình máy chủ (Server Config)<br>• Triển khai tự động hóa (CI/CD) |
 | **Trần Hương Giang** | 25023224 | Phát triển Frontend (UI/UX)                   | • Chịu trách nhiệm chính trong việc thiết kế giao diện ứng dụng trực quan (FXML)<br>• Lập trình các bộ điều khiển giao diện (Controller)<br>• Tối ưu hóa trải nghiệm người dùng<br>• Định dạng CSS cho toàn bộ ứng dụng |
-| **Đào Gia Hào** |         | Phát triển Backend (Business Logic & Testing) | • Chức năng nâng cao: Đấu giá tự động (Auto Bid), Mã hóa mật khẩu (JWT)<br>• Phân quyền và bảo mật hệ thống<br>• Xử lý nghiệp vụ, giao dịch đấu giá, chức năng trong phiên đặt giá<br>• Viết các Exception<br>• Viết mã kiểm thử tự động với JUnit cho toàn bộ hệ thống dự án<br>• Thiết lập cấu hình máy chủ (Server Config) |
+| **Đào Gia Hào** | 25023234 | Phát triển Backend (Business Logic & Testing) | • Chức năng nâng cao: Đấu giá tự động (Auto Bid), Mã hóa mật khẩu (JWT)<br>• Phân quyền và bảo mật hệ thống<br>• Xử lý nghiệp vụ, giao dịch đấu giá, chức năng trong phiên đặt giá<br>• Viết các Exception<br>• Viết mã kiểm thử tự động với JUnit cho toàn bộ hệ thống dự án<br>• Thiết lập cấu hình máy chủ (Server Config) |
 
 ---
 
@@ -130,15 +130,13 @@ Hệ thống đấu giá trực tuyến là một ứng dụng desktop được 
 ```
 project-root/
 ├── pom.xml                          # Maven config (tất cả modules)
-├── server.properties                # Cấu hình server (port, database)
-│
 ├── server/                          # Module Server
 │   ├── pom.xml
-│   ├── src/main/java/
-│   │   ├── Main.java                # Entry point server
-│   │   ├── com/example/main/
-│   │   │   └── ServerMain.java
-│   │   ├── com/example/server/
+│   ├── update_dao_references.py     # Script hỗ trợ cập nhật DAO
+│   ├── src/main/java/com/example/
+│   │   ├── main/
+│   │   │   └── ServerMain.java          # Entry point server
+│   │   ├── server/
 │   │   │   ├── SocketServer.java        # Server socket chính
 │   │   │   ├── ClientHandler.java       # Xử lý client connections
 │   │   │   ├── BidPushServer.java       # Broadcast updates
@@ -191,10 +189,26 @@ project-root/
 │   │   │   └── enums/
 │   │   │       └── AuctionStatus.java
 │   │   ├── exception/               # Custom Exceptions
-│   │   │   ├── AuctionException...
-│   │   │   ├── BidException...
-│   │   │   ├── UserException...
-│   │   │   └── ... (tất cả exception classes)
+│   │   │   ├── AuctionAlreadyExistsException.java
+│   │   │   ├── AuctionCancelNotAllowedException.java
+│   │   │   ├── AuctionClosedException.java
+│   │   │   ├── AuctionEditNotAllowedException.java
+│   │   │   ├── AuctionNotApprovedException.java
+│   │   │   ├── AuctionNotFoundException.java
+│   │   │   ├── AuctionSystemException.java
+│   │   │   ├── BidOnOwnAuctionException.java
+│   │   │   ├── DatabaseException.java
+│   │   │   ├── DuplicateUsernameException.java
+│   │   │   ├── InvalidBidException.java
+│   │   │   ├── InvalidItemPriceException.java
+│   │   │   ├── ItemNotApprovedException.java
+│   │   │   ├── ItemNotFoundException.java
+│   │   │   ├── PaymentException.java
+│   │   │   ├── SelfBidException.java
+│   │   │   ├── UnauthorizedActionException.java
+│   │   │   ├── UserBannedException.java
+│   │   │   ├── UserNotFoundException.java
+│   │   │   └── WrongPasswordException.java
 │   │   ├── factory/
 │   │   │   └── ItemFactory.java     # Tạo item theo loại
 │   │   ├── auth/
@@ -205,13 +219,31 @@ project-root/
 │   │       └── PasswordUtil.java     # Mã hóa mật khẩu
 │   ├── src/test/java/
 │   │   ├── model/
-│   │   │   ├── auction/AuctionTest.java
-│   │   │   ├── item/ItemTest.java
-│   │   │   └── user/UserTest.java
+│   │   │   ├── auction/
+│   │   │   │   ├── AuctionTest.java
+│   │   │   │   └── BidTransactionTest.java
+│   │   │   ├── auth/
+│   │   │   │   ├── AuthResultTest.java
+│   │   │   │   ├── JwtUtilTest.java
+│   │   │   │   └── TokenGuardTest.java
+│   │   │   ├── item/
+│   │   │   │   ├── ArtTest.java
+│   │   │   │   ├── ETCTest.java
+│   │   │   │   ├── ElectronicsTest.java
+│   │   │   │   ├── FashionTest.java
+│   │   │   │   ├── ItemTest.java
+│   │   │   │   └── VehicleTest.java
+│   │   │   └── user/
+│   │   │       ├── AdminTest.java
+│   │   │       ├── BidderTest.java
+│   │   │       └── SellerTest.java
 │   │   ├── server/
+│   │   │   ├── AuctionManagerTest.java
 │   │   │   ├── AuctionServiceTest.java
+│   │   │   ├── AuctionTimerTest.java
 │   │   │   ├── AutoBidManagerTest.java
-│   │   │   └── ConcurrencyTest.java
+│   │   │   ├── ConcurrencyTest.java
+│   │   │   └── UserServiceTest.java
 │   │   └── util/
 │   │       └── PasswordUtilTest.java
 │   └── src/main/resources/
@@ -220,62 +252,82 @@ project-root/
 ├── client/                          # Module Client
 │   ├── pom.xml
 │   ├── server.properties            # Client config (server address)
-│   ├── src/main/java/
-│   │   ├── com/example/main/
+│   ├── src/main/java/com/example/
+│   │   ├── main/
 │   │   │   └── Main.java                # JavaFX Application entry
-│   │   ├── com/example/controller/
-│   │   │   ├── BaseController.java          # Base controller class
-│   │   │   ├── LoginController.java         # Màn hình login
-│   │   │   ├── RegisterController.java      # Đăng ký tài khoản
-│   │   │   ├── HomeAdminController.java     # Trang chủ Admin
-│   │   │   ├── HomeBidderController.java    # Trang chủ Bidder
-│   │   │   ├── HomeSellerController.java    # Trang chủ Seller
-│   │   │   ├── AuctionsController.java      # Danh sách đấu giá
-│   │   │   ├── AuctionRoomController.java   # Phòng đấu giá
-│   │   │   ├── BidderCentreController.java  # Trung tâm Bidder
-│   │   │   ├── SellerCentreController.java  # Trung tâm Seller
-│   │   │   ├── AdminCentreController.java   # Trung tâm Admin
+│   │   ├── controller/
+│   │   │   ├── BaseController.java              # Base controller class
+│   │   │   ├── LoginController.java             # Màn hình login
+│   │   │   ├── RegisterController.java          # Đăng ký tài khoản
+│   │   │   ├── HomeAdminController.java         # Trang chủ Admin
+│   │   │   ├── HomeBidderController.java        # Trang chủ Bidder
+│   │   │   ├── HomeSellerController.java        # Trang chủ Seller
+│   │   │   ├── AuctionsController.java          # Danh sách đấu giá
+│   │   │   ├── AuctionRoomController.java       # Phòng đấu giá
+│   │   │   ├── AuctionDetailDialogController.java
+│   │   │   ├── AdminCentreController.java       # Trung tâm Admin
+│   │   │   ├── AdminProductDetailController.java
+│   │   │   ├── AdminSessionDetailController.java
+│   │   │   ├── BidderCentreController.java      # Trung tâm Bidder
+│   │   │   ├── SellerCentreController.java      # Trung tâm Seller
 │   │   │   ├── SellerProductListController.java
+│   │   │   ├── SellerProductDetailController.java
 │   │   │   ├── SellerCreateSessionController.java
-│   │   │   ├── NotificationController.java  # Thông báo
-│   │   │   ├── SettingsController.java      # Cài đặt
-│   │   │   ├── ServerSetupController.java   # Setup server
-│   │   │   └── ... (các controller khác)
-│   │   ├── com/example/socket/
+│   │   │   ├── SellerSessionListController.java
+│   │   │   ├── SellerSessionDetailController.java
+│   │   │   ├── NotificationController.java      # Thông báo
+│   │   │   ├── SettingsController.java          # Cài đặt
+│   │   │   └── ServerSetupController.java       # Setup server
+│   │   ├── socket/
 │   │   │   ├── SocketClient.java            # Client socket
 │   │   │   ├── BidSocketClient.java         # Bid updates listener
 │   │   │   └── ServerService.java           # API requests
-│   │   ├── com/example/config/
-│   │   │   └── ServerConfig.java            # Cấu hình server
-│   │   └── com/example/util/              # (nếu có)
-│   ├── src/main/resources/
-│   │   ├── fxml/
-│   │   │   ├── Login.fxml
-│   │   │   ├── Register.fxml
-│   │   │   ├── HomeAdmin.fxml
-│   │   │   ├── HomeBidder.fxml
-│   │   │   ├── HomeSeller.fxml
-│   │   │   ├── Auctions.fxml
-│   │   │   ├── AuctionRoom.fxml
-│   │   │   ├── AuctionDetailDialog.fxml
-│   │   │   ├── AdminCentre.fxml
-│   │   │   ├── BidderCentre.fxml
-│   │   │   ├── SellerCentre.fxml
-│   │   │   ├── SellerProductList.fxml
-│   │   │   ├── SellerCreateSession.fxml
-│   │   │   ├── SellerAddProduct.fxml
-│   │   │   ├── NotificationPopup.fxml
-│   │   │   ├── Settings.fxml
-│   │   │   └── ServerSetup.fxml
-│   │   └── css/
-│   │       └── style.css              # CSS styling cho UI
-│   └── target/                        # Compiled classes (Maven)
+│   │   └── config/
+│   │       └── ServerConfig.java            # Cấu hình server
+│   └── src/main/resources/
+│       ├── fxml/
+│       │   ├── Login.fxml
+│       │   ├── Register.fxml
+│       │   ├── HomeAdmin.fxml
+│       │   ├── HomeBidder.fxml
+│       │   ├── HomeSeller.fxml
+│       │   ├── Auctions.fxml
+│       │   ├── AuctionRoom.fxml
+│       │   ├── AuctionDetailDialog.fxml
+│       │   ├── AdminCentre.fxml
+│       │   ├── AdminProductDetail.fxml
+│       │   ├── AdminSessionDetail.fxml
+│       │   ├── BidderCentre.fxml
+│       │   ├── SellerAddProduct.fxml
+│       │   ├── SellerCreateSession.fxml
+│       │   ├── SellerProductDetail.fxml
+│       │   ├── SellerProductList.fxml
+│       │   ├── SellerSessionDetail.fxml
+│       │   ├── SellerSessionList.fxml
+│       │   ├── NotificationPopup.fxml
+│       │   ├── Settings.fxml
+│       │   ├── SettingsAdmin.fxml
+│       │   ├── SettingsBidder.fxml
+│       │   ├── SettingsSeller.fxml
+│       │   └── ServerSetup.fxml
+│       ├── css/
+│       │   └── style.css              # CSS styling cho UI
+│       └── fonts/                     # Font chữ tùy chỉnh
+│           ├── AppleGaramond.ttf
+│           ├── AppleGaramond-Bold.ttf
+│           ├── AppleGaramond-BoldItalic.ttf
+│           ├── AppleGaramond-Italic.ttf
+│           ├── AppleGaramond-Light.ttf
+│           ├── AppleGaramond-LightItalic.ttf
+│           ├── ZTBrosOskon90s-Regular.otf
+│           ├── ZTBrosOskon90s-Light.otf
+│           ├── ZTBrosOskon90s-LightItalic.otf
+│           ├── ZTBrosOskon90s-Italic.otf
+│           ├── ZTBrosOskon90s-ExtraLight.otf
+│           └── ZTBrosOskon90s-ExtLtIta.otf
 │
-├── .github/workflows/
-│   └── maven-ci.yml                 # CI/CD pipeline
-│
-└── docs/                            # (tùy chọn)
-    └── ... (documentation)
+└── .github/workflows/
+    └── maven-ci.yml                 # CI/CD pipeline
 ```
 
 ---
