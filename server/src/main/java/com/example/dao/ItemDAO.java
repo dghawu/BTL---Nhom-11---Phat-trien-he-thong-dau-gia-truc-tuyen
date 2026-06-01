@@ -1,7 +1,7 @@
 package com.example.dao;
 
 import com.example.model.item.*;
-import model.item.*;
+import com.example.model.item.Item;
 
 import java.sql.*;
 import java.util.ArrayList;
