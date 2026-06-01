@@ -135,7 +135,7 @@ public class BidHandler extends BaseHandler {
         String currentWinner = auction.getCurrentWinner();
         boolean isSelf = currentWinner != null
                 && (bidderName.equals(currentWinner)
-                        || bidderId.equals(currentWinner));
+                || bidderId.equals(currentWinner));
         if (!isSelf) {
             try {
                 String currentWinnerId = "";
@@ -244,8 +244,21 @@ public class BidHandler extends BaseHandler {
     }
 
     /**
-     * triggerAutoBid — chuyển từ ClientHandler sang đây.
-     * Logic giữ nguyên, chỉ tách ra để ClientHandler không ôm thêm trách nhiệm.
+     * Kiểm tra bidder có đang là người dẫn đầu (currentWinner) không.
+     * currentWinner trong Auction được lưu bằng NAME, nên phải so sánh cả ID lẫn Name.
+     */
+    private boolean isCurrentLeader(final Auction auction, final AutoBidConfig cfg) {
+        String winner = auction.getCurrentWinner();
+        if (winner == null) {
+            return false;
+        }
+        return winner.equals(cfg.getBidderId()) || winner.equals(cfg.getBidderName());
+    }
+
+    /**
+     * triggerAutoBid — kích hoạt auto-bid cho các bidder chưa dẫn đầu.
+     * Fix: so sánh currentWinner bằng cả ID và Name để tránh SelfBidException
+     * khi nhiều bidder cùng bật auto-bid.
      */
     private void triggerAutoBid(
             final String sessionId,
@@ -256,6 +269,7 @@ public class BidHandler extends BaseHandler {
             return;
         }
 
+        // Luôn load lại auction mới nhất từ DB để có currentWinner và currentPrice chính xác
         Auction auction = getAuctionDAO().findById(sessionId);
         if (auction == null || auction.getStatus() != AuctionStatus.RUNNING) {
             return;
@@ -265,6 +279,12 @@ public class BidHandler extends BaseHandler {
         }
 
         for (AutoBidConfig cfg : autoBids) {
+            // Bỏ qua bidder đang dẫn đầu — so sánh cả ID lẫn Name
+            if (isCurrentLeader(auction, cfg)) {
+                continue;
+            }
+
+            // Bỏ qua nếu bidder vừa mới thắng lượt này (tránh đặt lại ngay lập tức)
             if (cfg.getBidderId().equals(lastWinnerId)) {
                 continue;
             }

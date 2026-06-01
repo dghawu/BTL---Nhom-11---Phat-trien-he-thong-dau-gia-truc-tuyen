@@ -64,7 +64,9 @@ public class Auction extends Entity implements Subject {
             throw new AuctionClosedException(auctionId, AuctionStatus.FINISHED);
         }
         // Chặn tự đặt giá khi đang thắng
-        if (currentWinner != null && bid.getBidderId().equals(currentWinner)) {
+        // currentWinner được lưu bằng name, nên so sánh cả bidderId lẫn bidderName
+        if (currentWinner != null && (bid.getBidderId().equals(currentWinner)
+                || (bid.getBidderName() != null && bid.getBidderName().equals(currentWinner)))) {
             throw new SelfBidException(bid.getBidderId(), auctionId);
         }
         double requiredPrice = currentPrice + minIncrement;

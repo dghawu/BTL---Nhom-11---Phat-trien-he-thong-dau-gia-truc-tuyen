@@ -211,6 +211,17 @@ public class AuctionRoomController extends BaseController {
                 }
                 String winner = s.optString("currentWinner", "");
                 lblNguoiGiuGia.setText("Current winner: " + (winner.isEmpty() ? "Chưa có" : winner));
+
+                // Nếu user đang là winner khi vừa vào phòng → disable manual bid
+                if (!"SELLER".equalsIgnoreCase(currentRole)
+                        && currentUsername != null && currentUsername.equals(winner)) {
+                    manualEnabled = false;
+                    lblManualToggle.setText("OFF");
+                    lblManualToggle.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white;"
+                            + "-fx-font-size: 11px; -fx-font-weight: bold;"
+                            + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+                    manualBidField.setDisable(true);
+                }
                 break;
             }
             new Thread(() -> {
@@ -351,7 +362,6 @@ public class AuctionRoomController extends BaseController {
                 // Cập nhật endTime nếu bị anti-snipe kéo dài
                 if (!event.endTime.isBlank()) {
                     lblThoiGianKetThuc.setText(formatTime(event.endTime));
-                    // Cập nhật endDateTime để countdown chạy đúng
                     try {
                         String normalized = event.endTime.length() == 16 ? event.endTime + ":00" : event.endTime;
                         endDateTime = java.time.LocalDateTime.parse(normalized);
@@ -366,6 +376,22 @@ public class AuctionRoomController extends BaseController {
                                 + " at " + now,
                         event.bidderName.equals(currentUsername));
                 addChartPoint(event.price, event.bidderName);
+
+                // Re-enable manual bid nếu user không còn là winner (và không phải SELLER, không có auto đang chạy)
+                if (!"SELLER".equalsIgnoreCase(currentRole) && !autoEnabled) {
+                    boolean iAmWinner = currentUsername != null
+                            && currentUsername.equals(event.bidderName);
+                    if (!iAmWinner) {
+                        // Người khác vừa đặt cao hơn → user có thể đặt lại
+                        manualEnabled = true;
+                        lblManualToggle.setText("ON");
+                        lblManualToggle.setStyle("-fx-background-color: #22C55E; -fx-text-fill: white;"
+                                + "-fx-font-size: 11px; -fx-font-weight: bold;"
+                                + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+                        manualBidField.setDisable(false);
+                        lblManualToggle.setDisable(false);
+                    }
+                }
             });
 
             case AUCTION_CLOSED -> Platform.runLater(() -> {
@@ -454,11 +480,18 @@ public class AuctionRoomController extends BaseController {
 
         if (!manualEnabled) return;
 
-        //không cho đặt nếu đang là current winner
+        // Không cho đặt nếu đang là current winner
         if (currentUsername != null && currentUsername.equals(
                 lblNguoiGiuGia.getText().replace("Current winner: ", "").trim())) {
             showNotification(getStage(bidHistoryBox),
-                    "“YOU ARE CURRENTLY THE HIGHEST BIDDER!\nYOU CANNOT BID AGAIN");
+                    "YOU ARE CURRENTLY THE HIGHEST BIDDER!\nYOU CANNOT BID AGAIN.");
+            // Disable nút để tránh spam click
+            manualEnabled = false;
+            lblManualToggle.setText("OFF");
+            lblManualToggle.setStyle("-fx-background-color: #EF4444; -fx-text-fill: white;"
+                    + "-fx-font-size: 11px; -fx-font-weight: bold;"
+                    + "-fx-background-radius: 20px; -fx-padding: 2 8 2 8; -fx-cursor: hand;");
+            manualBidField.setDisable(true);
             return;
         }
 
@@ -470,7 +503,7 @@ public class AuctionRoomController extends BaseController {
         try {
             bid = Double.parseDouble(input.replace(",", "").replace("đ", "").trim());
         } catch (NumberFormatException e) {
-            showNotification(getStage(bidHistoryBox), "“INVALID BID PRICE!");
+            showNotification(getStage(bidHistoryBox), "INVALID BID PRICE!");
             return;
         }
 
